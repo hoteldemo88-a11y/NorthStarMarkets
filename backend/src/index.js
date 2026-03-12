@@ -59,7 +59,7 @@ async function boot() {
       }
     }, 60 * 1000)
 
-    app.listen(port, () => console.log(`API running on http://localhost:${port}`))
+    app.listen(port, '0.0.0.0', () => console.log(`API running on port ${port}`))
   } catch (error) {
     console.error('Failed to start API', error)
     process.exit(1)
