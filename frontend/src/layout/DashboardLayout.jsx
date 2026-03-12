@@ -9,7 +9,8 @@ export default function DashboardLayout() {
   const { user, logout } = useAuth()
   const location = useLocation()
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
-  const [notifications, setNotifications] = useState({ pendingRequests: 0, newTrades: 0, newDepositRequests: 0, newWithdrawRequests: 0, openTrades: 0, pendingDeposits: 0, pendingWithdrawals: 0 })
+  const [notifications, setNotifications] = useState({ pendingRequests: 0, newTrades: 0, newDepositRequests: 0, newWithdrawRequests: 0, openTrades: 0, pendingDeposits: 0, pendingWithdrawals: 0, totalPendingRequests: 0, totalOpenTrades: 0 })
+  const [seenCounts, setSeenCounts] = useState({ openTrades: 0, pendingDeposits: 0, pendingWithdrawals: 0, totalPendingRequests: 0, totalOpenTrades: 0 })
   const notificationCheckRef = useRef(null)
 
   const checkNotifications = async () => {
@@ -21,18 +22,46 @@ export default function DashboardLayout() {
       } else {
         notifs = await apiRequest('/client/notifications')
       }
-      setNotifications(prev => ({
-        ...prev,
-        ...notifs,
+      setNotifications({
         pendingRequests: (notifs.pendingRequests || 0) + (notifs.newTrades || 0),
+        newTrades: notifs.newTrades || 0,
+        newDepositRequests: notifs.newDepositRequests || 0,
+        newWithdrawRequests: notifs.newWithdrawRequests || 0,
         openTrades: notifs.openTrades || 0,
-        pendingDeposits: notifs.newDepositRequests || 0,
-        pendingWithdrawals: notifs.newWithdrawRequests || 0,
-      }))
+        pendingDeposits: notifs.pendingDeposits || 0,
+        pendingWithdrawals: notifs.pendingWithdrawals || 0,
+        totalPendingRequests: notifs.totalPendingRequests || 0,
+        totalOpenTrades: notifs.totalOpenTrades || 0,
+      })
     } catch (err) {
       console.error('Notification check failed:', err)
     }
   }
+
+  const markAsSeen = (key) => {
+    setSeenCounts(prev => ({ ...prev, [key]: notifications[key] || 0 }))
+  }
+
+  useEffect(() => {
+    if (!user) return
+    
+    const path = location.pathname + location.search
+    
+    if (user.role === 'client') {
+      if (path.includes('trade-history') || path.includes('dashboard') && path.includes('main')) markAsSeen('openTrades')
+      if (path.includes('recharge')) markAsSeen('pendingDeposits')
+      if (path.includes('withdraw')) markAsSeen('pendingWithdrawals')
+      if (path.includes('wallet-history')) {
+        markAsSeen('pendingDeposits')
+        markAsSeen('pendingWithdrawals')
+      }
+    }
+    
+    if (user.role === 'admin') {
+      if (path.includes('deposits') || path.includes('withdrawals')) markAsSeen('totalPendingRequests')
+      if (path.includes('trades')) markAsSeen('totalOpenTrades')
+    }
+  }, [location.pathname, location.search, user, notifications])
 
   useEffect(() => {
     checkNotifications()
@@ -72,9 +101,15 @@ export default function DashboardLayout() {
   const pageTitle = links.find((link) => activeNav(link.to))?.label || (user.role === 'admin' ? 'Admin' : 'Client Dashboard')
   const headerIdentity = user.role === 'admin' ? 'Admin Session' : user.email
 
+  const getUnseenCount = (key) => {
+    const current = notifications[key] || 0
+    const seen = seenCounts[key] || 0
+    return Math.max(0, current - seen)
+  }
+
   const totalNotifications = user.role === 'admin' 
-    ? (notifications.totalPendingRequests || 0) + (notifications.totalOpenTrades || 0)
-    : (notifications.openTrades || 0) + (notifications.pendingDeposits || 0) + (notifications.pendingWithdrawals || 0)
+    ? getUnseenCount('totalPendingRequests') + getUnseenCount('totalOpenTrades')
+    : getUnseenCount('openTrades') + getUnseenCount('pendingDeposits') + getUnseenCount('pendingWithdrawals')
 
   useEffect(() => {
     setIsSidebarOpen(false)
@@ -111,25 +146,28 @@ export default function DashboardLayout() {
 <nav className="mt-6 space-y-2 lg:flex-1 lg:overflow-y-auto lg:pr-1">
             {links.map((link) => {
               let showBadge = false
-              if (user.role === 'admin' && link.to.includes('deposits') && (notifications.totalPendingRequests || 0) > 0) {
+              if (user.role === 'admin' && link.to.includes('deposits') && getUnseenCount('totalPendingRequests') > 0) {
                 showBadge = true
               }
-              if (user.role === 'admin' && link.to.includes('withdrawals') && (notifications.totalPendingRequests || 0) > 0) {
+              if (user.role === 'admin' && link.to.includes('withdrawals') && getUnseenCount('totalPendingRequests') > 0) {
                 showBadge = true
               }
-              if (user.role === 'admin' && link.to.includes('trades') && (notifications.totalOpenTrades || 0) > 0) {
+              if (user.role === 'admin' && link.to.includes('trades') && getUnseenCount('totalOpenTrades') > 0) {
                 showBadge = true
               }
-              if (user.role === 'client' && link.to.includes('trade-history') && (notifications.openTrades || 0) > 0) {
+              if (user.role === 'client' && link.to.includes('trade-history') && getUnseenCount('openTrades') > 0) {
                 showBadge = true
               }
-              if (user.role === 'client' && link.to.includes('recharge') && (notifications.pendingDeposits || 0) > 0) {
+              if (user.role === 'client' && link.to.includes('main') && getUnseenCount('openTrades') > 0) {
                 showBadge = true
               }
-              if (user.role === 'client' && link.to.includes('withdraw') && (notifications.pendingWithdrawals || 0) > 0) {
+              if (user.role === 'client' && link.to.includes('recharge') && getUnseenCount('pendingDeposits') > 0) {
                 showBadge = true
               }
-              if (user.role === 'client' && link.to.includes('wallet-history') && ((notifications.pendingDeposits || 0) > 0 || (notifications.pendingWithdrawals || 0) > 0)) {
+              if (user.role === 'client' && link.to.includes('withdraw') && getUnseenCount('pendingWithdrawals') > 0) {
+                showBadge = true
+              }
+              if (user.role === 'client' && link.to.includes('wallet-history') && (getUnseenCount('pendingDeposits') > 0 || getUnseenCount('pendingWithdrawals') > 0)) {
                 showBadge = true
               }
               
