@@ -9,8 +9,7 @@ export default function DashboardLayout() {
   const { user, logout } = useAuth()
   const location = useLocation()
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
-  const [notifications, setNotifications] = useState({ pendingRequests: 0, newTrades: 0, newDepositRequests: 0, newWithdrawRequests: 0 })
-  const [lastChecked, setLastChecked] = useState(() => new Date().toISOString())
+  const [notifications, setNotifications] = useState({ pendingRequests: 0, newTrades: 0, newDepositRequests: 0, newWithdrawRequests: 0, openTrades: 0, pendingDeposits: 0, pendingWithdrawals: 0 })
   const notificationCheckRef = useRef(null)
 
   const checkNotifications = async () => {
@@ -18,12 +17,18 @@ export default function DashboardLayout() {
     try {
       let notifs
       if (user.role === 'admin') {
-        notifs = await adminApi.getNotifications(lastChecked)
+        notifs = await adminApi.getNotifications()
       } else {
-        notifs = await apiRequest(`/client/notifications${lastChecked ? `?since=${encodeURIComponent(lastChecked)}` : ''}`)
+        notifs = await apiRequest('/client/notifications')
       }
-      setNotifications(notifs)
-      setLastChecked(new Date().toISOString())
+      setNotifications(prev => ({
+        ...prev,
+        ...notifs,
+        pendingRequests: (notifs.pendingRequests || 0) + (notifs.newTrades || 0),
+        openTrades: notifs.openTrades || 0,
+        pendingDeposits: notifs.newDepositRequests || 0,
+        pendingWithdrawals: notifs.newWithdrawRequests || 0,
+      }))
     } catch (err) {
       console.error('Notification check failed:', err)
     }
@@ -68,8 +73,8 @@ export default function DashboardLayout() {
   const headerIdentity = user.role === 'admin' ? 'Admin Session' : user.email
 
   const totalNotifications = user.role === 'admin' 
-    ? notifications.pendingRequests + notifications.newTrades 
-    : notifications.newTrades + notifications.newDepositRequests + notifications.newWithdrawRequests
+    ? (notifications.totalPendingRequests || 0) + (notifications.totalOpenTrades || 0)
+    : (notifications.openTrades || 0) + (notifications.pendingDeposits || 0) + (notifications.pendingWithdrawals || 0)
 
   useEffect(() => {
     setIsSidebarOpen(false)
@@ -106,19 +111,25 @@ export default function DashboardLayout() {
 <nav className="mt-6 space-y-2 lg:flex-1 lg:overflow-y-auto lg:pr-1">
             {links.map((link) => {
               let showBadge = false
-              if (user.role === 'admin' && link.to.includes('deposits') && notifications.pendingRequests > 0) {
+              if (user.role === 'admin' && link.to.includes('deposits') && (notifications.totalPendingRequests || 0) > 0) {
                 showBadge = true
               }
-              if (user.role === 'admin' && link.to.includes('trades') && notifications.newTrades > 0) {
+              if (user.role === 'admin' && link.to.includes('withdrawals') && (notifications.totalPendingRequests || 0) > 0) {
                 showBadge = true
               }
-              if (user.role === 'client' && link.to.includes('trade-history') && notifications.newTrades > 0) {
+              if (user.role === 'admin' && link.to.includes('trades') && (notifications.totalOpenTrades || 0) > 0) {
                 showBadge = true
               }
-              if (user.role === 'client' && link.to.includes('recharge') && notifications.newDepositRequests > 0) {
+              if (user.role === 'client' && link.to.includes('trade-history') && (notifications.openTrades || 0) > 0) {
                 showBadge = true
               }
-              if (user.role === 'client' && link.to.includes('withdraw') && notifications.newWithdrawRequests > 0) {
+              if (user.role === 'client' && link.to.includes('recharge') && (notifications.pendingDeposits || 0) > 0) {
+                showBadge = true
+              }
+              if (user.role === 'client' && link.to.includes('withdraw') && (notifications.pendingWithdrawals || 0) > 0) {
+                showBadge = true
+              }
+              if (user.role === 'client' && link.to.includes('wallet-history') && ((notifications.pendingDeposits || 0) > 0 || (notifications.pendingWithdrawals || 0) > 0)) {
                 showBadge = true
               }
               

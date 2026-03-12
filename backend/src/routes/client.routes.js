@@ -143,10 +143,28 @@ router.get('/notifications', async (req, res) => {
     [userId, since]
   )
 
+  const [openTrades] = await pool.query(
+    'SELECT COUNT(*) as count FROM trades WHERE user_id = ? AND status = "open"',
+    [userId]
+  )
+
+  const [pendingDeposits] = await pool.query(
+    'SELECT COUNT(*) as count FROM fund_requests WHERE user_id = ? AND type = "deposit" AND status = "pending"',
+    [userId]
+  )
+
+  const [pendingWithdrawals] = await pool.query(
+    'SELECT COUNT(*) as count FROM fund_requests WHERE user_id = ? AND type = "withdraw" AND status = "pending"',
+    [userId]
+  )
+
   return res.json({
     newTrades: newTrades[0].count,
     newDepositRequests: newDepositRequests[0].count,
     newWithdrawRequests: newWithdrawRequests[0].count,
+    openTrades: openTrades[0].count,
+    pendingDeposits: pendingDeposits[0].count,
+    pendingWithdrawals: pendingWithdrawals[0].count,
   })
 })
 

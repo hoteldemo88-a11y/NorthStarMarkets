@@ -253,9 +253,19 @@ router.get('/notifications', async (req, res) => {
     [since]
   )
 
+  const [totalPendingRequests] = await pool.query(
+    'SELECT COUNT(*) as count FROM fund_requests WHERE status = "pending"'
+  )
+
+  const [totalOpenTrades] = await pool.query(
+    'SELECT COUNT(*) as count FROM trades WHERE status = "open"'
+  )
+
   return res.json({
     pendingRequests: pendingRequests[0].count,
     newTrades: newTrades[0].count,
+    totalPendingRequests: totalPendingRequests[0].count,
+    totalOpenTrades: totalOpenTrades[0].count,
   })
 })
 
