@@ -314,17 +314,6 @@ export default function ClientDashboard() {
         </div>
       </motion.section>
 
-      <section className="grid sm:grid-cols-2 gap-4">
-        <div className="rounded-2xl border border-white/[0.08] bg-[#12121a] p-4">
-          <p className="text-xs uppercase tracking-wide text-gray-400">Total Account Balance</p>
-          <p className="text-2xl font-bold text-white mt-1">${Number(summary.balance).toLocaleString()}</p>
-        </div>
-        <div className="rounded-2xl border border-emerald-400/20 bg-emerald-500/10 p-4">
-          <p className="text-xs uppercase tracking-wide text-emerald-300">Equity (Balance + Open P/L)</p>
-          <p className="text-2xl font-bold text-emerald-100 mt-1">${Number(summary.equity ?? Number(summary.balance) + openTradesPnl).toLocaleString()}</p>
-        </div>
-      </section>
-
       <SectionSpotlight title={sectionMeta[active].title} subtitle={sectionMeta[active].subtitle} />
 
       {active === 'main' && (

@@ -52,11 +52,64 @@ router.post('/login', async (req, res) => {
   return res.json({ token, user })
 })
 
+router.post('/change-password', authenticate, async (req, res) => {
+  const { currentPassword, newPassword } = req.body
+  const adminId = req.user.id
+
+  if (!currentPassword || !newPassword) {
+    return res.status(400).json({ message: 'Current and new password are required' })
+  }
+
+  if (String(newPassword).length < 8) {
+    return res.status(400).json({ message: 'New password must be at least 8 characters' })
+  }
+
+  const [[admin]] = await pool.query('SELECT id, password_hash FROM users WHERE id = ? AND role = "admin" LIMIT 1', [adminId])
+  if (!admin) return res.status(404).json({ message: 'Admin not found' })
+
+  const isValid = await bcrypt.compare(currentPassword, admin.password_hash)
+  if (!isValid) return res.status(401).json({ message: 'Current password is incorrect' })
+
+  const newHash = await bcrypt.hash(newPassword, 12)
+  await pool.query('UPDATE users SET password_hash = ? WHERE id = ?', [newHash, adminId])
+  await logActivity(adminId, 'Admin changed password')
+
+  return res.json({ message: 'Password updated successfully' })
+})
+
 router.use(authenticate, requireAdmin)
 
 router.get('/users', async (_req, res) => {
-  const [rows] = await pool.query('SELECT id, username, email, role, balance, country FROM users WHERE role = "client" ORDER BY id DESC')
+  const [rows] = await pool.query('SELECT id, username, email, role, balance, country, status, created_at FROM users WHERE role = "client" ORDER BY id DESC')
   return res.json(rows)
+})
+
+router.get('/users/:id', async (req, res) => {
+  const userId = Number(req.params.id)
+  const [[user]] = await pool.query('SELECT id, username, email, balance, phone, id_type, id_number, country, date_of_birth, first_name, last_name, annual_income, net_worth, employment_status, source_of_funds, us_citizen, pep_status, tax_residency, risk_tolerance, investment_horizon, max_drawdown, years_trading, products_traded, average_trades_per_month, preferred_markets, strategy_style, preferred_leverage, status, created_at FROM users WHERE id = ? AND role = "client" LIMIT 1', [userId])
+  if (!user) return res.status(404).json({ message: 'User not found' })
+  return res.json(user)
+})
+
+router.patch('/users/:id/suspend', async (req, res) => {
+  const userId = Number(req.params.id)
+  const [[user]] = await pool.query('SELECT id, status FROM users WHERE id = ? AND role = "client" LIMIT 1', [userId])
+  if (!user) return res.status(404).json({ message: 'User not found' })
+  
+  const newStatus = user.status === 'suspended' ? 'active' : 'suspended'
+  await pool.query('UPDATE users SET status = ? WHERE id = ?', [newStatus, userId])
+  await logActivity(req.user.id, `User(${userId}) ${newStatus === 'suspended' ? 'suspended' : 'activated'}`)
+  return res.json({ message: `User ${newStatus === 'suspended' ? 'suspended' : 'activated'} successfully`, status: newStatus })
+})
+
+router.delete('/users/:id', async (req, res) => {
+  const userId = Number(req.params.id)
+  const [[user]] = await pool.query('SELECT id FROM users WHERE id = ? AND role = "client" LIMIT 1', [userId])
+  if (!user) return res.status(404).json({ message: 'User not found' })
+  
+  await pool.query('DELETE FROM users WHERE id = ?', [userId])
+  await logActivity(req.user.id, `User(${userId}) deleted`)
+  return res.json({ message: 'User deleted successfully' })
 })
 
 router.patch('/users/:id/balance', async (req, res) => {
@@ -267,6 +320,33 @@ router.get('/notifications', async (req, res) => {
     totalPendingRequests: totalPendingRequests[0].count,
     totalOpenTrades: totalOpenTrades[0].count,
   })
+})
+
+router.post('/reset-data', async (req, res) => {
+  const connection = await pool.getConnection()
+  try {
+    await connection.beginTransaction()
+    
+    await connection.query('DELETE FROM activity_logs WHERE user_id IS NOT NULL')
+    await connection.query('DELETE FROM fund_requests')
+    await connection.query('DELETE FROM trades')
+    await connection.query('DELETE FROM users WHERE role = "client"')
+    
+    await connection.query('ALTER TABLE users AUTO_INCREMENT = 1')
+    await connection.query('ALTER TABLE trades AUTO_INCREMENT = 1')
+    await connection.query('ALTER TABLE fund_requests AUTO_INCREMENT = 1')
+    await connection.query('ALTER TABLE activity_logs AUTO_INCREMENT = 1')
+    
+    await connection.commit()
+    
+    await logActivity(req.user.id, 'All client data has been reset')
+    return res.json({ message: 'All client data has been removed. Only admin accounts remain.' })
+  } catch (error) {
+    await connection.rollback()
+    throw error
+  } finally {
+    connection.release()
+  }
 })
 
 export default router

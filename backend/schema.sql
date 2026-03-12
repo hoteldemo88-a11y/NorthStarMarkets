@@ -11,6 +11,8 @@ CREATE TABLE IF NOT EXISTS users (
   first_name VARCHAR(100) NULL,
   last_name VARCHAR(100) NULL,
   phone VARCHAR(60) NULL,
+  id_type VARCHAR(60) NULL,
+  id_number VARCHAR(60) NULL,
   country VARCHAR(100) NULL,
   date_of_birth DATE NULL,
   annual_income VARCHAR(100) NULL,
@@ -29,6 +31,7 @@ CREATE TABLE IF NOT EXISTS users (
   preferred_markets VARCHAR(255) NULL,
   strategy_style VARCHAR(80) NULL,
   preferred_leverage VARCHAR(40) NULL,
+  status ENUM('active', 'suspended') NOT NULL DEFAULT 'active',
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 

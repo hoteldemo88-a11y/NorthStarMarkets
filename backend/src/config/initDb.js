@@ -119,6 +119,33 @@ export async function initDatabase() {
     await connection.query('ALTER TABLE trades ADD COLUMN exit_price DECIMAL(12,4) NULL')
   }
 
+  const [idNumberColumn] = await connection.query(
+    `SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = ? AND TABLE_NAME = 'users' AND COLUMN_NAME = 'id_number' LIMIT 1`,
+    [database],
+  )
+
+  if (!idNumberColumn.length) {
+    await connection.query('ALTER TABLE users ADD COLUMN id_number VARCHAR(60) NULL')
+  }
+
+  const [statusColumn] = await connection.query(
+    `SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = ? AND TABLE_NAME = 'users' AND COLUMN_NAME = 'status' LIMIT 1`,
+    [database],
+  )
+
+  if (!statusColumn.length) {
+    await connection.query('ALTER TABLE users ADD COLUMN status ENUM(\'active\', \'suspended\') NOT NULL DEFAULT \'active\'')
+  }
+
+  const [idTypeColumn] = await connection.query(
+    `SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = ? AND TABLE_NAME = 'users' AND COLUMN_NAME = 'id_type' LIMIT 1`,
+    [database],
+  )
+
+  if (!idTypeColumn.length) {
+    await connection.query('ALTER TABLE users ADD COLUMN id_type VARCHAR(60) NULL')
+  }
+
   await connection.query(`
     CREATE TABLE IF NOT EXISTS fund_requests (
       id INT PRIMARY KEY AUTO_INCREMENT,

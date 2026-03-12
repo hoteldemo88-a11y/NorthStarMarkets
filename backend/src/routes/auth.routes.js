@@ -15,6 +15,8 @@ router.post('/register', async (req, res) => {
     firstName,
     lastName,
     phone,
+    idType,
+    idNumber,
     country,
     dateOfBirth,
     annualIncome,
@@ -42,6 +44,8 @@ router.post('/register', async (req, res) => {
     firstName,
     lastName,
     phone,
+    idType,
+    idNumber,
     country,
     dateOfBirth,
     annualIncome,
@@ -101,13 +105,13 @@ router.post('/register', async (req, res) => {
 
   const passwordHash = await bcrypt.hash(password, 12)
 
-  const [result] = await pool.query(
+const [result] = await pool.query(
     `INSERT INTO users (
-      username,email,password_hash,role,first_name,last_name,phone,country,date_of_birth,
+      username,email,password_hash,role,first_name,last_name,phone,id_type,id_number,country,date_of_birth,
       annual_income,net_worth,employment_status,source_of_funds,us_citizen,pep_status,tax_residency,
       risk_tolerance,investment_horizon,max_drawdown,years_trading,products_traded,
       average_trades_per_month,preferred_markets,strategy_style,preferred_leverage,balance
-    ) VALUES (?, ?, ?, 'client', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0)`,
+    ) VALUES (?, ?, ?, 'client', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0)`,
     [
       username,
       email,
@@ -115,6 +119,8 @@ router.post('/register', async (req, res) => {
       firstName || null,
       lastName || null,
       phone || null,
+      idType || null,
+      idNumber || null,
       country || null,
       dateOfBirth || null,
       annualIncome || null,
@@ -150,6 +156,11 @@ router.post('/login', async (req, res) => {
   const user = rows[0]
 
   if (!user) return res.status(401).json({ message: 'Invalid credentials' })
+  
+  if (user.status === 'suspended') {
+    return res.status(403).json({ message: 'Your account has been suspended. Please contact support.' })
+  }
+  
   const isValid = await bcrypt.compare(password, user.password_hash)
   if (!isValid) return res.status(401).json({ message: 'Invalid credentials' })
 

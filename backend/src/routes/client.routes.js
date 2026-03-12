@@ -21,7 +21,7 @@ const allowedCommodities = [
 
 router.get('/summary', async (req, res) => {
   const userId = req.user.id
-  const [users] = await pool.query('SELECT id, username, email, balance, phone, country, risk_tolerance AS riskTolerance FROM users WHERE id = ? LIMIT 1', [userId])
+  const [users] = await pool.query('SELECT id, username, email, balance, phone, id_type AS idType, id_number AS idNumber, country, date_of_birth AS dateOfBirth, risk_tolerance AS riskTolerance, first_name AS firstName, last_name AS lastName, annual_income AS annualIncome, net_worth AS netWorth, employment_status AS employmentStatus, source_of_funds AS sourceOfFunds, us_citizen AS usCitizen, pep_status AS pepStatus, tax_residency AS taxResidency, investment_horizon AS investmentHorizon, max_drawdown AS maxDrawdown, years_trading AS yearsTrading, products_traded AS productsTraded, average_trades_per_month AS averageTradesPerMonth, preferred_markets AS preferredMarkets, strategy_style AS strategyStyle, preferred_leverage AS preferredLeverage, status FROM users WHERE id = ? LIMIT 1', [userId])
   if (!users.length) return res.status(404).json({ message: 'User not found' })
 
   const [openTrades] = await pool.query('SELECT id, symbol, ticket_symbol AS ticketSymbol, side, volume, margin_held AS marginHeld, pnl, trade_date AS tradeDate, contract_expiry AS contractExpiry FROM trades WHERE user_id = ? AND status = "open" ORDER BY id DESC LIMIT 20', [userId])

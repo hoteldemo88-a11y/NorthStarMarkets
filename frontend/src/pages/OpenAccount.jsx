@@ -41,6 +41,8 @@ const initialData = {
   firstName: '',
   lastName: '',
   phone: '',
+  idType: '',
+  idNumber: '',
   country: '',
   dateOfBirth: '',
   annualIncome: '',
@@ -59,6 +61,40 @@ const initialData = {
   preferredMarkets: [],
   strategyStyle: '',
   preferredLeverage: '',
+}
+
+const idTypeOptions = {
+  default: [
+    { value: 'passport', label: 'Passport' },
+    { value: 'national_id', label: 'National ID' },
+    { value: 'drivers_license', label: "Driver's License" },
+    { value: 'voter_id', label: 'Voter ID' },
+  ],
+  US: [
+    { value: 'ssn', label: 'Social Security Number (SSN)' },
+    { value: 'drivers_license', label: "Driver's License" },
+    { value: 'passport', label: 'US Passport' },
+  ],
+  UK: [
+    { value: 'passport', label: 'UK Passport' },
+    { value: 'national_id', label: 'National Insurance Number' },
+    { value: 'drivers_license', label: "Driver's License" },
+  ],
+  India: [
+    { value: 'aadhaar', label: 'Aadhaar Card' },
+    { value: 'pan', label: 'PAN Card' },
+    { value: 'passport', label: 'Passport' },
+    { value: 'drivers_license', label: "Driver's License" },
+    { value: 'voter_id', label: 'Voter ID' },
+  ],
+}
+
+const getIdOptions = (country) => {
+  if (!country) return idTypeOptions.default
+  const countryKey = Object.keys(idTypeOptions).find(key => 
+    country.toLowerCase().includes(key.toLowerCase())
+  )
+  return idTypeOptions[countryKey] || idTypeOptions.default
 }
 
 const options = {
@@ -106,8 +142,17 @@ export default function OpenAccount() {
   const [loading, setLoading] = useState(false)
   const [apiError, setApiError] = useState('')
   const [countryIso, setCountryIso] = useState(getCountryFromLocale())
-  const { register } = useAuth()
+  const { user, loading: authLoading, register } = useAuth()
   const navigate = useNavigate()
+
+  if (authLoading) {
+    return <div className="min-h-screen bg-[#090910] text-white flex items-center justify-center">Loading...</div>
+  }
+
+  if (user) {
+    navigate(user.role === 'admin' ? '/admin/dashboard' : '/dashboard', { replace: true })
+    return null
+  }
 
   const progress = useMemo(() => Math.round(((step + 1) / stepConfig.length) * 100), [step])
   const currentStep = stepConfig[step]
@@ -137,6 +182,8 @@ export default function OpenAccount() {
       if (!formData.firstName.trim()) nextErrors.firstName = 'First name is required'
       if (!formData.lastName.trim()) nextErrors.lastName = 'Last name is required'
       if (!formData.phone.trim() || formData.phone.length < 8) nextErrors.phone = 'Valid phone number is required'
+      if (!formData.idType) nextErrors.idType = 'Select ID type'
+      if (!formData.idNumber.trim()) nextErrors.idNumber = 'ID number is required'
       if (!formData.country.trim()) nextErrors.country = 'Country is required'
       if (!formData.dateOfBirth) nextErrors.dateOfBirth = 'Date of birth is required'
     }
@@ -277,6 +324,23 @@ export default function OpenAccount() {
                         />
                       </div>
                       {errors.phone && <p className="text-xs text-red-400 mt-1">{errors.phone}</p>}
+                    </div>
+
+                    <InputField icon={FaIdCard} label="ID Number (Passport/National ID)" value={formData.idNumber} onChange={(v) => setField('idNumber', v)} error={errors.idNumber} />
+
+                    <div className="sm:col-span-2">
+                      <label className="text-sm text-gray-300 mb-2 block">ID Type</label>
+                      <select
+                        value={formData.idType}
+                        onChange={(e) => { setField('idType', e.target.value); setField('idNumber', '') }}
+                        className="w-full px-4 py-2.5 rounded-xl bg-[#0a0a0f] border border-white/[0.12] text-white focus:outline-none focus:border-cyan-500"
+                      >
+                        <option value="">Select ID type</option>
+                        {getIdOptions(formData.country).map(opt => (
+                          <option key={opt.value} value={opt.value}>{opt.label}</option>
+                        ))}
+                      </select>
+                      {errors.idType && <p className="text-xs text-red-400 mt-1">{errors.idType}</p>}
                     </div>
 
                     <InputField icon={FaGlobe} label="Country" value={formData.country} onChange={(v) => setField('country', v)} error={errors.country} readOnly />
