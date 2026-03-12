@@ -10,9 +10,6 @@ const pool = mysql.createPool({
   password: process.env.MYSQL_PASSWORD || '',
   database: process.env.MYSQL_DATABASE || 'north_star_markets',
   connectionLimit: 10,
-  authPlugins: {
-    mysql_native_password: () => null
-  },
 })
 
 export default pool
