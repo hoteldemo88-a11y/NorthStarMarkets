@@ -33,7 +33,7 @@ const stepConfig = [
   { key: 'preferences', title: 'Investment Preferences', subtitle: 'Configure your strategy preferences', icon: FaPiggyBank },
 ]
 
-const initialData = {
+  const initialData = {
   username: '',
   email: '',
   password: '',
@@ -61,6 +61,7 @@ const initialData = {
   preferredMarkets: [],
   strategyStyle: '',
   preferredLeverage: '',
+  skipIdUpload: false,
 }
 
 const idTypeOptions = {
@@ -182,10 +183,13 @@ export default function OpenAccount() {
       if (!formData.firstName.trim()) nextErrors.firstName = 'First name is required'
       if (!formData.lastName.trim()) nextErrors.lastName = 'Last name is required'
       if (!formData.phone.trim() || formData.phone.length < 8) nextErrors.phone = 'Valid phone number is required'
-      if (!formData.idType) nextErrors.idType = 'Select ID type'
-      if (!formData.idNumber.trim()) nextErrors.idNumber = 'ID number is required'
       if (!formData.country.trim()) nextErrors.country = 'Country is required'
       if (!formData.dateOfBirth) nextErrors.dateOfBirth = 'Date of birth is required'
+      
+      if (!formData.skipIdUpload) {
+        if (!formData.idType) nextErrors.idType = 'Select ID type or skip'
+        if (!formData.idNumber.trim()) nextErrors.idNumber = 'ID number is required or skip'
+      }
     }
 
     if (step === 2) {
@@ -326,25 +330,45 @@ export default function OpenAccount() {
                       {errors.phone && <p className="text-xs text-red-400 mt-1">{errors.phone}</p>}
                     </div>
 
-                    <InputField icon={FaIdCard} label="ID Number (Passport/National ID)" value={formData.idNumber} onChange={(v) => setField('idNumber', v)} error={errors.idNumber} />
-
-                    <div className="sm:col-span-2">
-                      <label className="text-sm text-gray-300 mb-2 block">ID Type</label>
-                      <select
-                        value={formData.idType}
-                        onChange={(e) => { setField('idType', e.target.value); setField('idNumber', '') }}
-                        className="w-full px-4 py-2.5 rounded-xl bg-[#0a0a0f] border border-white/[0.12] text-white focus:outline-none focus:border-cyan-500"
-                      >
-                        <option value="">Select ID type</option>
-                        {getIdOptions(formData.country).map(opt => (
-                          <option key={opt.value} value={opt.value}>{opt.label}</option>
-                        ))}
-                      </select>
-                      {errors.idType && <p className="text-xs text-red-400 mt-1">{errors.idType}</p>}
-                    </div>
-
                     <InputField icon={FaGlobe} label="Country" value={formData.country} onChange={(v) => setField('country', v)} error={errors.country} readOnly />
                     <InputField icon={FaIdCard} label="Date of Birth" type="date" value={formData.dateOfBirth} onChange={(v) => setField('dateOfBirth', v)} error={errors.dateOfBirth} />
+
+                    <div className="sm:col-span-2 mt-2 p-4 rounded-xl bg-amber-500/10 border border-amber-400/25">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-sm text-amber-200 font-medium">ID Verification (Optional)</p>
+                          <p className="text-xs text-amber-100/70 mt-1">You can skip this and upload your ID later from your dashboard for faster verification.</p>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => setField('skipIdUpload', !formData.skipIdUpload)}
+                          className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${formData.skipIdUpload ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-400/30' : 'bg-white/10 text-gray-300 border border-white/20'}`}
+                        >
+                          {formData.skipIdUpload ? 'Skip Selected' : 'Skip for Now'}
+                        </button>
+                      </div>
+                    </div>
+
+                    {!formData.skipIdUpload && (
+                      <>
+                        <InputField icon={FaIdCard} label="ID Number (Passport/National ID)" value={formData.idNumber} onChange={(v) => setField('idNumber', v)} error={errors.idNumber} />
+
+                        <div className="sm:col-span-2">
+                          <label className="text-sm text-gray-300 mb-2 block">ID Type</label>
+                          <select
+                            value={formData.idType}
+                            onChange={(e) => { setField('idType', e.target.value); setField('idNumber', '') }}
+                            className="w-full px-4 py-2.5 rounded-xl bg-[#0a0a0f] border border-white/[0.12] text-white focus:outline-none focus:border-cyan-500"
+                          >
+                            <option value="">Select ID type</option>
+                            {getIdOptions(formData.country).map(opt => (
+                              <option key={opt.value} value={opt.value}>{opt.label}</option>
+                            ))}
+                          </select>
+                          {errors.idType && <p className="text-xs text-red-400 mt-1">{errors.idType}</p>}
+                        </div>
+                      </>
+                    )}
                   </div>
                 )}
 

@@ -2,12 +2,17 @@ import express from 'express'
 import cors from 'cors'
 import bcrypt from 'bcryptjs'
 import dotenv from 'dotenv'
+import path from 'path'
+import { fileURLToPath } from 'url'
 import pool from './config/db.js'
 import { initDatabase } from './config/initDb.js'
 import authRoutes from './routes/auth.routes.js'
 import clientRoutes from './routes/client.routes.js'
 import adminRoutes from './routes/admin.routes.js'
 import { closeExpiredTrades } from './utils/trades.js'
+
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
 
 dotenv.config()
 
@@ -16,6 +21,7 @@ const port = Number(process.env.PORT || 5000)
 
 app.use(cors())
 app.use(express.json({ limit: '1mb' }))
+app.use('/uploads', express.static(path.join(__dirname, '..', '..', 'uploads')))
 
 app.get('/api/health', (_req, res) => {
   res.json({ status: 'ok', service: 'north-star-api' })

@@ -146,6 +146,51 @@ export async function initDatabase() {
     await connection.query('ALTER TABLE users ADD COLUMN id_type VARCHAR(60) NULL')
   }
 
+  const [verificationStatusColumn] = await connection.query(
+    `SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = ? AND TABLE_NAME = 'users' AND COLUMN_NAME = 'verification_status' LIMIT 1`,
+    [database],
+  )
+
+  if (!verificationStatusColumn.length) {
+    await connection.query('ALTER TABLE users ADD COLUMN verification_status ENUM(\'pending\', \'verified\', \'rejected\', \'documents_requested\') NOT NULL DEFAULT \'pending\'')
+  }
+
+  const [idDocumentColumn] = await connection.query(
+    `SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = ? AND TABLE_NAME = 'users' AND COLUMN_NAME = 'id_document' LIMIT 1`,
+    [database],
+  )
+
+  if (!idDocumentColumn.length) {
+    await connection.query('ALTER TABLE users ADD COLUMN id_document VARCHAR(255) NULL')
+  }
+
+  const [verificationNotesColumn] = await connection.query(
+    `SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = ? AND TABLE_NAME = 'users' AND COLUMN_NAME = 'verification_notes' LIMIT 1`,
+    [database],
+  )
+
+  if (!verificationNotesColumn.length) {
+    await connection.query('ALTER TABLE users ADD COLUMN verification_notes TEXT NULL')
+  }
+
+  const [idFrontColumn] = await connection.query(
+    `SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = ? AND TABLE_NAME = 'users' AND COLUMN_NAME = 'id_front' LIMIT 1`,
+    [database],
+  )
+
+  if (!idFrontColumn.length) {
+    await connection.query('ALTER TABLE users ADD COLUMN id_front VARCHAR(255) NULL')
+  }
+
+  const [idBackColumn] = await connection.query(
+    `SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = ? AND TABLE_NAME = 'users' AND COLUMN_NAME = 'id_back' LIMIT 1`,
+    [database],
+  )
+
+  if (!idBackColumn.length) {
+    await connection.query('ALTER TABLE users ADD COLUMN id_back VARCHAR(255) NULL')
+  }
+
   await connection.query(`
     CREATE TABLE IF NOT EXISTS fund_requests (
       id INT PRIMARY KEY AUTO_INCREMENT,
