@@ -250,4 +250,19 @@ router.post('/submit-kyc', async (req, res) => {
   }
 })
 
+router.post('/kyc-info', async (req, res) => {
+  const { idType, idNumber, dateOfBirth } = req.body
+
+  try {
+    await pool.query(
+      'UPDATE users SET id_type = ?, id_number = ?, date_of_birth = ? WHERE id = ?',
+      [idType || null, idNumber || null, dateOfBirth || null, req.user.id]
+    )
+    return res.json({ message: 'KYC info updated' })
+  } catch (error) {
+    console.error('KYC info error:', error)
+    return res.status(500).json({ message: 'Failed to update KYC info' })
+  }
+})
+
 export default router
