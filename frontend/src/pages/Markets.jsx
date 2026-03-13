@@ -81,7 +81,7 @@ export default function Markets() {
         <div className="relative z-10 max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 text-center">
           <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} className="max-w-4xl mx-auto">
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 text-white">North Star Markets <span className="bg-gradient-to-r from-indigo-400 via-cyan-400 to-emerald-400 bg-clip-text text-transparent">Markets</span></h1>
-            <p className="text-xl md:text-2xl text-gray-200 mb-4">Join traders across the globe who are growing their portfolio through North Star Markets Markets</p>
+            <p className="text-xl md:text-2xl text-gray-200 mb-4">Join traders across the globe who are growing their portfolio through North Star Markets</p>
             <p className="text-lg text-gray-300">Gain access to more than 160 tradable instruments: Currencies, Agricultural Commodities, Metals, Energy, Stocks/Shares and Options</p>
           </motion.div>
         </div>
@@ -145,7 +145,6 @@ export default function Markets() {
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
             <div className="flex flex-wrap justify-center gap-4">
               <Link to="/contact" className="inline-flex items-center gap-2 px-8 sm:px-10 py-4 text-base font-semibold text-white bg-gradient-to-r from-indigo-600 to-indigo-600 rounded-xl hover:from-indigo-500 hover:to-indigo-500 transition-all duration-300 shadow-lg shadow-indigo-500/25">Get Started <ArrowRight className="w-5 h-5" /></Link>
-              <Link to="/contact" className="inline-flex items-center gap-2 px-8 sm:px-10 py-4 text-base font-semibold text-white bg-white/10 border border-white/20 rounded-xl hover:bg-white/20 transition-all duration-300">Contract Agreement</Link>
             </div>
           </motion.div>
         </div>

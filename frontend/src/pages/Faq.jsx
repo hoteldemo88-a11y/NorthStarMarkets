@@ -152,10 +152,9 @@ export default function Faq() {
           >
             <div className="bg-[#12121a] border border-white/[0.08] rounded-2xl p-10">
               <h2 className="text-2xl font-bold mb-4 text-white">Still have questions?</h2>
-              <p className="text-gray-300 mb-8">Our support team is available 24/7 to help you.</p>
+              <p className="text-gray-300 mb-8">Our support team is here to help you.</p>
               <div className="flex flex-wrap justify-center gap-4">
                 <Link to="/contact" className="inline-flex items-center gap-2 px-8 py-4 text-base font-semibold text-white bg-gradient-to-r from-indigo-600 to-indigo-600 rounded-xl hover:from-indigo-500 hover:to-indigo-500 transition-all duration-300 shadow-lg shadow-indigo-500/25">Contact Support <ArrowRight className="w-5 h-5" /></Link>
-                <Link to="/contact" className="inline-flex items-center gap-2 px-8 py-4 text-base font-semibold text-white bg-white/10 border border-white/20 rounded-xl hover:bg-white/20 transition-all duration-300">Contract Agreement</Link>
               </div>
             </div>
           </motion.div>

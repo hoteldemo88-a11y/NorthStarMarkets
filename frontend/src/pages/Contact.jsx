@@ -4,7 +4,7 @@ import { Mail, Phone, MapPin, Send, Twitter, Facebook, Instagram, Linkedin, Chec
 
 const contactInfo = [
   { icon: Mail, title: 'Email Support', details: 'support@northstarmarkets.com', description: 'Response within 24 hours' },
-  { icon: Phone, title: 'Phone Support', details: '+1 (888) 123-4567', description: 'Available 24/7' },
+  { icon: Phone, title: 'Phone Support', details: '+1 (888) 123-4567', description: 'Available during business hours' },
   { icon: MapPin, title: 'Headquarters', details: 'New York, NY 10001', description: 'United States' },
 ]
 
@@ -40,7 +40,7 @@ export default function Contact() {
         <div className="relative z-10 max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 text-center">
           <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} className="max-w-3xl mx-auto">
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 text-white">Get in <span className="bg-gradient-to-r from-indigo-400 via-cyan-400 to-emerald-400 bg-clip-text text-transparent">Touch</span></h1>
-            <p className="text-xl text-gray-300">Have questions? Our support team is here to help 24/7.</p>
+            <p className="text-xl text-gray-300">Have questions? Our support team is here to help.</p>
           </motion.div>
         </div>
       </section>

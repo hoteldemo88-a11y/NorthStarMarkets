@@ -7,12 +7,12 @@ import { useAuth } from '../context/AuthContext'
 const navLinks = [
   { name: 'Home', path: '/' },
   { name: 'Markets', path: '/markets' },
-  { name: 'Our Goal', path: '/our-goal' },
+  { name: 'Our Mission', path: '/our-goal' },
   { name: 'About Us', path: '/about' },
   { name: 'FAQs', path: '/faq' },
   { name: 'Careers', path: '/careers' },
   { name: 'Contact', path: '/contact' },
-  { name: 'Clients Reviews', path: '/clients-reviews' },
+  { name: 'Client Reviews', path: '/clients-reviews' },
 ]
 
 export default function Navbar() {

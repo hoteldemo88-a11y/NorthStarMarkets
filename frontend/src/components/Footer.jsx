@@ -24,7 +24,6 @@ export default function Footer() {
             <p className="text-gray-300 text-sm mb-4 max-w-xs leading-relaxed">Trade with confidence on a secure and fast platform.</p>
             <div className="flex flex-col gap-2 mb-4 max-w-xs">
               <Link to="/open-account" className="w-full text-center px-4 py-2.5 text-sm font-semibold text-white bg-gradient-to-r from-indigo-600 to-cyan-500 rounded-lg hover:from-indigo-500 hover:to-cyan-400 transition-all">Open Account</Link>
-              <Link to="/contact" className="w-full text-center px-4 py-2.5 text-sm font-semibold text-white bg-white/10 border border-white/20 rounded-lg hover:bg-white/20 transition-all">Contract Agreement</Link>
             </div>
             <div className="flex gap-2.5">
               {socialLinks.map((social, i) => (
@@ -38,7 +37,7 @@ export default function Footer() {
           <div className="min-w-0">
             <h4 className="text-white font-semibold mb-3">Company</h4>
             <ul className="space-y-2">
-              <li><Link to="/about" className="text-gray-300 text-sm hover:text-white transition-colors">Our Goal</Link></li>
+              <li><Link to="/our-mission" className="text-gray-300 text-sm hover:text-white transition-colors">Our Mission</Link></li>
               <li><Link to="/about" className="text-gray-300 text-sm hover:text-white transition-colors">About Us</Link></li>
               <li><Link to="/careers" className="text-gray-300 text-sm hover:text-white transition-colors">Careers</Link></li>
               <li><Link to="/contact" className="text-gray-300 text-sm hover:text-white transition-colors">Contact</Link></li>
@@ -60,7 +59,7 @@ export default function Footer() {
             <h4 className="text-white font-semibold mb-3">Support</h4>
             <ul className="space-y-2">
               <li><Link to="/faq" className="text-gray-300 text-sm hover:text-white transition-colors">FAQs</Link></li>
-              <li><Link to="/about" className="text-gray-300 text-sm hover:text-white transition-colors">Clients Reviews</Link></li>
+              <li><Link to="/clients-reviews" className="text-gray-300 text-sm hover:text-white transition-colors">Client Reviews</Link></li>
               <li><Link to="/contact" className="text-gray-300 text-sm hover:text-white transition-colors">Help Center</Link></li>
             </ul>
           </div>
@@ -78,7 +77,6 @@ export default function Footer() {
         <div className="mt-8 pt-6 border-t border-white/[0.08] flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-gray-300 text-sm">© {new Date().getFullYear()} North Star Markets. All rights reserved.</p>
           <div className="flex flex-wrap justify-center gap-4 sm:gap-6">
-            <Link to="/contact" className="text-gray-300 text-sm hover:text-white transition-colors">Contract Agreement</Link>
             <Link to="/about" className="text-gray-300 text-sm hover:text-white transition-colors">Terms</Link>
             <Link to="/about" className="text-gray-300 text-sm hover:text-white transition-colors">Privacy</Link>
           </div>

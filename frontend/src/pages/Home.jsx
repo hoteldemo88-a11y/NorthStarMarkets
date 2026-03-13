@@ -118,7 +118,6 @@ const traderCards = [
 const features = [
   { icon: Zap, title: 'Lightning Fast', desc: 'Sub-50ms execution' },
   { icon: Shield, title: 'Secure', desc: 'Bank-grade encryption' },
-  { icon: Clock, title: '24/7', desc: 'Expert support' },
   { icon: CreditCard, title: 'No Fees', desc: 'Zero deposits' },
 ]
 
@@ -593,7 +592,6 @@ export default function Home() {
             <p className="text-lg text-gray-300 mb-8">Join over 150,000 traders today.</p>
             <div className="flex flex-wrap justify-center gap-4">
               <Link to="/open-account" className="px-10 py-4 text-base font-semibold text-white bg-gradient-to-r from-indigo-600 to-indigo-600 rounded-xl hover:from-indigo-500 hover:to-indigo-500 transition-all duration-300 shadow-lg shadow-indigo-500/25">Open Free Account</Link>
-              <Link to="/contact" className="px-10 py-4 text-base font-semibold text-white bg-[#12121a] border border-white/[0.15] rounded-xl hover:bg-white/[0.05] transition-all">Contract Agreement</Link>
             </div>
           </motion.div>
         </div>

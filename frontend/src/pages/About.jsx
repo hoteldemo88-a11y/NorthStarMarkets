@@ -11,7 +11,6 @@ const features = [
 ]
 
 const team = [
-  { name: 'Lars Nilsson', role: 'Chief Executive Officer', initial: 'LN' },
   { name: 'Ana Ericsson', role: 'Chief Compliance Officer', initial: 'AE' },
   { name: 'Magnus Björk', role: 'Marketing Director', initial: 'MB' },
   { name: 'Oskar Bergström', role: 'Legal Director', initial: 'OB' },
@@ -20,7 +19,6 @@ const team = [
 const whyChooseUs = [
   'Raw market spreads from 0.0 pips',
   'No-Commission Deposits',
-  '24x7 Global Customer Support',
   'Industry leading execution',
   'Hassle-free withdrawals in 24 hours',
   'Segregated client funds',
@@ -140,7 +138,6 @@ export default function About() {
             <p className="text-lg text-gray-300 mb-8">Join thousands of traders who trust North Star Markets.</p>
             <div className="flex flex-wrap justify-center gap-4">
               <Link to="/contact" className="inline-flex items-center gap-2 px-8 py-4 text-base font-semibold text-white bg-gradient-to-r from-indigo-600 to-indigo-600 rounded-xl hover:from-indigo-500 hover:to-indigo-500 transition-all duration-300 shadow-lg shadow-indigo-500/25">Get Started <ArrowRight className="w-5 h-5" /></Link>
-              <Link to="/contact" className="inline-flex items-center gap-2 px-8 py-4 text-base font-semibold text-white bg-white/10 border border-white/20 rounded-xl hover:bg-white/20 transition-all duration-300">Contract Agreement</Link>
             </div>
           </motion.div>
         </div>

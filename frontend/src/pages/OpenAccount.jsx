@@ -103,7 +103,7 @@ const options = {
   investmentHorizon: ['short', 'medium', 'long'],
   yearsTrading: ['0-1', '1-3', '3-5', '5+'],
   averageTradesPerMonth: ['1-10', '10-30', '30-50', '50+'],
-  preferredLeverage: ['1:30', '1:50', '1:100', '1:200', '1:500'],
+  preferredLeverage: ['1:30', '1:50', '1:100', '1:200'],
 }
 
 const riskOptions = [

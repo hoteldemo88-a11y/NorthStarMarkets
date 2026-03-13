@@ -11,22 +11,21 @@ const stats = [
 const cultureHighlights = [
   { value: '15K+', label: 'Customers' },
   { value: '2023', label: 'Acquired' },
-  { value: 'Sweden', label: 'Made in' },
 ]
 
 const coreValues = [
-  { icon: TrendingUp, title: 'Continuous Improvement', description: 'Embracing Advanced365, we drive excellence through small, incremental changes, fostering continuous growth.' },
+  { icon: TrendingUp, title: 'Continuous Improvement', description: 'Driving excellence through small, incremental changes, fostering continuous growth.' },
   { icon: Target, title: 'Results-Driven Mindset', description: 'Setting clear goals and tracking progress, we approach our work with a determined focus on achieving impactful results.' },
-  { icon: Shield, title: 'Ownership and Accountability', description: 'In the Advanced365 family, ownership and accountability are our values. Each member takes pride in their work, contributing to our collective success.' },
-  { icon: Users, title: 'Diversity and Inclusion', description: 'At Advanced365, diversity is our strength. We cultivate an inclusive culture, valuing and empowering individuals from diverse backgrounds.' },
+  { icon: Shield, title: 'Ownership and Accountability', description: 'Ownership and accountability are our values. Each member takes pride in their work, contributing to our collective success.' },
+  { icon: Users, title: 'Diversity and Inclusion', description: 'Diversity is our strength. We cultivate an inclusive culture, valuing and empowering individuals from diverse backgrounds.' },
   { icon: Sparkles, title: 'Fun and Celebration', description: 'While serious about our work, we know how to have fun. Celebrating milestones and achievements is woven into our positive and enjoyable workplace culture.' },
 ]
 
 const diversityPoints = [
-  { title: 'Equal Opportunities', description: 'At Advanced365, we ensure equal opportunities for all to thrive. Merit and talent are the driving forces in our commitment to a level playing field for career advancement.' },
-  { title: 'Diverse Leadership', description: 'Our leadership embodies diversity for innovative decision-making. Representing varied backgrounds and experiences, they steer Advanced365 towards excellence.' },
+  { title: 'Equal Opportunities', description: 'We ensure equal opportunities for all to thrive. Merit and talent are the driving forces in our commitment to a level playing field for career advancement.' },
+  { title: 'Diverse Leadership', description: 'Our leadership embodies diversity for innovative decision-making. Representing varied backgrounds and experiences, they steer us towards excellence.' },
   { title: 'Open Communication', description: 'Fostering open and honest communication, we value every voice. Actively seeking diverse perspectives enriches our discussions, decision-making, and problem-solving approaches.' },
-  { title: 'Celebrating Differences', description: 'Differences aren\'t just tolerated – they\'re celebrated at Advanced365. Recognising and appreciating each individual\'s uniqueness, we cultivate an environment where diversity is a source of strength.' },
+  { title: 'Celebrating Differences', description: 'Differences aren\'t just tolerated – they\'re celebrated. Recognising and appreciating each individual\'s uniqueness, we cultivate an environment where diversity is a source of strength.' },
 ]
 
 export default function OurGoal() {
@@ -74,7 +73,7 @@ export default function OurGoal() {
         <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6">
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold mb-4 text-white">Our <span className="bg-gradient-to-r from-indigo-400 via-cyan-400 to-emerald-400 bg-clip-text text-transparent">Culture</span></h2>
-            <p className="text-gray-300 max-w-2xl mx-auto">At Advanced365, our company culture is the heartbeat of our organisation. Rooted in the principles of continuous improvement, teamwork, and excellence.</p>
+            <p className="text-gray-300 max-w-2xl mx-auto">Our company culture is the heartbeat of our organisation. Rooted in the principles of continuous improvement, teamwork, and excellence.</p>
           </motion.div>
 
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="flex flex-wrap justify-center gap-8 mb-12">
@@ -112,7 +111,7 @@ export default function OurGoal() {
         <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6">
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold mb-4 text-white">Our Core <span className="bg-gradient-to-r from-indigo-400 via-cyan-400 to-emerald-400 bg-clip-text text-transparent">Values</span></h2>
-            <p className="text-gray-300 max-w-2xl mx-auto">At Advanced365, our core values are the bedrock of our identity, shaping our culture and defining the way we work.</p>
+            <p className="text-gray-300 max-w-2xl mx-auto">Our core values are the bedrock of our identity, shaping our culture and defining the way we work.</p>
           </motion.div>
         </div>
       </section>
@@ -122,7 +121,7 @@ export default function OurGoal() {
         <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6">
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold mb-4 text-white">Diversity & <span className="bg-gradient-to-r from-indigo-400 via-cyan-400 to-emerald-400 bg-clip-text text-transparent">Inclusion</span></h2>
-            <p className="text-gray-300 max-w-2xl mx-auto">Building Strength Through Differences. At Advanced365, we recognise that our strength lies in our diversity.</p>
+            <p className="text-gray-300 max-w-2xl mx-auto">Building Strength Through Differences. We recognise that our strength lies in our diversity.</p>
           </motion.div>
 
           <div className="grid md:grid-cols-2 gap-6">
@@ -159,7 +158,6 @@ export default function OurGoal() {
             <p className="text-lg text-gray-300 mb-8">Join thousands of traders who trust North Star Markets.</p>
             <div className="flex flex-wrap justify-center gap-4">
               <Link to="/contact" className="inline-flex items-center gap-2 px-8 py-4 text-base font-semibold text-white bg-gradient-to-r from-indigo-600 to-indigo-600 rounded-xl hover:from-indigo-500 hover:to-indigo-500 transition-all duration-300 shadow-lg shadow-indigo-500/25">Get Started <ArrowRight className="w-5 h-5" /></Link>
-              <Link to="/contact" className="inline-flex items-center gap-2 px-8 py-4 text-base font-semibold text-white bg-white/10 border border-white/20 rounded-xl hover:bg-white/20 transition-all duration-300">Contract Agreement</Link>
             </div>
           </motion.div>
         </div>

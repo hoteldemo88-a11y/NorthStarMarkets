@@ -59,7 +59,7 @@ const reviews = [
   },
 ]
 
-const trustBadges = ['Verified Traders', 'Tier-1 Liquidity', '24/7 Support', 'Fast Withdrawals', 'Transparent Fees', 'Data Security']
+const trustBadges = ['Verified Traders', 'Tier-1 Liquidity', 'Fast Withdrawals', 'Transparent Fees', 'Data Security']
 
 const stats = [
   { label: 'Client Satisfaction', value: '98.9%' },
@@ -83,7 +83,7 @@ export default function ClientsReviews() {
               <span className="text-sm text-gray-200">Trusted feedback from real traders</span>
             </div>
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 text-white">
-              Clients <span className="bg-gradient-to-r from-indigo-400 via-cyan-400 to-emerald-400 bg-clip-text text-transparent">Reviews</span>
+              Client <span className="bg-gradient-to-r from-indigo-400 via-cyan-400 to-emerald-400 bg-clip-text text-transparent">Reviews</span>
             </h1>
             <p className="text-lg md:text-xl text-gray-300 max-w-3xl mx-auto">
               Transparent, verified experiences from traders using North Star Markets across global sessions and strategies.
@@ -189,7 +189,6 @@ export default function ClientsReviews() {
             <p className="text-lg text-gray-300 mb-8">Open your account and trade with confidence on North Star Markets.</p>
             <div className="flex flex-wrap justify-center gap-4">
               <Link to="/contact" className="inline-flex items-center gap-2 px-8 py-4 text-base font-semibold text-white bg-gradient-to-r from-indigo-600 to-cyan-500 rounded-xl hover:from-indigo-500 hover:to-cyan-400 transition-all duration-300 shadow-lg shadow-indigo-500/25">Get Started <ArrowRight className="w-5 h-5" /></Link>
-              <Link to="/contact" className="inline-flex items-center gap-2 px-8 py-4 text-base font-semibold text-white bg-white/10 border border-white/20 rounded-xl hover:bg-white/20 transition-all duration-300">Contract Agreement</Link>
             </div>
           </motion.div>
         </div>
