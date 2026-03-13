@@ -50,7 +50,7 @@ chown -R www-data:www-data dist
 # Reload nginx
 echo "🔄 Reloading nginx..."
 nginx -t
-systemctl reload nginx
+systemctl restart nginx
 
 # Restart backend with PM2 (zero downtime)
 echo "🔄 Restarting backend with PM2..."
