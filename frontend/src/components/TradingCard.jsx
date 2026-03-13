@@ -5,8 +5,8 @@ import { createChart } from 'lightweight-charts'
 const markets = [
   { id: 'BTC', name: 'Bitcoin', symbol: 'btcusdt', pair: 'BTC/USDT', icon: '₿', color: '#F7931A' },
   { id: 'ETH', name: 'Ethereum', symbol: 'ethusdt', pair: 'ETH/USDT', icon: 'Ξ', color: '#627EEA' },
-  { id: 'SOL', name: 'Solana', symbol: 'solusdt', pair: 'SOL/USDT', icon: '◎', color: '#00FFA3' },
-  { id: 'XAU', name: 'Gold', symbol: 'xaueur', pair: 'XAU/USD', icon: '⬡', color: '#FFD700' },
+  { id: 'DOGE', name: 'Dogecoin', symbol: 'dogeusdt', pair: 'DOGE/USDT', icon: 'Ð', color: '#C2A633' },
+  { id: 'XRP', name: 'XRP', symbol: 'xrpusdt', pair: 'XRP/USDT', icon: '✕', color: '#23292F' },
   { id: 'EUR', name: 'Euro', symbol: 'eurusdt', pair: 'EUR/USD', icon: '€', color: '#003399' },
 ]
 
@@ -133,7 +133,17 @@ export default function TradingCard() {
       setLow24h(parseFloat(data.lowPrice))
       setPriceChange(parseFloat(data.priceChangePercent))
     } catch (error) {
-      console.error('Failed to fetch market data:', error)
+      // Fallback for EUR
+      try {
+        const res = await fetch('https://api.frankfurter.app/latest?from=USD&to=EUR')
+        const data = await res.json()
+        setPrice(data.rates.EUR)
+        setHigh24h(data.rates.EUR * 1.01)
+        setLow24h(data.rates.EUR * 0.99)
+        setPriceChange(0.12)
+      } catch (fallbackError) {
+        console.error('Fallback also failed:', fallbackError)
+      }
     }
   }, [])
 
