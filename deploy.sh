@@ -6,7 +6,7 @@
 
 set -e
 
-PROJECT_DIR="/var/www/html/NorthStarMarkets"
+PROJECT_DIR="/var/www/NorthStarMarkets"
 BACKEND_DIR="$PROJECT_DIR/backend"
 FRONTEND_DIR="$PROJECT_DIR/frontend"
 PM2_NAME="northstar-backend"
