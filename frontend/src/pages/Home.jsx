@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import { TrendingUp, Shield, Zap, Globe, Users, Award, ChevronRight, ArrowRight, Star, Bitcoin, Activity, Currency, Wheat, Gem, Zap as EnergyIcon, ArrowUpRight, CheckCircle, Quote, Lock, Clock, CreditCard, HeadphonesIcon, TrendingDown, Play } from 'lucide-react'
+import TradingHero from '../components/TradingHero'
 
 const stats = [
   { value: 2.5, suffix: 'B+', label: 'Trading Volume', prefix: '$', decimals: 1 },
@@ -272,72 +273,12 @@ function LiveTradingCard() {
 export default function Home() {
   return (
     <div className="bg-[#0a0a0f] w-full max-w-full overflow-x-hidden">
-      {/* Hero */}
-      <section className="relative min-h-screen flex items-center pt-20 overflow-hidden">
-        <div className="absolute inset-0 overflow-hidden">
-          <div className="absolute top-[-20%] left-[-30%] sm:left-[-10%] w-[150%] sm:w-[700px] h-[400px] sm:h-[700px] bg-indigo-600/20 rounded-full blur-[100px] sm:blur-[150px]" />
-          <div className="absolute bottom-[-20%] right-[-30%] sm:right-[-10%] w-[150%] sm:w-[700px] h-[400px] sm:h-[700px] bg-cyan-500/20 rounded-full blur-[100px] sm:blur-[150px]" />
-          <div className="absolute inset-0 bg-[linear-gradient(rgba(99,102,241,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(99,102,241,0.03)_1px,transparent_1px)] bg-[size:60px_60px]" />
-        </div>
+      <TradingHero />
 
-        <div className="relative z-10 max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 w-full">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <motion.div initial={{ opacity: 0, x: -40 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.8 }}>
-              <div className="inline-flex items-center gap-2 px-4 py-2 mb-6 bg-[#12121a] border border-white/[0.1] rounded-full">
-                <span className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse" />
-                <span className="text-sm text-gray-200">Trusted by 150,000+ traders</span>
-              </div>
-
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6 leading-tight text-white">
-                Trade the Future with<br />
-                <span className="bg-gradient-to-r from-indigo-400 via-cyan-400 to-emerald-400 bg-clip-text text-transparent">North Star Markets</span>
-              </h1>
-
-              <p className="text-lg text-gray-300 mb-8 max-w-lg">Experience next-generation trading with institutional-grade tools, lightning-fast execution, and unmatched security.</p>
-
-              <div className="flex flex-wrap gap-4 mb-8">
-                <Link to="/open-account" className="px-8 py-4 text-base font-semibold text-white bg-gradient-to-r from-indigo-600 to-indigo-600 rounded-xl hover:from-indigo-500 hover:to-indigo-500 transition-all duration-300 shadow-lg shadow-indigo-500/25 flex items-center gap-2">
-                  Open Account <ArrowRight className="w-5 h-5" />
-                </Link>
-                <Link to="/markets" className="px-8 py-4 text-base font-semibold text-white bg-[#12121a] border border-white/[0.15] rounded-xl hover:bg-white/[0.05] transition-all flex items-center gap-2">
-                  <Play className="w-4 h-4" /> Learn More
-                </Link>
-              </div>
-
-              <div className="flex flex-wrap gap-6">
-                <div className="flex items-center gap-4">
-                  <div className="flex -space-x-3">
-                    {[
-                      'https://i.pravatar.cc/150?img=60',
-                      'https://i.pravatar.cc/150?img=45',
-                      'https://i.pravatar.cc/150?img=52',
-                      'https://i.pravatar.cc/150?img=44',
-                      'https://i.pravatar.cc/150?img=68'
-                    ].map((img, i) => (
-                      <img 
-                        key={i}
-                        src={img} 
-                        alt="Reviewer"
-                        className="w-10 h-10 rounded-full border-2 border-[#0a0a0f] object-cover"
-                      />
-                    ))}
-                  </div>
-                  <div>
-                    <div className="flex items-center gap-1 mb-0.5">
-                      {[...Array(5)].map((_, i) => <Star key={i} className="w-3 h-3 fill-amber-400 text-amber-400" />)}
-                    </div>
-                    <span className="text-xs text-gray-400">5.0 rating from 10,000+ reviews</span>
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-
-            <motion.div initial={{ opacity: 0, x: 40 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.8, delay: 0.2 }} className="hidden lg:block">
-              <LiveTradingCard />
-            </motion.div>
-          </div>
-
-          <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.4 }} className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-16">
+      {/* Stats */}
+      <section className="py-12 -mt-20 relative z-20">
+        <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6">
+          <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.4 }} className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {stats.map((stat, i) => (
               <Counter key={stat.label} {...stat} delay={i * 200} />
             ))}
