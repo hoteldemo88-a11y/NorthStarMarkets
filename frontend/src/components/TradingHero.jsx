@@ -17,29 +17,21 @@ function FloatingOrbs() {
     <div className="absolute inset-0 overflow-hidden pointer-events-none">
       <motion.div
         animate={{ 
-          x: [0, 100, 0], 
-          y: [0, -50, 0],
-          scale: [1, 1.2, 1]
-        }}
-        transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-gradient-to-r from-indigo-600/20 via-purple-500/15 to-cyan-500/20 rounded-full blur-[150px]"
-      />
-      <motion.div
-        animate={{ 
-          x: [0, -80, 0], 
-          y: [0, 80, 0],
+          x: [0, 50, 0], 
+          y: [0, -30, 0],
           scale: [1, 1.1, 1]
         }}
-        transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] bg-gradient-to-r from-cyan-500/20 via-emerald-500/15 to-indigo-500/20 rounded-full blur-[120px]"
+        transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
+        className="absolute top-1/4 left-1/4 w-[300px] h-[300px] bg-gradient-to-r from-indigo-600/15 via-purple-500/10 to-cyan-500/15 rounded-full blur-[100px]"
       />
       <motion.div
         animate={{ 
-          x: [0, 50, 0], 
-          y: [0, -30, 0]
+          x: [0, -40, 0], 
+          y: [0, 40, 0],
+          scale: [1, 1.05, 1]
         }}
-        transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-r from-purple-600/10 via-pink-500/10 to-cyan-500/10 rounded-full blur-[180px]"
+        transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
+        className="absolute bottom-1/4 right-1/4 w-[250px] h-[250px] bg-gradient-to-r from-cyan-500/15 via-emerald-500/10 to-indigo-500/15 rounded-full blur-[80px]"
       />
     </div>
   )
@@ -227,12 +219,12 @@ export default function TradingHero() {
   ]
 
   return (
-    <section className="relative min-h-[90vh] flex items-center overflow-hidden bg-[#050507]">
+    <section className="relative min-h-[85vh] flex items-center overflow-hidden bg-[#050507] pt-20">
       <FloatingOrbs />
       <GridPattern />
       
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 w-full">
-        <div className="grid lg:grid-cols-2 gap-10 items-center">
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12 w-full">
+        <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
           {/* Left Side - Content */}
           <motion.div 
             initial={{ opacity: 0, x: -60 }}
@@ -241,20 +233,20 @@ export default function TradingHero() {
             className="text-center lg:text-left"
           >
             <motion.div 
-              initial={{ opacity: 0, y: 30 }}
+              initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
-              className="inline-flex items-center gap-3 px-5 py-2.5 bg-white/[0.03] backdrop-blur-md border border-white/10 rounded-full mb-8"
+              className="inline-flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2 bg-white/[0.03] backdrop-blur-md border border-white/10 rounded-full mb-4 sm:mb-6"
             >
               <motion.span 
                 animate={{ scale: [1, 1.2, 1] }}
                 transition={{ duration: 2, repeat: Infinity }}
-                className="w-2.5 h-2.5 bg-emerald-400 rounded-full"
+                className="w-2 h-2 sm:w-2.5 sm:h-2.5 bg-emerald-400 rounded-full"
               />
-              <span className="text-sm text-gray-300 font-medium">Institutional Grade Trading</span>
-              <div className="flex -space-x-2 ml-2">
+              <span className="text-xs sm:text-sm text-gray-300 font-medium">Institutional Grade Trading</span>
+              <div className="flex -space-x-2 ml-1 sm:ml-2 hidden sm:flex">
                 {[1,2,3,4].map(i => (
-                  <img key={i} src={`https://i.pravatar.cc/36?img=${i+15}`} alt="" className="w-7 h-7 rounded-full border-2 border-[#050507]" />
+                  <img key={i} src={`https://i.pravatar.cc/36?img=${i+15}`} alt="" className="w-6 h-6 sm:w-7 sm:h-7 rounded-full border-2 border-[#050507]" />
                 ))}
               </div>
             </motion.div>
@@ -263,7 +255,7 @@ export default function TradingHero() {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
-              className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold text-white mb-6 leading-tight"
+              className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-bold text-white mb-4 lg:mb-6 leading-tight"
             >
               Trade the Future with{' '}
               <span className="bg-gradient-to-r from-indigo-400 via-cyan-400 via-60% to-emerald-400 bg-clip-text text-transparent">
@@ -275,20 +267,20 @@ export default function TradingHero() {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4 }}
-              className="text-base sm:text-lg text-gray-400 mb-8 max-w-xl mx-auto lg:mx-0"
+              className="text-sm sm:text-base text-gray-400 mb-6 lg:mb-8 max-w-xl mx-auto lg:mx-0"
             >
-              Experience lightning-fast execution with institutional-grade tools and zero compromise on security.
+              Lightning-fast execution with institutional-grade tools and zero compromise on security.
             </motion.p>
             
             <motion.div 
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.5 }}
-              className="flex flex-wrap gap-4 justify-center lg:justify-start mb-8"
+              className="flex flex-wrap gap-3 sm:gap-4 justify-center lg:justify-start mb-6 lg:mb-8"
             >
               <Link 
                 to="/open-account"
-                className="group relative px-6 py-3 bg-gradient-to-r from-indigo-600 via-purple-500 to-cyan-500 text-white font-semibold rounded-xl overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-indigo-500/25"
+                className="group relative px-5 sm:px-6 py-2.5 sm:py-3 bg-gradient-to-r from-indigo-600 via-purple-500 to-cyan-500 text-white font-semibold rounded-xl overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-indigo-500/25 text-sm sm:text-base"
               >
                 <span className="relative z-10 flex items-center gap-2">
                   Open Account <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
@@ -296,9 +288,9 @@ export default function TradingHero() {
               </Link>
               <Link 
                 to="/markets"
-                className="px-6 py-3 bg-white/[0.03] backdrop-blur-sm border border-white/10 text-white font-semibold rounded-xl hover:bg-white/[0.08] hover:border-white/20 transition-all duration-300 flex items-center gap-2"
+                className="px-5 sm:px-6 py-2.5 sm:py-3 bg-white/[0.03] backdrop-blur-sm border border-white/10 text-white font-semibold rounded-xl hover:bg-white/[0.08] hover:border-white/20 transition-all duration-300 flex items-center gap-2 text-sm sm:text-base"
               >
-                Explore Markets <TrendingUp className="w-4 h-4" />
+                Explore <TrendingUp className="w-4 h-4" />
               </Link>
             </motion.div>
             
@@ -306,25 +298,25 @@ export default function TradingHero() {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.6 }}
-              className="flex flex-wrap items-center justify-center lg:justify-start gap-8 text-sm"
+              className="flex flex-wrap items-center justify-center lg:justify-start gap-4 sm:gap-6 lg:gap-8 text-xs sm:text-sm"
             >
-              <div className="flex items-center gap-2.5">
+              <div className="flex items-center gap-2">
                 <div className="flex items-center">
                   {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="w-4 h-4 fill-amber-400 text-amber-400" />
+                    <Star key={i} className="w-3 h-3 sm:w-4 sm:h-4 fill-amber-400 text-amber-400" />
                   ))}
                 </div>
                 <span className="text-white font-semibold">4.9</span>
                 <span className="text-gray-500">Rating</span>
               </div>
-              <div className="w-px h-8 bg-white/10" />
-              <div className="flex items-center gap-2.5">
-                <Users className="w-5 h-5 text-cyan-400" />
+              <div className="w-px h-6 bg-white/10 hidden sm:block" />
+              <div className="flex items-center gap-2">
+                <Users className="w-4 h-4 sm:w-5 sm:h-5 text-cyan-400" />
                 <span className="text-white font-semibold">150K+</span>
                 <span className="text-gray-500">Traders</span>
               </div>
-              <div className="w-px h-8 bg-white/10" />
-              <div className="flex items-center gap-2.5">
+              <div className="w-px h-6 bg-white/10 hidden lg:block" />
+              <div className="flex items-center gap-2 hidden lg:flex">
                 <Globe className="w-5 h-5 text-emerald-400" />
                 <span className="text-white font-semibold">180+</span>
                 <span className="text-gray-500">Countries</span>

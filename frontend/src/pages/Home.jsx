@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import { TrendingUp, Shield, Zap, Globe, Users, Award, ChevronRight, ArrowRight, Star, Bitcoin, Activity, Currency, Wheat, Gem, Zap as EnergyIcon, ArrowUpRight, CheckCircle, Quote, Lock, Clock, CreditCard, HeadphonesIcon, TrendingDown, Play } from 'lucide-react'
-import TradingHero from '../components/TradingHero'
+import TradingCard from '../components/TradingCard'
 
 const stats = [
   { value: 2.5, suffix: 'B+', label: 'Trading Volume', prefix: '$', decimals: 1 },
@@ -129,156 +129,75 @@ const liveMarketsData = [
   { id: 'GOLD', name: 'Gold', pair: 'XAU/USD', price: 2342, change: -0.34, icon: Gem },
 ]
 
-function LiveTradingCard() {
-  const [markets, setMarkets] = useState(liveMarketsData)
-  const [chartData, setChartData] = useState(() => 
-    liveMarketsData.map(() => Array(30).fill(0).map(() => Math.random() * 60 + 30))
-  )
-  const [activeTab, setActiveTab] = useState('BTC')
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setMarkets(prev => prev.map(m => ({
-        ...m,
-        price: m.price * (1 + (Math.random() - 0.5) * 0.002),
-        change: m.change + (Math.random() - 0.5) * 0.1
-      })))
-      setChartData(prev => prev.map(arr => [...arr.slice(1), Math.random() * 60 + 30]))
-    }, 2000)
-    return () => clearInterval(interval)
-  }, [])
-
-  const activeMarket = markets.find(m => m.id === activeTab) || markets[0]
-
-  return (
-    <motion.div 
-      initial={{ opacity: 0, x: 40 }} 
-      animate={{ opacity: 1, x: 0 }} 
-      transition={{ duration: 0.8, delay: 0.2 }}
-      className="hidden lg:block"
-    >
-      <div className="relative">
-        <div className="absolute inset-0 bg-gradient-to-r from-indigo-500 to-cyan-500 rounded-3xl blur-2xl opacity-30" />
-        
-        {/* Main Card */}
-        <div className="relative bg-[#12121a] border border-white/[0.1] rounded-3xl p-6 overflow-hidden">
-          {/* Header */}
-          <div className="flex items-center justify-between mb-5">
-            <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-orange-500 to-amber-500 flex items-center justify-center shadow-lg shadow-orange-500/20">
-                <Bitcoin className="w-6 h-6 text-white" />
-              </div>
-              <div>
-                <div className="font-bold text-white text-lg">{activeMarket.pair}</div>
-                <div className="text-xs text-gray-400">{activeMarket.name}</div>
-              </div>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="relative flex h-2.5 w-2.5">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
-              </span>
-              <span className="text-xs text-emerald-400 font-medium">Live</span>
-            </div>
-          </div>
-
-          {/* Price Display */}
-          <div className="flex items-end justify-between mb-5">
-            <div>
-              <motion.div 
-                key={activeMarket.price}
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="text-3xl font-bold text-white"
-              >
-                {activeMarket.price < 100 ? `$${activeMarket.price.toFixed(4)}` : `$${activeMarket.price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
-              </motion.div>
-              <motion.div 
-                key={activeMarket.change}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className={`text-sm font-semibold ${activeMarket.change >= 0 ? 'text-emerald-400' : 'text-red-400'}`}
-              >
-                {activeMarket.change >= 0 ? '+' : ''}{activeMarket.change.toFixed(2)}%
-              </motion.div>
-            </div>
-            <div className="text-right">
-              <div className="text-xs text-gray-500">High</div>
-              <div className="text-sm text-white">${(activeMarket.price * 1.02).toLocaleString('en-US', { maximumFractionDigits: 2 })}</div>
-              <div className="text-xs text-gray-500 mt-1">Low</div>
-              <div className="text-sm text-white">${(activeMarket.price * 0.98).toLocaleString('en-US', { maximumFractionDigits: 2 })}</div>
-            </div>
-          </div>
-
-          {/* Chart */}
-          <div className="h-28 flex items-end gap-1 mb-4">
-            {chartData[markets.findIndex(m => m.id === activeTab)].map((h, i) => (
-              <motion.div
-                key={i}
-                initial={{ height: 0 }}
-                animate={{ height: `${h}%` }}
-                className={`flex-1 rounded-t ${activeMarket.change >= 0 ? 'bg-gradient-to-t from-emerald-600 to-emerald-400' : 'bg-gradient-to-t from-red-600 to-red-400'}`}
-              />
-            ))}
-          </div>
-
-          {/* Time Labels */}
-          <div className="flex items-center justify-between text-xs text-gray-500 mb-5">
-            <span>00:00</span><span>06:00</span><span>12:00</span><span>18:00</span><span>24:00</span>
-          </div>
-
-          {/* Market Tabs */}
-          <div className="grid grid-cols-4 gap-2">
-            {markets.map(m => (
-              <button
-                key={m.id}
-                onClick={() => setActiveTab(m.id)}
-                className={`p-3 rounded-xl text-center transition-all ${
-                  activeTab === m.id 
-                    ? 'bg-gradient-to-br from-indigo-500 to-cyan-500' 
-                    : 'bg-white/5 hover:bg-white/10'
-                }`}
-              >
-                <div className={`text-xs font-medium ${activeTab === m.id ? 'text-white' : 'text-gray-400'}`}>{m.id}</div>
-                <div className={`text-xs ${activeTab === m.id ? 'text-white' : 'text-gray-500'}`}>{m.change >= 0 ? '+' : ''}{m.change.toFixed(2)}%</div>
-              </button>
-            ))}
-          </div>
-
-          {/* Stats Row */}
-          <div className="grid grid-cols-4 gap-2 mt-4">
-            <div className="text-center p-2 bg-white/5 rounded-lg">
-              <div className="text-xs text-gray-500">Spread</div>
-              <div className="text-xs text-white font-medium">0.0</div>
-            </div>
-            <div className="text-center p-2 bg-white/5 rounded-lg">
-              <div className="text-xs text-gray-500">Leverage</div>
-              <div className="text-xs text-white font-medium">1:200</div>
-            </div>
-            <div className="text-center p-2 bg-white/5 rounded-lg">
-              <div className="text-xs text-gray-500">Exec</div>
-              <div className="text-xs text-white font-medium">&lt;50ms</div>
-            </div>
-            <div className="text-center p-2 bg-white/5 rounded-lg">
-              <div className="text-xs text-gray-500">Swap</div>
-              <div className="text-xs text-emerald-400 font-medium">Free</div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </motion.div>
-  )
-}
-
 export default function Home() {
   return (
     <div className="bg-[#0a0a0f] w-full max-w-full overflow-x-hidden">
-      <TradingHero />
+      {/* Hero */}
+      <section className="relative min-h-screen flex items-center pt-20 overflow-hidden">
+        <div className="absolute inset-0 overflow-hidden">
+          <div className="absolute top-[-20%] left-[-30%] sm:left-[-10%] w-[150%] sm:w-[700px] h-[400px] sm:h-[700px] bg-indigo-600/20 rounded-full blur-[100px] sm:blur-[150px]" />
+          <div className="absolute bottom-[-20%] right-[-30%] sm:right-[-10%] w-[150%] sm:w-[700px] h-[400px] sm:h-[700px] bg-cyan-500/20 rounded-full blur-[100px] sm:blur-[150px]" />
+          <div className="absolute inset-0 bg-[linear-gradient(rgba(99,102,241,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(99,102,241,0.03)_1px,transparent_1px)] bg-[size:60px_60px]" />
+        </div>
 
-      {/* Stats */}
-      <section className="py-12 -mt-20 relative z-20">
-        <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6">
-          <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.4 }} className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="relative z-10 max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 w-full">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            <motion.div initial={{ opacity: 0, x: -40 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.8 }}>
+              <div className="inline-flex items-center gap-2 px-4 py-2 mb-6 bg-[#12121a] border border-white/[0.1] rounded-full">
+                <span className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse" />
+                <span className="text-sm text-gray-200">Trusted by 150,000+ traders</span>
+              </div>
+
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6 leading-tight text-white">
+                Trade the Future with<br />
+                <span className="bg-gradient-to-r from-indigo-400 via-cyan-400 to-emerald-400 bg-clip-text text-transparent">North Star Markets</span>
+              </h1>
+
+              <p className="text-lg text-gray-300 mb-8 max-w-lg">Experience next-generation trading with institutional-grade tools, lightning-fast execution, and unmatched security.</p>
+
+              <div className="flex flex-wrap gap-4 mb-8">
+                <Link to="/open-account" className="px-8 py-4 text-base font-semibold text-white bg-gradient-to-r from-indigo-600 to-indigo-600 rounded-xl hover:from-indigo-500 hover:to-indigo-500 transition-all duration-300 shadow-lg shadow-indigo-500/25 flex items-center gap-2">
+                  Open Account <ArrowRight className="w-5 h-5" />
+                </Link>
+                <Link to="/markets" className="px-8 py-4 text-base font-semibold text-white bg-[#12121a] border border-white/[0.15] rounded-xl hover:bg-white/[0.05] transition-all flex items-center gap-2">
+                  <Play className="w-4 h-4" /> Learn More
+                </Link>
+              </div>
+
+              <div className="flex flex-wrap gap-6">
+                <div className="flex items-center gap-4">
+                  <div className="flex -space-x-3">
+                    {[
+                      'https://i.pravatar.cc/150?img=60',
+                      'https://i.pravatar.cc/150?img=45',
+                      'https://i.pravatar.cc/150?img=52',
+                      'https://i.pravatar.cc/150?img=44',
+                      'https://i.pravatar.cc/150?img=68'
+                    ].map((img, i) => (
+                      <img 
+                        key={i}
+                        src={img} 
+                        alt="Reviewer"
+                        className="w-10 h-10 rounded-full border-2 border-[#0a0a0f] object-cover"
+                      />
+                    ))}
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-1 mb-0.5">
+                      {[...Array(5)].map((_, i) => <Star key={i} className="w-3 h-3 fill-amber-400 text-amber-400" />)}
+                    </div>
+                    <span className="text-xs text-gray-400">5.0 rating from 10,000+ reviews</span>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+
+            <motion.div initial={{ opacity: 0, x: 40 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.8, delay: 0.2 }} className="hidden lg:block">
+              <TradingCard />
+            </motion.div>
+          </div>
+
+          <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.4 }} className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-16">
             {stats.map((stat, i) => (
               <Counter key={stat.label} {...stat} delay={i * 200} />
             ))}
