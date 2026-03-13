@@ -29,23 +29,32 @@ git reset --hard origin/main
 # Recreate frontend .env (not tracked in git)
 echo "VITE_API_URL=/api" > "$FRONTEND_DIR/.env"
 
-# Install backend dependencies if node_modules doesn't exist
-if [ ! -d "$BACKEND_DIR/node_modules" ]; then
-    echo "📥 Installing backend dependencies..."
-    cd "$BACKEND_DIR"
-    npm install
-fi
+# Recreate backend .env with Cloudinary credentials (not tracked in git)
+# Update these with your actual Cloudinary credentials
+cat > "$BACKEND_DIR/.env" << EOF
+PORT=5000
+JWT_SECRET=northstar_secure_jwt_secret_2024
+MYSQL_HOST=localhost
+MYSQL_PORT=3306
+MYSQL_USER=root
+MYSQL_PASSWORD=root
+MYSQL_DATABASE=north_star_markets
+ADMIN_EMAIL=admin@northstarmarkets.com
+ADMIN_PASSWORD=Admin@12345
+CLOUDINARY_CLOUD_NAME=your_cloud_name
+CLOUDINARY_API_KEY=your_api_key
+CLOUDINARY_API_SECRET=your_api_secret
+EOF
 
-# Install frontend dependencies if node_modules doesn't exist
-if [ ! -d "$FRONTEND_DIR/node_modules" ]; then
-    echo "📥 Installing frontend dependencies..."
-    cd "$FRONTEND_DIR"
-    npm install
-else
-    echo "📥 Updating frontend dependencies..."
-    cd "$FRONTEND_DIR"
-    npm install
-fi
+# Install backend dependencies (always update to get latest packages)
+echo "📥 Installing backend dependencies..."
+cd "$BACKEND_DIR"
+npm install
+
+# Install frontend dependencies
+echo "📥 Installing frontend dependencies..."
+cd "$FRONTEND_DIR"
+npm install
 
 # Build frontend
 echo "🔨 Building frontend..."
@@ -65,9 +74,14 @@ systemctl restart nginx
 
 # Restart backend with PM2 (zero downtime)
 echo "🔄 Restarting backend with PM2..."
-pm2 delete "$PM2_NAME" 2>/dev/null || true
 cd "$BACKEND_DIR"
-pm2 start src/index.js --name "$PM2_NAME"
+
+# Stop existing PM2 process
+pm2 stop "$PM2_NAME" 2>/dev/null || true
+pm2 delete "$PM2_NAME" 2>/dev/null || true
+
+# Start fresh
+pm2 start src/index.js --name "$PM2_NAME" --watch
 pm2 save
 
 # Wait a moment and check status
