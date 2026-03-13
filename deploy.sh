@@ -11,6 +11,9 @@ BACKEND_DIR="$PROJECT_DIR/backend"
 FRONTEND_DIR="$PROJECT_DIR/frontend"
 PM2_NAME="northstar-backend"
 
+# Also update nginx config path
+NGINX_CONF="/etc/nginx/sites-available/default"
+
 echo "=========================================="
 echo "🚀 Starting deployment at $(date)"
 echo "=========================================="
@@ -47,8 +50,12 @@ rm -rf dist
 npm run build
 chown -R www-data:www-data dist
 
+# Update nginx config to correct path
+echo "🔄 Updating nginx config..."
+sed -i 's|/var/www/html/NorthStarMarkets|/var/www/NorthStarMarkets|g' /etc/nginx/sites-available/default
+
 # Reload nginx
-echo "🔄 Reloading nginx..."
+echo "🔄 Restarting nginx..."
 nginx -t
 systemctl restart nginx
 
