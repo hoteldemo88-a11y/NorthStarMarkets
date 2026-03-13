@@ -21,7 +21,10 @@ cd "$PROJECT_DIR"
 # Pull latest code from GitHub
 echo "📦 Pulling latest code from GitHub..."
 git fetch origin main
-git pull origin main
+git reset --hard origin/main
+
+# Recreate frontend .env (not tracked in git)
+echo "VITE_API_URL=/api" > "$FRONTEND_DIR/.env"
 
 # Install backend dependencies if node_modules doesn't exist
 if [ ! -d "$BACKEND_DIR/node_modules" ]; then
@@ -40,7 +43,6 @@ fi
 # Build frontend
 echo "🔨 Building frontend..."
 cd "$FRONTEND_DIR"
-echo "VITE_API_URL=/api" > .env
 npm run build
 chown -R www-data:www-data dist
 
