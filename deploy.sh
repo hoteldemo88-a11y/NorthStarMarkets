@@ -43,8 +43,14 @@ fi
 # Build frontend
 echo "🔨 Building frontend..."
 cd "$FRONTEND_DIR"
+rm -rf dist
 npm run build
 chown -R www-data:www-data dist
+
+# Reload nginx
+echo "🔄 Reloading nginx..."
+nginx -t
+systemctl reload nginx
 
 # Restart backend with PM2 (zero downtime)
 echo "🔄 Restarting backend with PM2..."
