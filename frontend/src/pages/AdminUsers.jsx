@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { jsPDF } from 'jspdf'
-import { Search, UserRound, Wallet, Eye, Edit3, Trash2, X, Download, AlertTriangle, CheckCircle } from 'lucide-react'
+import { Search, UserRound, Wallet, Eye, Edit3, Trash2, X, Download, AlertTriangle, CheckCircle, ShieldCheck, ShieldX, FileText } from 'lucide-react'
 import { adminApi } from '../services/adminApi'
 import { AdminPanel, SectionTitle, StatTile, TinyBars } from '../components/admin/AdminPrimitives'
 
@@ -15,6 +15,12 @@ export default function AdminUsers() {
   const [editAction, setEditAction] = useState('')
   const [actionLoading, setActionLoading] = useState(false)
   const [actionMessage, setActionMessage] = useState('')
+  const [showVerifyModal, setShowVerifyModal] = useState(false)
+  const [verifyAction, setVerifyAction] = useState('')
+  const [verifyReason, setVerifyReason] = useState('')
+  const [verifyLoading, setVerifyLoading] = useState(false)
+  const [verificationDocs, setVerificationDocs] = useState(null)
+  const [loadingDocs, setLoadingDocs] = useState(false)
 
   const loadUsers = async () => {
     try {
@@ -218,6 +224,55 @@ export default function AdminUsers() {
     }
   }
 
+  const handleVerifyClick = async (user) => {
+    setSelectedUser(user)
+    setShowVerifyModal(true)
+    setVerifyAction('')
+    setVerifyReason('')
+    setActionMessage('')
+    setVerificationDocs(null)
+    setUserDetails(null)
+    
+    setLoadingDocs(true)
+    try {
+      const [docs, details] = await Promise.all([
+        adminApi.getVerificationDocs(user.id),
+        adminApi.getUser(user.id)
+      ])
+      setVerificationDocs(docs)
+      setUserDetails(details)
+    } catch (err) {
+      console.error('Failed to load docs:', err)
+    } finally {
+      setLoadingDocs(false)
+    }
+  }
+
+  const handleVerifyAction = async () => {
+    if (!verifyAction || !selectedUser) return
+
+    setVerifyLoading(true)
+    setActionMessage('')
+
+    try {
+      if (verifyAction === 'approve') {
+        await adminApi.verifyUser(selectedUser.id)
+        setActionMessage('User verification approved')
+      } else if (verifyAction === 'reject') {
+        await adminApi.rejectVerification(selectedUser.id, verifyReason)
+        setActionMessage('User verification rejected')
+      } else if (verifyAction === 'request') {
+        await adminApi.requestDocuments(selectedUser.id, verifyReason)
+        setActionMessage('Document request sent to user')
+      }
+      loadUsers()
+    } catch (err) {
+      setActionMessage(err.message)
+    } finally {
+      setVerifyLoading(false)
+    }
+  }
+
   const filteredUsers = useMemo(() => {
     const clients = users.filter((user) => user.role === 'client')
     const q = query.trim().toLowerCase()
@@ -228,15 +283,20 @@ export default function AdminUsers() {
   const userBalances = useMemo(() => filteredUsers.slice(0, 10).map((user) => Number(user.balance)), [filteredUsers])
   const total = useMemo(() => filteredUsers.reduce((sum, user) => sum + Number(user.balance), 0), [filteredUsers])
   const suspendedCount = filteredUsers.filter(u => u.status === 'suspended').length
+  const pendingVerification = filteredUsers.filter(u => u.verificationStatus === 'pending').length
+  const verifiedCount = filteredUsers.filter(u => u.verificationStatus === 'verified').length
+  const documentsRequested = filteredUsers.filter(u => u.verificationStatus === 'documents_requested').length
 
   return (
     <div className="space-y-5">
       {error && <p className="text-red-400 text-sm">{error}</p>}
 
-      <div className="grid sm:grid-cols-2 xl:grid-cols-4 gap-4">
+      <div className="grid sm:grid-cols-2 xl:grid-cols-6 gap-4">
         <StatTile icon={UserRound} label="Total Users" value={String(filteredUsers.length)} tone="from-indigo-500/25 to-indigo-400/10" />
         <StatTile icon={UserRound} label="Active Users" value={String(filteredUsers.length - suspendedCount)} tone="from-emerald-500/25 to-emerald-400/10" />
         <StatTile icon={AlertTriangle} label="Suspended" value={String(suspendedCount)} tone="from-amber-500/25 to-amber-400/10" />
+        <StatTile icon={ShieldCheck} label="Verified" value={String(verifiedCount)} tone="from-emerald-500/25 to-emerald-400/10" />
+        <StatTile icon={FileText} label="Pending" value={String(pendingVerification)} tone="from-cyan-500/25 to-cyan-400/10" />
         <StatTile icon={Wallet} label="Combined Balance" value={`$${total.toLocaleString()}`} tone="from-cyan-500/25 to-cyan-400/10" />
       </div>
 
@@ -264,6 +324,7 @@ export default function AdminUsers() {
                 <th className="py-3 pr-3">User</th>
                 <th className="py-3 pr-3">Email</th>
                 <th className="py-3 pr-3">Status</th>
+                <th className="py-3 pr-3">Verification</th>
                 <th className="py-3 pr-3">Balance</th>
                 <th className="py-3 pr-3">Joined</th>
                 <th className="py-3 pr-3">Actions</th>
@@ -279,6 +340,29 @@ export default function AdminUsers() {
                       {user.status === 'suspended' ? 'Suspended' : 'Active'}
                     </span>
                   </td>
+                  <td className="py-3 pr-3">
+                    {user.verificationStatus === 'verified' ? (
+                      <span className="text-xs px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 flex items-center gap-1 w-fit">
+                        <ShieldCheck className="w-3 h-3" /> Verified
+                      </span>
+                    ) : user.verificationStatus === 'pending' ? (
+                      <span className="text-xs px-2.5 py-1 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-400/30 flex items-center gap-1 w-fit">
+                        <FileText className="w-3 h-3" /> Pending
+                      </span>
+                    ) : user.verificationStatus === 'documents_requested' ? (
+                      <span className="text-xs px-2.5 py-1 rounded-full bg-amber-500/20 text-amber-300 border border-amber-400/30 flex items-center gap-1 w-fit">
+                        <FileText className="w-3 h-3" /> Docs Requested
+                      </span>
+                    ) : user.verificationStatus === 'rejected' ? (
+                      <span className="text-xs px-2.5 py-1 rounded-full bg-red-500/20 text-red-300 border border-red-400/30 flex items-center gap-1 w-fit">
+                        <ShieldX className="w-3 h-3" /> Rejected
+                      </span>
+                    ) : (
+                      <span className="text-xs px-2.5 py-1 rounded-full bg-gray-500/20 text-gray-300 border border-gray-400/30">
+                        None
+                      </span>
+                    )}
+                  </td>
                   <td className="py-3 pr-3 text-cyan-300 font-medium">${Number(user.balance).toLocaleString()}</td>
                   <td className="py-3 pr-3 text-gray-400">{user.created_at ? new Date(user.created_at).toLocaleDateString() : 'N/A'}</td>
                   <td className="py-3 pr-3">
@@ -286,6 +370,11 @@ export default function AdminUsers() {
                       <button onClick={() => updateBalance(user.id, 100)} className="px-2.5 py-1.5 rounded-lg bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 text-xs">+100</button>
                       <button onClick={() => updateBalance(user.id, -100)} className="px-2.5 py-1.5 rounded-lg bg-red-500/20 text-red-300 border border-red-400/30 text-xs">-100</button>
                       <button onClick={() => handleViewUser(user)} className="px-2.5 py-1.5 rounded-lg bg-indigo-500/20 text-indigo-300 border border-indigo-400/30 text-xs flex items-center gap-1"><Eye className="w-3 h-3" /> View</button>
+                      {(user.verificationStatus === 'pending' || user.verificationStatus === 'documents_requested' || user.verificationStatus === 'rejected') && (
+                        <button onClick={() => handleVerifyClick(user)} className="px-2.5 py-1.5 rounded-lg bg-cyan-500/20 text-cyan-300 border border-cyan-400/30 text-xs flex items-center gap-1">
+                          <ShieldCheck className="w-3 h-3" /> Verify
+                        </button>
+                      )}
                       <button onClick={() => handleEditClick(user)} className="px-2.5 py-1.5 rounded-lg bg-white/10 text-gray-100 border border-white/20 text-xs flex items-center gap-1"><Edit3 className="w-3 h-3" /> Edit</button>
                     </div>
                   </td>
@@ -429,6 +518,173 @@ export default function AdminUsers() {
                 {actionLoading ? 'Processing...' : 'Confirm Action'}
               </button>
               <button onClick={() => setShowEditModal(false)} className="flex-1 px-4 py-2.5 rounded-xl border border-white/20 text-gray-200 hover:bg-white/5 transition-colors">
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showVerifyModal && (
+        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-3xl border border-white/[0.12] bg-gradient-to-br from-[#171726] to-[#101019] p-5 sm:p-6">
+            <div className="flex items-center justify-between gap-3 mb-4">
+              <h3 className="text-xl font-semibold text-white">Verify User: {selectedUser?.username}</h3>
+              <button onClick={() => setShowVerifyModal(false)} className="w-9 h-9 rounded-lg bg-white/10 hover:bg-white/20 transition-colors flex items-center justify-center text-white">
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            {loadingDocs ? (
+              <div className="text-center py-8 text-gray-400">Loading verification details...</div>
+            ) : (
+              <>
+                {userDetails && (
+                  <div className="mb-6">
+                    <h4 className="text-sm font-semibold text-cyan-300 mb-3">User Information</h4>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-sm">
+                      <div className="p-3 rounded-lg bg-[#0a0a0f] border border-white/[0.08]">
+                        <p className="text-gray-400 text-xs">Full Name</p>
+                        <p className="text-white font-medium">{userDetails.first_name} {userDetails.last_name}</p>
+                      </div>
+                      <div className="p-3 rounded-lg bg-[#0a0a0f] border border-white/[0.08]">
+                        <p className="text-gray-400 text-xs">Email</p>
+                        <p className="text-white font-medium">{userDetails.email}</p>
+                      </div>
+                      <div className="p-3 rounded-lg bg-[#0a0a0f] border border-white/[0.08]">
+                        <p className="text-gray-400 text-xs">Phone</p>
+                        <p className="text-white font-medium">{userDetails.phone || 'N/A'}</p>
+                      </div>
+                      <div className="p-3 rounded-lg bg-[#0a0a0f] border border-white/[0.08]">
+                        <p className="text-gray-400 text-xs">Country</p>
+                        <p className="text-white font-medium">{userDetails.country || 'N/A'}</p>
+                      </div>
+                      <div className="p-3 rounded-lg bg-[#0a0a0f] border border-white/[0.08]">
+                        <p className="text-gray-400 text-xs">Date of Birth</p>
+                        <p className="text-white font-medium">{userDetails.date_of_birth || 'N/A'}</p>
+                      </div>
+                      <div className="p-3 rounded-lg bg-[#0a0a0f] border border-white/[0.08]">
+                        <p className="text-gray-400 text-xs">ID Type</p>
+                        <p className="text-white font-medium">{userDetails.id_type ? userDetails.id_type.replace(/_/g, ' ').toUpperCase() : 'N/A'}</p>
+                      </div>
+                      <div className="p-3 rounded-lg bg-[#0a0a0f] border border-white/[0.08]">
+                        <p className="text-gray-400 text-xs">ID Number</p>
+                        <p className="text-white font-medium font-mono">{userDetails.id_number || 'N/A'}</p>
+                      </div>
+                      <div className="p-3 rounded-lg bg-[#0a0a0f] border border-white/[0.08]">
+                        <p className="text-gray-400 text-xs">Annual Income</p>
+                        <p className="text-white font-medium">{userDetails.annual_income || 'N/A'}</p>
+                      </div>
+                      <div className="p-3 rounded-lg bg-[#0a0a0f] border border-white/[0.08]">
+                        <p className="text-gray-400 text-xs">Net Worth</p>
+                        <p className="text-white font-medium">{userDetails.net_worth || 'N/A'}</p>
+                      </div>
+                      <div className="p-3 rounded-lg bg-[#0a0a0f] border border-white/[0.08]">
+                        <p className="text-gray-400 text-xs">Employment</p>
+                        <p className="text-white font-medium">{userDetails.employment_status || 'N/A'}</p>
+                      </div>
+                      <div className="p-3 rounded-lg bg-[#0a0a0f] border border-white/[0.08]">
+                        <p className="text-gray-400 text-xs">Source of Funds</p>
+                        <p className="text-white font-medium">{userDetails.source_of_funds || 'N/A'}</p>
+                      </div>
+                      <div className="p-3 rounded-lg bg-[#0a0a0f] border border-white/[0.08]">
+                        <p className="text-gray-400 text-xs">Risk Tolerance</p>
+                        <p className="text-white font-medium">{userDetails.risk_tolerance || 'N/A'}</p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                <div className="mb-6">
+                  <h4 className="text-sm font-semibold text-cyan-300 mb-3">KYC Documents</h4>
+                  <div className="grid sm:grid-cols-2 gap-4">
+                    <div className="p-4 rounded-xl bg-[#0a0a0f] border border-white/[0.08]">
+                      <p className="text-xs text-gray-400 mb-2">ID Front</p>
+                      {verificationDocs?.idFront ? (
+                        <a href={verificationDocs.idFront} target="_blank" rel="noopener noreferrer" className="block">
+                          <img src={verificationDocs.idFront} alt="ID Front" className="w-full h-48 object-contain rounded-lg border border-white/10 hover:border-cyan-400/50 transition-colors" />
+                        </a>
+                      ) : (
+                        <div className="h-48 flex items-center justify-center text-gray-500 border border-dashed border-white/10 rounded-lg">
+                          No ID Front Uploaded
+                        </div>
+                      )}
+                    </div>
+                    <div className="p-4 rounded-xl bg-[#0a0a0f] border border-white/[0.08]">
+                      <p className="text-xs text-gray-400 mb-2">ID Back</p>
+                      {verificationDocs?.idBack ? (
+                        <a href={verificationDocs.idBack} target="_blank" rel="noopener noreferrer" className="block">
+                          <img src={verificationDocs.idBack} alt="ID Back" className="w-full h-48 object-contain rounded-lg border border-white/10 hover:border-cyan-400/50 transition-colors" />
+                        </a>
+                      ) : (
+                        <div className="h-48 flex items-center justify-center text-gray-500 border border-dashed border-white/10 rounded-lg">
+                          No ID Back Uploaded
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                {verificationDocs?.verificationNotes && (
+                  <div className="mb-6 p-4 rounded-xl bg-amber-500/15 border border-amber-400/30">
+                    <p className="text-sm text-amber-200">
+                      <span className="font-semibold">Admin Notes: </span>
+                      {verificationDocs.verificationNotes}
+                    </p>
+                  </div>
+                )}
+              </>
+            )}
+
+            <div className="space-y-3">
+              <button onClick={() => setVerifyAction('approve')} className={`w-full p-4 rounded-xl border text-left flex items-center gap-3 transition-colors ${verifyAction === 'approve' ? 'bg-emerald-500/20 border-emerald-400/40 text-white' : 'border-white/10 text-gray-300 hover:bg-white/5'}`}>
+                <CheckCircle className="w-5 h-5 text-emerald-300" />
+                <div>
+                  <p className="font-medium">Approve Verification</p>
+                  <p className="text-xs text-gray-400">Mark this user as verified and allow full access</p>
+                </div>
+              </button>
+
+              <button onClick={() => setVerifyAction('request')} className={`w-full p-4 rounded-xl border text-left flex items-center gap-3 transition-colors ${verifyAction === 'request' ? 'bg-amber-500/20 border-amber-400/40 text-white' : 'border-white/10 text-gray-300 hover:bg-white/5'}`}>
+                <FileText className="w-5 h-5 text-amber-300" />
+                <div>
+                  <p className="font-medium">Request Documents</p>
+                  <p className="text-xs text-gray-400">Ask user to upload identification documents</p>
+                </div>
+              </button>
+
+              <button onClick={() => setVerifyAction('reject')} className={`w-full p-4 rounded-xl border text-left flex items-center gap-3 transition-colors ${verifyAction === 'reject' ? 'bg-red-500/20 border-red-400/40 text-white' : 'border-white/10 text-gray-300 hover:bg-white/5'}`}>
+                <ShieldX className="w-5 h-5 text-red-300" />
+                <div>
+                  <p className="font-medium">Reject Verification</p>
+                  <p className="text-xs text-gray-400">Reject the verification application</p>
+                </div>
+              </button>
+
+              {(verifyAction === 'reject' || verifyAction === 'request') && (
+                <div className="mt-3">
+                  <label className="text-sm text-gray-300 mb-2 block">Reason / Message (Optional)</label>
+                  <textarea
+                    value={verifyReason}
+                    onChange={(e) => setVerifyReason(e.target.value)}
+                    placeholder={verifyAction === 'reject' ? 'Reason for rejection...' : 'Message to user...'}
+                    className="w-full px-4 py-2.5 rounded-xl bg-[#0a0a0f] border border-white/[0.12] text-white focus:outline-none focus:border-cyan-500 h-20 resize-none"
+                  />
+                </div>
+              )}
+            </div>
+
+            {actionMessage && (
+              <div className={`mt-4 p-3 rounded-xl text-sm ${actionMessage.includes('approved') || actionMessage.includes('sent') || actionMessage.includes('rejected') ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-400/30' : 'bg-red-500/20 text-red-300 border border-red-400/30'}`}>
+                {actionMessage}
+              </div>
+            )}
+
+            <div className="flex flex-wrap gap-3 mt-5">
+              <button onClick={handleVerifyAction} disabled={!verifyAction || verifyLoading} className="flex-1 px-4 py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 to-cyan-500 text-white font-semibold hover:from-indigo-500 hover:to-cyan-400 transition-all disabled:opacity-50 disabled:cursor-not-allowed">
+                {verifyLoading ? 'Processing...' : 'Confirm'}
+              </button>
+              <button onClick={() => setShowVerifyModal(false)} className="flex-1 px-4 py-2.5 rounded-xl border border-white/20 text-gray-200 hover:bg-white/5 transition-colors">
                 Cancel
               </button>
             </div>

@@ -16,4 +16,8 @@ export const adminApi = {
   deleteUser: (userId) => apiRequest(`/admin/users/${userId}`, { method: 'DELETE' }),
   resetData: () => apiRequest('/admin/reset-data', { method: 'POST' }),
   getNotifications: (since) => apiRequest(`/admin/notifications${since ? `?since=${encodeURIComponent(since)}` : ''}`),
+  verifyUser: (userId) => apiRequest(`/admin/users/${userId}/verify`, { method: 'PATCH' }),
+  rejectVerification: (userId, reason) => apiRequest(`/admin/users/${userId}/reject-verification`, { method: 'PATCH', body: JSON.stringify({ reason }) }),
+  requestDocuments: (userId, message) => apiRequest(`/admin/users/${userId}/request-documents`, { method: 'PATCH', body: JSON.stringify({ message }) }),
+  getVerificationDocs: (userId) => apiRequest(`/admin/users/${userId}/verification-docs`),
 }

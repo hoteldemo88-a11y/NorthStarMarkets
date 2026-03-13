@@ -80,7 +80,16 @@ router.post('/change-password', authenticate, async (req, res) => {
 router.use(authenticate, requireAdmin)
 
 router.get('/users', async (_req, res) => {
-  const [rows] = await pool.query('SELECT id, username, email, role, balance, country, status, created_at FROM users WHERE role = "client" ORDER BY id DESC')
+  const [rows] = await pool.query('SELECT id, username, email, role, balance, country, status, verification_status AS verificationStatus, id_front AS idFront, id_back AS idBack, created_at FROM users WHERE role = "client" ORDER BY id DESC')
+  return res.json(rows)
+})
+
+router.get('/users/pending-verification', async (_req, res) => {
+  const [rows] = await pool.query(
+    `SELECT id, username, email, role, balance, country, status, verification_status AS verificationStatus, 
+    id_front AS idFront, id_back AS idBack, created_at 
+    FROM users WHERE role = "client" AND verification_status = 'pending' ORDER BY id DESC`
+  )
   return res.json(rows)
 })
 
@@ -128,6 +137,45 @@ router.patch('/users/:id/balance', async (req, res) => {
   await pool.query('UPDATE users SET balance = balance + ? WHERE id = ?', [delta, userId])
   await logActivity(req.user.id, `Adjusted user(${userId}) balance by ${delta}`)
   return res.json({ message: 'Balance updated' })
+})
+
+router.patch('/users/:id/verify', async (req, res) => {
+  const userId = Number(req.params.id)
+  const [[user]] = await pool.query('SELECT id, verification_status FROM users WHERE id = ? AND role = "client" LIMIT 1', [userId])
+  if (!user) return res.status(404).json({ message: 'User not found' })
+
+  await pool.query('UPDATE users SET verification_status = "verified" WHERE id = ?', [userId])
+  await logActivity(req.user.id, `User(${userId}) verification approved`)
+  return res.json({ message: 'User verification approved' })
+})
+
+router.patch('/users/:id/reject-verification', async (req, res) => {
+  const userId = Number(req.params.id)
+  const { reason } = req.body
+  const [[user]] = await pool.query('SELECT id, verification_status FROM users WHERE id = ? AND role = "client" LIMIT 1', [userId])
+  if (!user) return res.status(404).json({ message: 'User not found' })
+
+  await pool.query('UPDATE users SET verification_status = "rejected", verification_notes = ? WHERE id = ?', [reason || null, userId])
+  await logActivity(req.user.id, `User(${userId}) verification rejected: ${reason || 'No reason provided'}`)
+  return res.json({ message: 'User verification rejected' })
+})
+
+router.patch('/users/:id/request-documents', async (req, res) => {
+  const userId = Number(req.params.id)
+  const { message } = req.body
+  const [[user]] = await pool.query('SELECT id, verification_status FROM users WHERE id = ? AND role = "client" LIMIT 1', [userId])
+  if (!user) return res.status(404).json({ message: 'User not found' })
+
+  await pool.query('UPDATE users SET verification_status = "documents_requested", verification_notes = ? WHERE id = ?', [message || 'Please upload your identification documents', userId])
+  await logActivity(req.user.id, `User(${userId}) requested to upload documents`)
+  return res.json({ message: 'Document request sent to user' })
+})
+
+router.get('/users/:id/verification-docs', async (req, res) => {
+  const userId = Number(req.params.id)
+  const [[user]] = await pool.query('SELECT id, id_front AS idFront, id_back AS idBack, verification_status AS verificationStatus, verification_notes AS verificationNotes FROM users WHERE id = ? AND role = "client" LIMIT 1', [userId])
+  if (!user) return res.status(404).json({ message: 'User not found' })
+  return res.json(user)
 })
 
 router.post('/trades', async (req, res) => {

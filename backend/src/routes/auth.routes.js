@@ -44,8 +44,6 @@ router.post('/register', async (req, res) => {
     firstName,
     lastName,
     phone,
-    idType,
-    idNumber,
     country,
     dateOfBirth,
     annualIncome,
@@ -105,13 +103,13 @@ router.post('/register', async (req, res) => {
 
   const passwordHash = await bcrypt.hash(password, 12)
 
-const [result] = await pool.query(
+  const [result] = await pool.query(
     `INSERT INTO users (
-      username,email,password_hash,role,first_name,last_name,phone,id_type,id_number,country,date_of_birth,
+      username,email,password_hash,role,first_name,last_name,phone,country,date_of_birth,
       annual_income,net_worth,employment_status,source_of_funds,us_citizen,pep_status,tax_residency,
       risk_tolerance,investment_horizon,max_drawdown,years_trading,products_traded,
-      average_trades_per_month,preferred_markets,strategy_style,preferred_leverage,balance
-    ) VALUES (?, ?, ?, 'client', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0)`,
+      average_trades_per_month,preferred_markets,strategy_style,preferred_leverage
+    ) VALUES (?, ?, ?, 'client', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     [
       username,
       email,
@@ -119,8 +117,6 @@ const [result] = await pool.query(
       firstName || null,
       lastName || null,
       phone || null,
-      idType || null,
-      idNumber || null,
       country || null,
       dateOfBirth || null,
       annualIncome || null,
@@ -171,6 +167,7 @@ router.post('/login', async (req, res) => {
     role: user.role,
     country: user.country,
     riskTolerance: user.risk_tolerance,
+    verificationStatus: user.verification_status,
   }
   const token = signToken(payload)
   await logActivity(user.id, `${user.email} logged in`)
@@ -179,9 +176,39 @@ router.post('/login', async (req, res) => {
 })
 
 router.get('/me', authenticate, async (req, res) => {
-  const [rows] = await pool.query('SELECT id, username, email, role, country, risk_tolerance AS riskTolerance FROM users WHERE id = ? LIMIT 1', [req.user.id])
+  const [rows] = await pool.query(
+    `SELECT id, username, email, role, country, risk_tolerance AS riskTolerance, 
+    verification_status AS verificationStatus, id_document AS idDocument, id_front AS idFront, id_back AS idBack 
+    FROM users WHERE id = ? LIMIT 1`, 
+    [req.user.id]
+  )
   if (!rows.length) return res.status(404).json({ message: 'User not found' })
   return res.json({ user: rows[0] })
+})
+
+router.post('/upload-id', authenticate, async (req, res) => {
+  const { idFront, idBack } = req.body
+  
+  try {
+    await pool.query(
+      'UPDATE users SET id_front = ?, id_back = ?, verification_status = COALESCE(verification_status, "pending") WHERE id = ?',
+      [idFront || null, idBack || null, req.user.id]
+    )
+    await logActivity(req.user.id, 'ID document uploaded')
+    return res.json({ message: 'ID uploaded successfully' })
+  } catch (error) {
+    console.error('ID upload error:', error)
+    return res.status(500).json({ message: 'Failed to upload ID' })
+  }
+})
+
+router.get('/verification-status', authenticate, async (req, res) => {
+  const [rows] = await pool.query(
+    'SELECT verification_status AS verificationStatus, id_document AS idDocument, id_front AS idFront, id_back AS idBack, verification_notes AS verificationNotes FROM users WHERE id = ? LIMIT 1',
+    [req.user.id]
+  )
+  if (!rows.length) return res.status(404).json({ message: 'User not found' })
+  return res.json({ verification: rows[0] })
 })
 
 export default router

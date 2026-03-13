@@ -12,6 +12,7 @@ import Contact from './pages/Contact'
 import Login from './pages/Login'
 import OpenAccount from './pages/OpenAccount'
 import ClientDashboard from './pages/ClientDashboard'
+import ClientKYC from './pages/ClientKYC'
 import AdminLogin from './pages/AdminLogin'
 import AdminDashboard from './pages/AdminDashboard'
 import AdminUsers from './pages/AdminUsers'
@@ -42,6 +43,7 @@ function App() {
 
         <Route path="/dashboard" element={<ProtectedRoute><DashboardLayout /></ProtectedRoute>}>
           <Route index element={<ClientDashboard />} />
+          <Route path="kyc" element={<ClientKYC />} />
         </Route>
 
         <Route path="/admin/login" element={<AdminLogin />} />

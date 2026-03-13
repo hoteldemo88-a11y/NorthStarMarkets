@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { motion } from 'framer-motion'
-import { useSearchParams } from 'react-router-dom'
-import { AlertCircle, Bell, ChartCandlestick, CheckCircle2, Clock3, Download, History, LockKeyhole, Pencil, ShieldCheck, Sparkles, Upload, Wallet, X } from 'lucide-react'
+import { useSearchParams, useNavigate } from 'react-router-dom'
+import { AlertCircle, Bell, ChartCandlestick, CheckCircle2, Clock3, Download, History, LockKeyhole, Pencil, ShieldCheck, ShieldX, Sparkles, Upload, Wallet, X } from 'lucide-react'
 import { apiRequest, getClientNotifications } from '../services/api'
 
 const validSections = new Set(['main', 'trade-history', 'profile', 'recharge', 'withdraw', 'wallet-history'])
@@ -56,6 +56,7 @@ export default function ClientDashboard() {
   const [profileMessage, setProfileMessage] = useState('')
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false)
   const [isProfileSaving, setIsProfileSaving] = useState(false)
+  const navigate = useNavigate()
 
   const showSubmitPopup = (title, message, tone = 'success') => {
     if (popupTimerRef.current) clearTimeout(popupTimerRef.current)
@@ -127,6 +128,14 @@ export default function ClientDashboard() {
       riskTolerance: summary.profile.riskTolerance || 'moderate',
     })
   }, [summary])
+
+  const isVerified = summary?.verificationStatus === 'verified'
+  const isPending = summary?.verificationStatus === 'pending'
+  const isRejected = summary?.verificationStatus === 'rejected'
+  const isDocumentsRequested = summary?.verificationStatus === 'documents_requested'
+  const hasKycDocuments = summary?.idFront && summary?.idBack
+  const kycComplete = isVerified || hasKycDocuments
+  const canTrade = isVerified || isPending
 
   const active = validSections.has(searchParams.get('section')) ? searchParams.get('section') : 'main'
 
@@ -287,6 +296,30 @@ export default function ClientDashboard() {
         <div className="absolute -top-24 -right-24 w-64 h-64 bg-cyan-500/15 rounded-full blur-3xl" />
         <div className="absolute -bottom-20 -left-20 w-56 h-56 bg-indigo-500/15 rounded-full blur-3xl" />
 
+        {!isVerified && (isPending || isDocumentsRequested || isRejected) && (
+          <div className="relative mb-4 p-3 rounded-xl bg-amber-500/15 border border-amber-400/30">
+            <div className="flex items-start gap-3">
+              <AlertCircle className="w-5 h-5 text-amber-300 mt-0.5" />
+              <div className="flex-1">
+                <p className="text-sm font-medium text-amber-200">
+                  {isDocumentsRequested 
+                    ? 'Verification Required: Please upload your ID documents' 
+                    : isRejected 
+                      ? 'Verification Rejected: Please contact support or re-upload documents'
+                      : 'Account Verification Under Review'}
+                </p>
+                <p className="text-xs text-amber-100/70 mt-1">
+                  {isDocumentsRequested 
+                    ? 'Upload your ID to get faster verification. You can still trade while verification is pending.'
+                    : isRejected 
+                      ? 'Contact support for more information or re-submit your documents.'
+                      : 'You can trade while your verification is being processed. Upload ID for faster approval.'}
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
         <div className="relative flex flex-wrap items-start justify-between gap-4">
           <div>
             <div className="flex items-center gap-2">
@@ -299,11 +332,62 @@ export default function ClientDashboard() {
               )}
             </div>
             <p className="text-3xl sm:text-4xl font-bold text-white mt-1">${Number(summary.balance).toLocaleString()}</p>
-            <div className="mt-3 inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-emerald-400/30 bg-emerald-500/10 text-emerald-200 text-xs">
-              <ShieldCheck className="w-3.5 h-3.5" />
-              Account secured and verified
-            </div>
+            {isVerified ? (
+              <div className="mt-3 inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-emerald-400/30 bg-emerald-500/10 text-emerald-200 text-xs">
+                <ShieldCheck className="w-3.5 h-3.5" />
+                Account Verified
+              </div>
+            ) : isPending ? (
+              <div className="mt-3 inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-amber-400/30 bg-amber-500/10 text-amber-200 text-xs">
+                <Clock3 className="w-3.5 h-3.5" />
+                Verification Under Review
+              </div>
+            ) : isDocumentsRequested ? (
+              <div className="mt-3 inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-red-400/30 bg-red-500/10 text-red-200 text-xs">
+                <ShieldX className="w-3.5 h-3.5" />
+                Documents Requested - Please Upload ID
+              </div>
+            ) : isRejected ? (
+              <div className="mt-3 inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-red-400/30 bg-red-500/10 text-red-200 text-xs">
+                <ShieldX className="w-3.5 h-3.5" />
+                Verification Rejected
+              </div>
+            ) : (
+              <div className="mt-3 inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-amber-400/30 bg-amber-500/10 text-amber-200 text-xs">
+                <Clock3 className="w-3.5 h-3.5" />
+                Pending Verification
+              </div>
+            )}
+
+            {(isRejected || !hasKycDocuments) && (
+              <button
+                onClick={() => navigate('/dashboard/kyc')}
+                className="mt-3 ml-2 inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-red-400/30 bg-red-500/20 text-red-200 text-xs hover:bg-red-500/30 transition-colors"
+              >
+                {isRejected ? 'Resubmit KYC' : 'Submit KYC'}
+              </button>
+            )}
           </div>
+
+          {!kycComplete && (
+            <div className="mt-4 p-4 rounded-xl bg-red-500/15 border border-red-400/30">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                <div className="flex items-start gap-3">
+                  <ShieldX className="w-5 h-5 text-red-300 mt-0.5" />
+                  <div>
+                    <p className="text-sm font-medium text-red-200">Please complete KYC to get access to trades, recharge, and withdraw</p>
+                    <p className="text-xs text-red-100/70 mt-1">Upload your ID documents to verify your account</p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => navigate('/dashboard/kyc')}
+                  className="px-4 py-2 rounded-xl bg-gradient-to-r from-indigo-600 to-cyan-500 text-white text-sm font-semibold hover:from-indigo-500 hover:to-cyan-400 transition-all whitespace-nowrap"
+                >
+                  Submit KYC
+                </button>
+              </div>
+            </div>
+          )}
 
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 min-w-[280px]">
             <Metric label="Open Trades" value={String(summary.openTrades.length)} />
@@ -418,7 +502,7 @@ export default function ClientDashboard() {
               <ProfileInfo label="Phone" value={summary.profile.phone || 'N/A'} />
               <ProfileInfo label="Country" value={summary.profile.country || 'N/A'} />
               <ProfileInfo label="Risk Profile" value={summary.profile.riskTolerance || 'N/A'} />
-              <ProfileInfo label="Account Type" value="Client" />
+              <ProfileInfo label="Verification" value={isVerified ? 'Verified' : summary.verificationStatus || 'Pending'} />
             </div>
           </div>
           {profileMessage && <p className="text-sm text-gray-300 mt-3">{profileMessage}</p>}
@@ -427,39 +511,71 @@ export default function ClientDashboard() {
 
       {active === 'recharge' && (
         <GlassPanel title="Recharge Wallet" icon={Download}>
-          <div className="grid sm:grid-cols-[1fr_auto] gap-3 items-end">
-            <Field label="Recharge Amount" type="number" min="0" value={rechargeAmount} onChange={(e) => setRechargeAmount(e.target.value)} />
-            <button onClick={() => submitWallet('deposit')} className="px-4 py-2.5 rounded-xl bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 inline-flex items-center gap-2 hover:bg-emerald-500/25 transition-colors">
-              <Download className="w-4 h-4" />
-              Recharge
-            </button>
-          </div>
-          <div className="flex flex-wrap gap-2 mt-3">
-            {[100, 500, 1000].map((value) => (
-              <button key={value} onClick={() => setRechargeAmount(String(value))} className="px-3 py-1.5 rounded-lg bg-white/10 border border-white/15 text-gray-200 text-xs hover:bg-white/15">
-                +${value}
+          {!kycComplete ? (
+            <div className="text-center py-8">
+              <ShieldX className="w-12 h-12 text-red-400 mx-auto mb-3" />
+              <p className="text-white font-medium mb-2">KYC Required</p>
+              <p className="text-sm text-gray-400 mb-4">Please complete your KYC verification to access recharge</p>
+              <button
+                onClick={() => navigate('/dashboard/kyc')}
+                className="px-4 py-2 rounded-xl bg-gradient-to-r from-indigo-600 to-cyan-500 text-white text-sm font-semibold"
+              >
+                Submit KYC
               </button>
-            ))}
-          </div>
+            </div>
+          ) : (
+            <>
+              <div className="grid sm:grid-cols-[1fr_auto] gap-3 items-end">
+                <Field label="Recharge Amount" type="number" min="0" value={rechargeAmount} onChange={(e) => setRechargeAmount(e.target.value)} />
+                <button onClick={() => submitWallet('deposit')} className="px-4 py-2.5 rounded-xl bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 inline-flex items-center gap-2 hover:bg-emerald-500/25 transition-colors">
+                  <Download className="w-4 h-4" />
+                  Recharge
+                </button>
+              </div>
+              <div className="flex flex-wrap gap-2 mt-3">
+                {[100, 500, 1000].map((value) => (
+                  <button key={value} onClick={() => setRechargeAmount(String(value))} className="px-3 py-1.5 rounded-lg bg-white/10 border border-white/15 text-gray-200 text-xs hover:bg-white/15">
+                    +${value}
+                  </button>
+                ))}
+              </div>
+            </>
+          )}
         </GlassPanel>
       )}
 
       {active === 'withdraw' && (
         <GlassPanel title="Withdraw from Wallet" icon={Upload}>
-          <div className="grid sm:grid-cols-[1fr_auto] gap-3 items-end">
-            <Field label="Withdraw Amount" type="number" min="0" value={withdrawAmount} onChange={(e) => setWithdrawAmount(e.target.value)} />
-            <button onClick={() => submitWallet('withdraw')} className="px-4 py-2.5 rounded-xl bg-red-500/20 text-red-300 border border-red-400/30 inline-flex items-center gap-2 hover:bg-red-500/25 transition-colors">
-              <Upload className="w-4 h-4" />
-              Withdraw
-            </button>
-          </div>
-          <div className="flex flex-wrap gap-2 mt-3">
-            {[100, 250, 500].map((value) => (
-              <button key={value} onClick={() => setWithdrawAmount(String(value))} className="px-3 py-1.5 rounded-lg bg-white/10 border border-white/15 text-gray-200 text-xs hover:bg-white/15">
-                ${value}
+          {!kycComplete ? (
+            <div className="text-center py-8">
+              <ShieldX className="w-12 h-12 text-red-400 mx-auto mb-3" />
+              <p className="text-white font-medium mb-2">KYC Required</p>
+              <p className="text-sm text-gray-400 mb-4">Please complete your KYC verification to access withdrawals</p>
+              <button
+                onClick={() => navigate('/dashboard/kyc')}
+                className="px-4 py-2 rounded-xl bg-gradient-to-r from-indigo-600 to-cyan-500 text-white text-sm font-semibold"
+              >
+                Submit KYC
               </button>
-            ))}
-          </div>
+            </div>
+          ) : (
+            <>
+              <div className="grid sm:grid-cols-[1fr_auto] gap-3 items-end">
+                <Field label="Withdraw Amount" type="number" min="0" value={withdrawAmount} onChange={(e) => setWithdrawAmount(e.target.value)} />
+                <button onClick={() => submitWallet('withdraw')} className="px-4 py-2.5 rounded-xl bg-red-500/20 text-red-300 border border-red-400/30 inline-flex items-center gap-2 hover:bg-red-500/25 transition-colors">
+                  <Upload className="w-4 h-4" />
+                  Withdraw
+                </button>
+              </div>
+              <div className="flex flex-wrap gap-2 mt-3">
+                {[100, 250, 500].map((value) => (
+                  <button key={value} onClick={() => setWithdrawAmount(String(value))} className="px-3 py-1.5 rounded-lg bg-white/10 border border-white/15 text-gray-200 text-xs hover:bg-white/15">
+                    ${value}
+                  </button>
+                ))}
+              </div>
+            </>
+          )}
         </GlassPanel>
       )}
 
