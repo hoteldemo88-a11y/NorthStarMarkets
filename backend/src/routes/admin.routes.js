@@ -95,7 +95,7 @@ router.get('/users/pending-verification', async (_req, res) => {
 
 router.get('/users/:id', async (req, res) => {
   const userId = Number(req.params.id)
-  const [[user]] = await pool.query('SELECT id, username, email, balance, phone, id_type, id_number, country, date_of_birth, first_name, last_name, annual_income, net_worth, employment_status, source_of_funds, us_citizen, pep_status, tax_residency, risk_tolerance, investment_horizon, max_drawdown, years_trading, products_traded, average_trades_per_month, preferred_markets, strategy_style, preferred_leverage, status, created_at FROM users WHERE id = ? AND role = "client" LIMIT 1', [userId])
+  const [[user]] = await pool.query('SELECT id, username, email, balance, phone, id_type, id_number, country, date_of_birth, first_name, last_name, annual_income, net_worth, employment_status, source_of_funds, us_citizen, pep_status, tax_residency, risk_tolerance, investment_horizon, max_drawdown, years_trading, products_traded, average_trades_per_month, preferred_markets, strategy_style, preferred_leverage, status, created_at, id_front, id_back, verification_status, verification_notes FROM users WHERE id = ? AND role = "client" LIMIT 1', [userId])
   if (!user) return res.status(404).json({ message: 'User not found' })
   return res.json(user)
 })
