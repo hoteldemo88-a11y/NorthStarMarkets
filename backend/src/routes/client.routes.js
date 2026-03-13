@@ -182,6 +182,10 @@ router.post('/upload-id-front', async (req, res) => {
   const { idFront } = req.body
   if (!idFront) return res.status(400).json({ message: 'Image data required' })
 
+  if (!process.env.CLOUDINARY_CLOUD_NAME || process.env.CLOUDINARY_CLOUD_NAME === 'your_cloud_name') {
+    return res.status(500).json({ message: 'Cloudinary not configured. Please contact administrator.' })
+  }
+
   try {
     const uploadResult = await cloudinary.uploader.upload(idFront, {
       folder: 'kyc_documents',
@@ -198,13 +202,17 @@ router.post('/upload-id-front', async (req, res) => {
     return res.json({ message: 'ID front uploaded successfully', url: uploadResult.secure_url })
   } catch (error) {
     console.error('ID front upload error:', error)
-    return res.status(500).json({ message: 'Failed to upload ID' })
+    return res.status(500).json({ message: 'Failed to upload ID: ' + error.message })
   }
 })
 
 router.post('/upload-id-back', async (req, res) => {
   const { idBack } = req.body
   if (!idBack) return res.status(400).json({ message: 'Image data required' })
+
+  if (!process.env.CLOUDINARY_CLOUD_NAME || process.env.CLOUDINARY_CLOUD_NAME === 'your_cloud_name') {
+    return res.status(500).json({ message: 'Cloudinary not configured. Please contact administrator.' })
+  }
 
   try {
     const uploadResult = await cloudinary.uploader.upload(idBack, {
@@ -222,7 +230,7 @@ router.post('/upload-id-back', async (req, res) => {
     return res.json({ message: 'ID back uploaded successfully', url: uploadResult.secure_url })
   } catch (error) {
     console.error('ID back upload error:', error)
-    return res.status(500).json({ message: 'Failed to upload ID' })
+    return res.status(500).json({ message: 'Failed to upload ID: ' + error.message })
   }
 })
 
