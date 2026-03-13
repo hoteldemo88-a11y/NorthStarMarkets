@@ -252,7 +252,7 @@ function LiveTradingCard() {
             </div>
             <div className="text-center p-2 bg-white/5 rounded-lg">
               <div className="text-xs text-gray-500">Leverage</div>
-              <div className="text-xs text-white font-medium">1:500</div>
+              <div className="text-xs text-white font-medium">1:200</div>
             </div>
             <div className="text-center p-2 bg-white/5 rounded-lg">
               <div className="text-xs text-gray-500">Exec</div>

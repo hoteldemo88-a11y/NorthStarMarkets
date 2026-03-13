@@ -224,9 +224,6 @@ export default function Careers() {
               <Link to="/contact" className="inline-flex items-center gap-2 px-8 py-4 text-base font-semibold text-white bg-gradient-to-r from-indigo-600 to-cyan-500 rounded-xl hover:from-indigo-500 hover:to-cyan-400 transition-all duration-300 shadow-lg shadow-indigo-500/25">
                 Become an Agent <ArrowRight className="w-5 h-5" />
               </Link>
-              <Link to="/contact" className="inline-flex items-center gap-2 px-8 py-4 text-base font-semibold text-white bg-white/10 border border-white/20 rounded-xl hover:bg-white/20 transition-all duration-300">
-                Contract Agreement <Share2 className="w-4 h-4" />
-              </Link>
             </div>
           </motion.div>
         </div>
