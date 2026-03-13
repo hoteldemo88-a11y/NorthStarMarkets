@@ -25,6 +25,8 @@ export default function ClientKYC() {
     country: '',
   })
 
+  const [existingDocs, setExistingDocs] = useState({ idFront: false, idBack: false })
+
   useEffect(() => {
     loadVerificationStatus()
   }, [])
@@ -33,6 +35,10 @@ export default function ClientKYC() {
     try {
       const res = await apiRequest('/client/summary')
       setVerificationStatus(res.verificationStatus)
+      setExistingDocs({
+        idFront: !!res.idFront,
+        idBack: !!res.idBack,
+      })
       if (res.profile) {
         setPersonalInfo({
           idType: res.profile.idType || '',
@@ -140,7 +146,7 @@ export default function ClientKYC() {
   }
 
   const isVerified = verificationStatus === 'verified'
-  const isPending = verificationStatus === 'pending'
+  const isPending = verificationStatus === 'pending' && (existingDocs.idFront || existingDocs.idBack)
   const hasBothDocs = idFrontPreview && idBackPreview
 
   return (
