@@ -191,6 +191,15 @@ export async function initDatabase() {
     await connection.query('ALTER TABLE users ADD COLUMN id_back VARCHAR(255) NULL')
   }
 
+  const [initialDepositColumn] = await connection.query(
+    `SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = ? AND TABLE_NAME = 'users' AND COLUMN_NAME = 'initial_deposit' LIMIT 1`,
+    [database],
+  )
+
+  if (!initialDepositColumn.length) {
+    await connection.query('ALTER TABLE users ADD COLUMN initial_deposit DECIMAL(14,2) NOT NULL DEFAULT 0')
+  }
+
   await connection.query(`
     CREATE TABLE IF NOT EXISTS fund_requests (
       id INT PRIMARY KEY AUTO_INCREMENT,

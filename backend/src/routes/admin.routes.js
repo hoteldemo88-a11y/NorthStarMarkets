@@ -326,6 +326,10 @@ router.patch('/requests/:id', async (req, res) => {
   if (status === 'approved') {
     if (request.type === 'deposit') {
       await pool.query('UPDATE users SET balance = balance + ? WHERE id = ?', [request.amount, request.user_id])
+      const [[user]] = await pool.query('SELECT initial_deposit FROM users WHERE id = ?', [request.user_id])
+      if (user && Number(user.initial_deposit) === 0) {
+        await pool.query('UPDATE users SET initial_deposit = initial_deposit + ? WHERE id = ?', [request.amount, request.user_id])
+      }
     }
     if (request.type === 'withdraw') {
       await pool.query('UPDATE users SET balance = balance - ? WHERE id = ?', [request.amount, request.user_id])

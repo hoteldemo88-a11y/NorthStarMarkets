@@ -332,6 +332,17 @@ export default function ClientDashboard() {
               )}
             </div>
             <p className="text-3xl sm:text-4xl font-bold text-white mt-1">${Number(summary.balance).toLocaleString()}</p>
+            {summary.initialDeposit > 0 && (
+              <div className="mt-2 flex items-center gap-2">
+                <span className="text-xs text-gray-400">P/L:</span>
+                <span className={`text-sm font-semibold ${summary.profitLoss >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+                  {summary.profitLoss >= 0 ? '+' : ''}${Number(summary.profitLoss).toLocaleString()}
+                </span>
+                <span className="text-xs text-gray-500">
+                  (Initial: ${Number(summary.initialDeposit).toLocaleString()})
+                </span>
+              </div>
+            )}
             {isVerified ? (
               <div className="mt-3 inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-emerald-400/30 bg-emerald-500/10 text-emerald-200 text-xs">
                 <ShieldCheck className="w-3.5 h-3.5" />
