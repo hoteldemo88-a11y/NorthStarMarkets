@@ -41,9 +41,9 @@ MYSQL_PASSWORD=root
 MYSQL_DATABASE=north_star_markets
 ADMIN_EMAIL=admin@northstarmarkets.com
 ADMIN_PASSWORD=Admin@12345
-CLOUDINARY_CLOUD_NAME=your_cloud_name
-CLOUDINARY_API_KEY=your_api_key
-CLOUDINARY_API_SECRET=your_api_secret
+CLOUDINARY_CLOUD_NAME=dchjy0hvk
+CLOUDINARY_API_KEY=373115673631775
+CLOUDINARY_API_SECRET=rjBNynEX6wxyaQBUTmQOC-0HcA0
 EOF
 
 # Install backend dependencies (always update to get latest packages)
