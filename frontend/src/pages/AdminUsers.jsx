@@ -418,14 +418,27 @@ export default function AdminUsers() {
                   <div className="p-4 rounded-xl bg-[#0d0d15] border border-amber-500/30">
                     <h4 className="text-sm font-semibold text-amber-300 mb-3 flex items-center gap-2">
                       <span>ID Proof (For Verification)</span>
-                      <span className="text-xs px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-400/30">
-                        {userDetails.id_type ? userDetails.id_type.replace('_', ' ').toUpperCase() : 'Not Submitted'}
+                      <span className={`text-xs px-2 py-0.5 rounded-full ${userDetails.id_front || userDetails.id_back ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-400/30' : 'bg-amber-500/20 text-amber-300 border border-amber-400/30'}`}>
+                        {userDetails.id_front || userDetails.id_back ? 'Submitted' : 'Not Submitted'}
                       </span>
                     </h4>
                     <div className="grid grid-cols-2 gap-3 text-sm">
                       <div><span className="text-gray-400">ID Type:</span> <span className="text-white ml-1 font-medium">{userDetails.id_type ? userDetails.id_type.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) : 'N/A'}</span></div>
                       <div><span className="text-gray-400">ID Number:</span> <span className="text-white ml-1 font-mono font-medium">{userDetails.id_number || 'N/A'}</span></div>
                     </div>
+                    {(userDetails.id_front || userDetails.id_back) && (
+                      <div className="mt-3 pt-3 border-t border-white/10">
+                        <p className="text-xs text-gray-400 mb-2">Uploaded Documents:</p>
+                        <div className="flex gap-2">
+                          {userDetails.id_front && (
+                            <a href={userDetails.id_front} target="_blank" rel="noopener noreferrer" className="text-xs text-cyan-300 hover:underline">View Front</a>
+                          )}
+                          {userDetails.id_back && (
+                            <a href={userDetails.id_back} target="_blank" rel="noopener noreferrer" className="text-xs text-cyan-300 hover:underline">View Back</a>
+                          )}
+                        </div>
+                      </div>
+                    )}
                   </div>
 
                   <div className="p-4 rounded-xl bg-[#0d0d15] border border-white/[0.08]">
