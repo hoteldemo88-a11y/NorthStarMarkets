@@ -41,6 +41,10 @@ if [ ! -d "$FRONTEND_DIR/node_modules" ]; then
     echo "📥 Installing frontend dependencies..."
     cd "$FRONTEND_DIR"
     npm install
+else
+    echo "📥 Updating frontend dependencies..."
+    cd "$FRONTEND_DIR"
+    npm install
 fi
 
 # Build frontend
