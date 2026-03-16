@@ -6,6 +6,7 @@ import About from './pages/About'
 import OurGoal from './pages/OurGoal'
 import ClientsReviews from './pages/ClientsReviews'
 import Markets from './pages/Markets'
+import MarketDetail from './pages/MarketDetail'
 import Faq from './pages/Faq'
 import Careers from './pages/Careers'
 import Contact from './pages/Contact'
@@ -36,6 +37,7 @@ function App() {
           <Route path="our-goal" element={<OurGoal />} />
           <Route path="clients-reviews" element={<ClientsReviews />} />
           <Route path="markets" element={<Markets />} />
+          <Route path="markets/:id" element={<MarketDetail />} />
           <Route path="faq" element={<Faq />} />
           <Route path="careers" element={<Careers />} />
           <Route path="contact" element={<Contact />} />

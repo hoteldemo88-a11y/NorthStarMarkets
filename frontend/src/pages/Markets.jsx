@@ -92,22 +92,23 @@ export default function Markets() {
         <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6">
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
             {marketCategories.map((market, i) => (
-              <motion.div 
-                key={market.id} 
-                initial={{ opacity: 0, y: 20 }} 
-                whileInView={{ opacity: 1, y: 0 }} 
-                viewport={{ once: true }} 
-                transition={{ delay: i * 0.1 }}
-                whileHover={{ y: -4 }}
-                className="bg-[#12121a] border border-white/[0.08] rounded-2xl p-6 hover:border-indigo-500/30 transition-all cursor-pointer group"
-              >
-                <div className={`w-14 h-14 rounded-xl bg-gradient-to-br ${market.color} flex items-center justify-center mb-4 shadow-lg group-hover:scale-110 transition-transform`}>
-                  <market.icon className="w-7 h-7 text-white" />
-                </div>
-                <h3 className="text-lg font-semibold mb-2 text-white">{market.name}</h3>
-                <p className="text-sm text-cyan-400 font-medium mb-1">{market.pairs}</p>
-                <p className="text-xs text-gray-300">{market.description}</p>
-              </motion.div>
+              <Link to={`/markets/${market.id}`} key={market.id}>
+                <motion.div 
+                  initial={{ opacity: 0, y: 20 }} 
+                  whileInView={{ opacity: 1, y: 0 }} 
+                  viewport={{ once: true }} 
+                  transition={{ delay: i * 0.1 }}
+                  whileHover={{ y: -4 }}
+                  className="bg-[#12121a] border border-white/[0.08] rounded-2xl p-6 hover:border-indigo-500/30 transition-all cursor-pointer group h-full"
+                >
+                  <div className={`w-14 h-14 rounded-xl bg-gradient-to-br ${market.color} flex items-center justify-center mb-4 shadow-lg group-hover:scale-110 transition-transform`}>
+                    <market.icon className="w-7 h-7 text-white" />
+                  </div>
+                  <h3 className="text-lg font-semibold mb-2 text-white">{market.name}</h3>
+                  <p className="text-sm text-cyan-400 font-medium mb-1">{market.pairs}</p>
+                  <p className="text-xs text-gray-300">{market.description}</p>
+                </motion.div>
+              </Link>
             ))}
           </div>
         </div>
@@ -144,7 +145,7 @@ export default function Markets() {
         <div className="relative z-10 max-w-4xl mx-auto px-3 sm:px-4 lg:px-6 text-center">
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
             <div className="flex flex-wrap justify-center gap-4">
-              <Link to="/contact" className="inline-flex items-center gap-2 px-8 sm:px-10 py-4 text-base font-semibold text-white bg-gradient-to-r from-indigo-600 to-indigo-600 rounded-xl hover:from-indigo-500 hover:to-indigo-500 transition-all duration-300 shadow-lg shadow-indigo-500/25">Get Started <ArrowRight className="w-5 h-5" /></Link>
+              <Link to="/open-account" className="inline-flex items-center gap-2 px-8 sm:px-10 py-4 text-base font-semibold text-white bg-gradient-to-r from-indigo-600 to-indigo-600 rounded-xl hover:from-indigo-500 hover:to-indigo-500 transition-all duration-300 shadow-lg shadow-indigo-500/25">Get Started <ArrowRight className="w-5 h-5" /></Link>
             </div>
           </motion.div>
         </div>

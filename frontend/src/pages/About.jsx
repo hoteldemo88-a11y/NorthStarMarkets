@@ -1,6 +1,44 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { Shield, Cookie, AlertTriangle, FileText } from 'lucide-react'
+import { Shield, Cookie, AlertTriangle, FileText, Globe, TrendingUp, Target } from 'lucide-react'
+
+const aboutContent = {
+  title: 'About North Star Markets',
+  sections: [
+    {
+      title: 'About Us',
+      content: `North Star Markets is a global financial markets platform focused on providing market insights, research, and access to key international trading sectors including currencies, commodities, metals, and energy markets.
+
+Our objective is to help traders and market participants better understand global financial markets and the economic forces that influence price movements across major asset classes.
+
+Financial markets are driven by a wide range of factors including macroeconomic data, central bank policy decisions, geopolitical developments, global supply and demand dynamics, and investor sentiment. North Star Markets highlights these developments and the markets most affected by them.
+
+Through our platform, users can explore key global instruments including major currency pairs, precious and industrial metals, energy benchmarks such as crude oil and natural gas, and widely traded agricultural commodities.
+
+Our focus is on market transparency, accessibility, and delivering a clear overview of the financial markets that play a critical role in the global economy.`
+    },
+    {
+      title: 'Global Market Coverage',
+      content: `North Star Markets covers a wide range of globally traded financial instruments including:
+
+Currencies – major global forex pairs such as EUR/USD, GBP/USD, USD/JPY and USD/CHF.
+
+Metals – widely traded precious and industrial metals including gold, silver and copper.
+
+Energy – key global energy benchmarks including Brent crude oil, WTI crude oil and natural gas.
+
+Agricultural commodities – globally traded soft commodities such as orange juice, coffee, cocoa, cotton and sugar.
+
+These markets are actively traded by institutions, investors, and producers worldwide due to their importance within the global economy.`
+    },
+    {
+      title: 'Our Approach',
+      content: `North Star Markets focuses on highlighting the markets and economic developments that shape global financial activity. By providing an overview of key sectors including currencies, commodities, metals and energy markets, we aim to offer a structured view of the forces driving global market movements.
+
+Our platform is designed to provide clear access to major financial markets and the information that influences them.`
+    }
+  ]
+}
 
 const policies = {
   privacy: {
@@ -132,17 +170,83 @@ If you have any questions regarding these Terms and Conditions, please contact N
 }
 
 export default function About() {
-  const [activeTab, setActiveTab] = useState('privacy')
+  const [activeTab, setActiveTab] = useState('about')
 
   const tabs = [
+    { id: 'about', label: 'About Us' },
     { id: 'privacy', label: 'Privacy Policy' },
     { id: 'cookie', label: 'Cookie Policy' },
     { id: 'risk', label: 'Risk Disclosure' },
     { id: 'terms', label: 'Terms & Conditions' }
   ]
 
-  const activePolicy = policies[activeTab]
-  const Icon = activePolicy.icon
+  const renderContent = () => {
+    if (activeTab === 'about') {
+      return (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+        >
+          {aboutContent.sections.map((section, idx) => (
+            <div key={idx} className="mb-8">
+              <h2 className="text-2xl font-bold text-white mb-4">{section.title}</h2>
+              {section.content.split('\n\n').map((paragraph, pIdx) => (
+                <p key={pIdx} className="text-gray-300 leading-relaxed mb-4">{paragraph}</p>
+              ))}
+            </div>
+          ))}
+        </motion.div>
+      )
+    }
+
+    const activePolicy = policies[activeTab]
+    const Icon = activePolicy.icon
+
+    return (
+      <motion.div
+        key={activeTab}
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+      >
+        <div className="flex items-center gap-3 mb-6">
+          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-500 to-cyan-500 flex items-center justify-center">
+            <Icon className="w-6 h-6 text-white" />
+          </div>
+          <h2 className="text-2xl font-bold text-white">{activePolicy.title}</h2>
+        </div>
+        <div className="prose prose-invert max-w-none">
+          {activePolicy.content.split('\n\n').map((paragraph, idx) => {
+            if (paragraph.match(/^\d+\.\s/)) {
+              const [title, ...rest] = paragraph.split('\n')
+              return (
+                <div key={idx} className="mt-6">
+                  <h3 className="text-lg font-semibold text-white mb-2">{title}</h3>
+                  {rest.map((line, i) => (
+                    <p key={i} className="text-gray-300 leading-relaxed mb-2">{line}</p>
+                  ))}
+                </div>
+              )
+            }
+            if (paragraph.includes(':') && !paragraph.match(/^\d+\./)) {
+              const [title, ...rest] = paragraph.split(':')
+              return (
+                <div key={idx} className="mt-4">
+                  <h3 className="text-lg font-semibold text-white mb-1">{title}:</h3>
+                  {rest.length > 0 && <p className="text-gray-300 leading-relaxed">{rest.join(':')}</p>}
+                </div>
+              )
+            }
+            return <p key={idx} className="text-gray-300 leading-relaxed mb-4">{paragraph}</p>
+          })}
+        </div>
+      </motion.div>
+    )
+  }
+
+  const getTitle = () => {
+    if (activeTab === 'about') return 'About Us'
+    return 'Legal Policies'
+  }
 
   return (
     <div className="bg-[#0a0a0f] w-full max-w-full overflow-x-hidden">
@@ -153,8 +257,8 @@ export default function About() {
         </div>
         <div className="relative z-10 max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 text-center">
           <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} className="max-w-3xl mx-auto">
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 text-white">Legal <span className="bg-gradient-to-r from-indigo-400 via-cyan-400 to-emerald-400 bg-clip-text text-transparent">Policies</span></h1>
-            <p className="text-xl text-gray-300">Important information about our practices and terms</p>
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 text-white">{getTitle()}</h1>
+            <p className="text-xl text-gray-300">{activeTab === 'about' ? 'Learn more about North Star Markets' : 'Important information about our practices and terms'}</p>
           </motion.div>
         </div>
       </section>
@@ -177,44 +281,9 @@ export default function About() {
             ))}
           </div>
 
-          <motion.div
-            key={activeTab}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="bg-[#12121a] border border-white/[0.08] rounded-2xl p-8"
-          >
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-500 to-cyan-500 flex items-center justify-center">
-                <Icon className="w-6 h-6 text-white" />
-              </div>
-              <h2 className="text-2xl font-bold text-white">{activePolicy.title}</h2>
-            </div>
-            <div className="prose prose-invert max-w-none">
-              {activePolicy.content.split('\n\n').map((paragraph, idx) => {
-                if (paragraph.match(/^\d+\.\s/)) {
-                  const [title, ...rest] = paragraph.split('\n')
-                  return (
-                    <div key={idx} className="mt-6">
-                      <h3 className="text-lg font-semibold text-white mb-2">{title}</h3>
-                      {rest.map((line, i) => (
-                        <p key={i} className="text-gray-300 leading-relaxed mb-2">{line}</p>
-                      ))}
-                    </div>
-                  )
-                }
-                if (paragraph.includes(':')) {
-                  const [title, ...rest] = paragraph.split(':')
-                  return (
-                    <div key={idx} className="mt-4">
-                      <h3 className="text-lg font-semibold text-white mb-1">{title}:</h3>
-                      {rest.length > 0 && <p className="text-gray-300 leading-relaxed">{rest.join(':')}</p>}
-                    </div>
-                  )
-                }
-                return <p key={idx} className="text-gray-300 leading-relaxed mb-4">{paragraph}</p>
-              })}
-            </div>
-          </motion.div>
+          <div className="bg-[#12121a] border border-white/[0.08] rounded-2xl p-8">
+            {renderContent()}
+          </div>
         </div>
       </section>
     </div>

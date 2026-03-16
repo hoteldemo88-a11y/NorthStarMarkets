@@ -37,7 +37,7 @@ export default function Footer() {
           <div className="min-w-0">
             <h4 className="text-white font-semibold mb-3">Company</h4>
             <ul className="space-y-2">
-              <li><Link to="/our-mission" className="text-gray-300 text-sm hover:text-white transition-colors">Our Mission</Link></li>
+              <li><Link to="/our-goal" className="text-gray-300 text-sm hover:text-white transition-colors">Our Mission</Link></li>
               <li><Link to="/about" className="text-gray-300 text-sm hover:text-white transition-colors">About Us</Link></li>
               <li><Link to="/careers" className="text-gray-300 text-sm hover:text-white transition-colors">Careers</Link></li>
               <li><Link to="/contact" className="text-gray-300 text-sm hover:text-white transition-colors">Contact</Link></li>
@@ -48,10 +48,10 @@ export default function Footer() {
             <h4 className="text-white font-semibold mb-3">Trading</h4>
             <ul className="space-y-2">
               <li><Link to="/markets" className="text-gray-300 text-sm hover:text-white transition-colors">Markets</Link></li>
-              <li><Link to="/markets#currencies" className="text-gray-300 text-sm hover:text-white transition-colors">Currencies</Link></li>
-              <li><Link to="/markets#commodities" className="text-gray-300 text-sm hover:text-white transition-colors">Commodities</Link></li>
-              <li><Link to="/markets#metals" className="text-gray-300 text-sm hover:text-white transition-colors">Metals</Link></li>
-              <li><Link to="/markets#energy" className="text-gray-300 text-sm hover:text-white transition-colors">Energy</Link></li>
+              <li><Link to="/markets/currencies" className="text-gray-300 text-sm hover:text-white transition-colors">Currencies</Link></li>
+              <li><Link to="/markets/agricultural" className="text-gray-300 text-sm hover:text-white transition-colors">Commodities</Link></li>
+              <li><Link to="/markets/metals" className="text-gray-300 text-sm hover:text-white transition-colors">Metals</Link></li>
+              <li><Link to="/markets/energy" className="text-gray-300 text-sm hover:text-white transition-colors">Energy</Link></li>
             </ul>
           </div>
 
@@ -77,10 +77,10 @@ export default function Footer() {
         <div className="mt-8 pt-6 border-t border-white/[0.08] flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-gray-300 text-sm">© {new Date().getFullYear()} North Star Markets. All rights reserved.</p>
           <div className="flex flex-wrap justify-center gap-4 sm:gap-6">
-            <Link to="/about" className="text-gray-300 text-sm hover:text-white transition-colors">Privacy Policy</Link>
-            <Link to="/about" className="text-gray-300 text-sm hover:text-white transition-colors">Cookie Policy</Link>
-            <Link to="/about" className="text-gray-300 text-sm hover:text-white transition-colors">Risk Disclosure</Link>
-            <Link to="/about" className="text-gray-300 text-sm hover:text-white transition-colors">Terms & Conditions</Link>
+            <Link to="/about" onClick={() => window.scrollTo(0, 0)} className="text-gray-300 text-sm hover:text-white transition-colors">Privacy Policy</Link>
+            <Link to="/about" onClick={() => window.scrollTo(0, 0)} className="text-gray-300 text-sm hover:text-white transition-colors">Cookie Policy</Link>
+            <Link to="/about" onClick={() => window.scrollTo(0, 0)} className="text-gray-300 text-sm hover:text-white transition-colors">Risk Disclosure</Link>
+            <Link to="/about" onClick={() => window.scrollTo(0, 0)} className="text-gray-300 text-sm hover:text-white transition-colors">Terms & Conditions</Link>
           </div>
         </div>
 

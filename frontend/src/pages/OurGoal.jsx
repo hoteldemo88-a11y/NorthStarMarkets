@@ -1,31 +1,87 @@
+import { useState, useEffect, useRef } from 'react'
 import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
-import { Target, TrendingUp, Users, Globe, Award, ArrowRight, Shield, Heart, Lightbulb, Sparkles, Building2, BarChart3 } from 'lucide-react'
+import { Target, Globe, TrendingUp, ArrowRight, Shield, Users, BarChart3, Zap, Award } from 'lucide-react'
+
+const missionContent = `North Star Markets is focused on providing clear access to global financial markets and the economic developments that influence them. Our goal is to highlight key sectors of the global economy including currencies, commodities, metals and energy markets.
+
+Financial markets move in response to macroeconomic data, central bank policy decisions, geopolitical developments and global supply and demand dynamics. By covering these markets and the forces that influence them, North Star Markets aims to provide traders with a structured overview of global market activity.
+
+Through a focus on transparency, market awareness and global financial coverage, our mission is to help traders stay informed about the markets that drive the world economy.`
 
 const stats = [
-  { value: '+200%', label: 'Conversion rate increased' },
-  { value: '+26K', label: 'Happy customers' },
-  { value: '+40M', label: 'Amount of investments in 2023' },
+  { value: 200, suffix: '%', label: 'Platform Growth', prefix: '+' },
+  { value: 26, suffix: 'K+', label: 'Global Users', prefix: '' },
+  { value: 40, suffix: 'M+', prefix: '$', label: 'Market Activity in 2025', decimals: 0 },
 ]
 
-const cultureHighlights = [
-  { value: '15K+', label: 'Customers' },
-  { value: '2023', label: 'Acquired' },
+function Counter({ value, suffix, prefix, label, delay, decimals = 0 }) {
+  const [count, setCount] = useState(0)
+  const ref = useRef(null)
+  const [isVisible, setIsVisible] = useState(false)
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && !isVisible) {
+          setIsVisible(true)
+        }
+      },
+      { threshold: 0.3 }
+    )
+    if (ref.current) observer.observe(ref.current)
+    return () => observer.disconnect()
+  }, [isVisible])
+
+  useEffect(() => {
+    if (!isVisible) return
+    const timer = setTimeout(() => {
+      let start = 0
+      const end = value
+      const duration = 2000
+      const increment = end / (duration / 16)
+      const timer = setInterval(() => {
+        start += increment
+        if (start >= end) {
+          setCount(end)
+          clearInterval(timer)
+        } else {
+          setCount(start)
+        }
+      }, 16)
+      return () => clearInterval(timer)
+    }, delay)
+    return () => clearTimeout(timer)
+  }, [value, delay, isVisible])
+
+  return (
+    <div ref={ref} className="text-center">
+      <div className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-indigo-400 via-cyan-400 to-emerald-400 bg-clip-text text-transparent mb-2">
+        {prefix}{count.toFixed(decimals)}{suffix}
+      </div>
+      <div className="text-xs text-gray-300">{label}</div>
+    </div>
+  )
+}
+
+const highlights = [
+  { icon: Globe, title: 'Global Market Coverage', description: 'Access to major currency pairs, commodities, metals, and energy markets worldwide.' },
+  { icon: TrendingUp, title: 'Market Insights', description: 'Comprehensive analysis of economic developments and market-moving events.' },
+  { icon: Target, title: 'Transparency', description: 'Clear and unbiased coverage of global financial markets and their movements.' },
 ]
 
-const coreValues = [
-  { icon: TrendingUp, title: 'Continuous Improvement', description: 'Driving excellence through small, incremental changes, fostering continuous growth.' },
-  { icon: Target, title: 'Results-Driven Mindset', description: 'Setting clear goals and tracking progress, we approach our work with a determined focus on achieving impactful results.' },
-  { icon: Shield, title: 'Ownership and Accountability', description: 'Ownership and accountability are our values. Each member takes pride in their work, contributing to our collective success.' },
-  { icon: Users, title: 'Diversity and Inclusion', description: 'Diversity is our strength. We cultivate an inclusive culture, valuing and empowering individuals from diverse backgrounds.' },
-  { icon: Sparkles, title: 'Fun and Celebration', description: 'While serious about our work, we know how to have fun. Celebrating milestones and achievements is woven into our positive and enjoyable workplace culture.' },
+const whyChooseUs = [
+  { icon: Shield, title: 'Secure Trading', description: 'Industry-leading security measures to protect your assets and personal information.' },
+  { icon: Zap, title: 'Fast Execution', description: 'Lightning-fast order execution with minimal slippage and competitive spreads.' },
+  { icon: Users, title: 'Expert Support', description: '24/7 customer support from experienced professionals dedicated to your success.' },
+  { icon: Award, title: 'Regulated Platform', description: 'Fully compliant with international financial regulations and standards.' },
 ]
 
-const diversityPoints = [
-  { title: 'Equal Opportunities', description: 'We ensure equal opportunities for all to thrive. Merit and talent are the driving forces in our commitment to a level playing field for career advancement.' },
-  { title: 'Diverse Leadership', description: 'Our leadership embodies diversity for innovative decision-making. Representing varied backgrounds and experiences, they steer us towards excellence.' },
-  { title: 'Open Communication', description: 'Fostering open and honest communication, we value every voice. Actively seeking diverse perspectives enriches our discussions, decision-making, and problem-solving approaches.' },
-  { title: 'Celebrating Differences', description: 'Differences aren\'t just tolerated – they\'re celebrated. Recognising and appreciating each individual\'s uniqueness, we cultivate an environment where diversity is a source of strength.' },
+const tradingFeatures = [
+  { title: 'Advanced Charts', description: 'Professional-grade charting tools with technical indicators and drawing tools.' },
+  { title: 'Multiple Assets', description: 'Trade currencies, commodities, metals, and energy all from a single platform.' },
+  { title: 'Real-Time Data', description: 'Live market prices and news to keep you informed at all times.' },
+  { title: 'Risk Management', description: 'Stop-loss, take-profit, and other tools to manage your risk effectively.' },
 ]
 
 export default function OurGoal() {
@@ -39,28 +95,26 @@ export default function OurGoal() {
         </div>
         <div className="relative z-10 max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 text-center">
           <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} className="max-w-3xl mx-auto">
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 text-white">Our <span className="bg-gradient-to-r from-indigo-400 via-cyan-400 to-emerald-400 bg-clip-text text-transparent">Goal</span></h1>
-            <p className="text-xl text-gray-300">Building the future of trading.</p>
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 text-white">Our <span className="bg-gradient-to-r from-indigo-400 via-cyan-400 to-emerald-400 bg-clip-text text-transparent">Mission</span></h1>
+            <p className="text-xl text-gray-300">Empowering traders with global market insights.</p>
           </motion.div>
         </div>
       </section>
 
-      {/* Our Goal */}
+      {/* Our Mission */}
       <section className="py-20 bg-[#0c0c10]">
         <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <motion.div initial={{ opacity: 0, x: -30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }}>
-              <h2 className="text-3xl md:text-4xl font-bold mb-6 text-white">Our <span className="bg-gradient-to-r from-indigo-400 via-cyan-400 to-emerald-400 bg-clip-text text-transparent">Goal</span></h2>
-              <p className="text-gray-300 text-lg leading-relaxed mb-4">Our main goal is to provide a pleasant experience to our customers by delivering products through a smooth and easy trading process.</p>
-              <p className="text-gray-300 text-lg leading-relaxed">With the use of technology and a specialized team, our customers will be able to grow and access new markets around the world.</p>
+              <h2 className="text-3xl md:text-4xl font-bold mb-6 text-white">Our <span className="bg-gradient-to-r from-indigo-400 via-cyan-400 to-emerald-400 bg-clip-text text-transparent">Mission</span></h2>
+              {missionContent.split('\n\n').map((paragraph, i) => (
+                <p key={i} className="text-gray-300 text-lg leading-relaxed mb-4">{paragraph}</p>
+              ))}
             </motion.div>
             <motion.div initial={{ opacity: 0, x: 30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} className="bg-[#12121a] border border-white/[0.08] rounded-2xl p-8">
               <div className="grid grid-cols-3 gap-6">
                 {stats.map((stat, i) => (
-                  <div key={stat.label} className="text-center">
-                    <div className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-indigo-400 via-cyan-400 to-emerald-400 bg-clip-text text-transparent mb-2">{stat.value}</div>
-                    <div className="text-xs text-gray-300">{stat.label}</div>
-                  </div>
+                  <Counter key={i} {...stat} delay={i * 200} />
                 ))}
               </div>
             </motion.div>
@@ -68,27 +122,18 @@ export default function OurGoal() {
         </div>
       </section>
 
-      {/* Our Culture */}
+      {/* Highlights */}
       <section className="py-20">
         <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6">
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-white">Our <span className="bg-gradient-to-r from-indigo-400 via-cyan-400 to-emerald-400 bg-clip-text text-transparent">Culture</span></h2>
-            <p className="text-gray-300 max-w-2xl mx-auto">Our company culture is the heartbeat of our organisation. Rooted in the principles of continuous improvement, teamwork, and excellence.</p>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-white">What We <span className="bg-gradient-to-r from-indigo-400 via-cyan-400 to-emerald-400 bg-clip-text text-transparent">Offer</span></h2>
+            <p className="text-gray-300 max-w-2xl mx-auto">Comprehensive coverage of global financial markets.</p>
           </motion.div>
 
-          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="flex flex-wrap justify-center gap-8 mb-12">
-            {cultureHighlights.map((item, i) => (
-              <div key={item.label} className="text-center">
-                <div className="text-2xl md:text-3xl font-bold text-white">{item.value}</div>
-                <div className="text-sm text-gray-300">{item.label}</div>
-              </div>
-            ))}
-          </motion.div>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {coreValues.map((value, i) => (
+          <div className="grid md:grid-cols-3 gap-6">
+            {highlights.map((item, i) => (
               <motion.div 
-                key={value.title} 
+                key={item.title} 
                 initial={{ opacity: 0, y: 20 }} 
                 whileInView={{ opacity: 1, y: 0 }} 
                 viewport={{ once: true }} 
@@ -96,53 +141,96 @@ export default function OurGoal() {
                 className="bg-[#12121a] border border-white/[0.08] rounded-2xl p-6 hover:border-indigo-500/30 transition-colors"
               >
                 <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-500 to-cyan-500 flex items-center justify-center mb-4">
-                  <value.icon className="w-6 h-6 text-white" />
+                  <item.icon className="w-6 h-6 text-white" />
                 </div>
-                <h3 className="text-lg font-semibold mb-2 text-white">{value.title}</h3>
-                <p className="text-gray-300 text-sm leading-relaxed">{value.description}</p>
+                <h3 className="text-lg font-semibold mb-2 text-white">{item.title}</h3>
+                <p className="text-gray-300 text-sm leading-relaxed">{item.description}</p>
               </motion.div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Our Core Values */}
+      {/* Why Choose Us */}
       <section className="py-20 bg-[#0c0c10]">
         <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6">
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-white">Our Core <span className="bg-gradient-to-r from-indigo-400 via-cyan-400 to-emerald-400 bg-clip-text text-transparent">Values</span></h2>
-            <p className="text-gray-300 max-w-2xl mx-auto">Our core values are the bedrock of our identity, shaping our culture and defining the way we work.</p>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* Diversity & Inclusion */}
-      <section className="py-20">
-        <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6">
-          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-white">Diversity & <span className="bg-gradient-to-r from-indigo-400 via-cyan-400 to-emerald-400 bg-clip-text text-transparent">Inclusion</span></h2>
-            <p className="text-gray-300 max-w-2xl mx-auto">Building Strength Through Differences. We recognise that our strength lies in our diversity.</p>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-white">Why Choose <span className="bg-gradient-to-r from-indigo-400 via-cyan-400 to-emerald-400 bg-clip-text text-transparent">North Star Markets</span></h2>
+            <p className="text-gray-300 max-w-2xl mx-auto">Experience the advantages of trading with a leading global platform.</p>
           </motion.div>
 
-          <div className="grid md:grid-cols-2 gap-6">
-            {diversityPoints.map((point, i) => (
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {whyChooseUs.map((item, i) => (
               <motion.div 
-                key={point.title} 
+                key={item.title} 
                 initial={{ opacity: 0, y: 20 }} 
                 whileInView={{ opacity: 1, y: 0 }} 
                 viewport={{ once: true }} 
                 transition={{ delay: i * 0.1 }}
-                className="bg-[#12121a] border border-white/[0.08] rounded-2xl p-6"
+                className="bg-[#12121a] border border-white/[0.08] rounded-2xl p-6 hover:border-indigo-500/30 transition-colors"
               >
-                <div className="flex items-start gap-4">
-                  <div className="w-10 h-10 rounded-lg bg-indigo-500/10 flex items-center justify-center flex-shrink-0">
-                    <Award className="w-5 h-5 text-indigo-400" />
-                  </div>
-                  <div>
-                    <h3 className="text-lg font-semibold mb-2 text-white">{point.title}</h3>
-                    <p className="text-gray-300 text-sm leading-relaxed">{point.description}</p>
-                  </div>
+                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-500 to-cyan-500 flex items-center justify-center mb-4">
+                  <item.icon className="w-6 h-6 text-white" />
                 </div>
+                <h3 className="text-lg font-semibold mb-2 text-white">{item.title}</h3>
+                <p className="text-gray-300 text-sm leading-relaxed">{item.description}</p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Trading Features */}
+      <section className="py-20">
+        <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6">
+          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-white">Trading <span className="bg-gradient-to-r from-indigo-400 via-cyan-400 to-emerald-400 bg-clip-text text-transparent">Features</span></h2>
+            <p className="text-gray-300 max-w-2xl mx-auto">Powerful tools designed for serious traders.</p>
+          </motion.div>
+
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {tradingFeatures.map((feature, i) => (
+              <motion.div 
+                key={feature.title} 
+                initial={{ opacity: 0, y: 20 }} 
+                whileInView={{ opacity: 1, y: 0 }} 
+                viewport={{ once: true }} 
+                transition={{ delay: i * 0.1 }}
+                className="bg-[#12121a] border border-white/[0.08] rounded-2xl p-6 hover:border-indigo-500/30 transition-colors"
+              >
+                <BarChart3 className="w-8 h-8 text-cyan-400 mb-4" />
+                <h3 className="text-lg font-semibold mb-2 text-white">{feature.title}</h3>
+                <p className="text-gray-300 text-sm leading-relaxed">{feature.description}</p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Global Reach */}
+      <section className="py-20 bg-[#0c0c10]">
+        <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6">
+          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-white">Global <span className="bg-gradient-to-r from-indigo-400 via-cyan-400 to-emerald-400 bg-clip-text text-transparent">Reach</span></h2>
+            <p className="text-gray-300 max-w-2xl mx-auto">Serving traders across the globe.</p>
+          </motion.div>
+
+          <div className="grid sm:grid-cols-3 gap-6">
+            {[
+              { value: '180+', label: 'Countries' },
+              { value: '160+', label: 'Trading Instruments' },
+              { value: '24/7', label: 'Customer Support' },
+            ].map((item, i) => (
+              <motion.div 
+                key={i}
+                initial={{ opacity: 0, y: 20 }} 
+                whileInView={{ opacity: 1, y: 0 }} 
+                viewport={{ once: true }} 
+                transition={{ delay: i * 0.1 }}
+                className="bg-[#12121a] border border-white/[0.08] rounded-2xl p-8 text-center"
+              >
+                <div className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-indigo-400 via-cyan-400 to-emerald-400 bg-clip-text text-transparent mb-2">{item.value}</div>
+                <div className="text-gray-300">{item.label}</div>
               </motion.div>
             ))}
           </div>
@@ -150,14 +238,15 @@ export default function OurGoal() {
       </section>
 
       {/* CTA */}
-      <section className="py-20 bg-[#0c0c10] relative overflow-hidden">
+      <section className="py-20 relative overflow-hidden">
         <div className="absolute inset-0"><div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-r from-indigo-600/15 to-cyan-500/15 rounded-full blur-[100px]" /></div>
         <div className="relative z-10 max-w-4xl mx-auto px-3 sm:px-4 lg:px-6 text-center">
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
             <h2 className="text-3xl md:text-4xl font-bold mb-5 text-white">Ready to Start Trading?</h2>
             <p className="text-lg text-gray-300 mb-8">Join thousands of traders who trust North Star Markets.</p>
             <div className="flex flex-wrap justify-center gap-4">
-              <Link to="/contact" className="inline-flex items-center gap-2 px-8 py-4 text-base font-semibold text-white bg-gradient-to-r from-indigo-600 to-indigo-600 rounded-xl hover:from-indigo-500 hover:to-indigo-500 transition-all duration-300 shadow-lg shadow-indigo-500/25">Get Started <ArrowRight className="w-5 h-5" /></Link>
+              <Link to="/open-account" className="inline-flex items-center gap-2 px-8 py-4 text-base font-semibold text-white bg-gradient-to-r from-indigo-600 to-cyan-500 rounded-xl hover:from-indigo-500 hover:to-cyan-400 transition-all duration-300 shadow-lg shadow-indigo-500/25">Open Account <ArrowRight className="w-5 h-5" /></Link>
+              <Link to="/markets" className="inline-flex items-center gap-2 px-8 py-4 text-base font-semibold text-white bg-white/[0.05] border border-white/10 rounded-xl hover:bg-white/[0.1] transition-all">Explore Markets</Link>
             </div>
           </motion.div>
         </div>
