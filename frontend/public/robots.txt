@@ -1,0 +1,16 @@
+# Robots.txt for North Star Markets
+# https://www.northstarmarketsint.com
+
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://northstarmarketsint.com/sitemap.xml
+
+# Crawl-delay
+Crawl-delay: 1
+
+# Disallow admin/private areas
+Disallow: /admin/
+Disallow: /dashboard/
+Disallow: /api/

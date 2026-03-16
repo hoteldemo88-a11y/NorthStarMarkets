@@ -19,7 +19,7 @@ export default function Login() {
     setLoading(true)
     try {
       const user = await login(formData)
-      navigate(user.role === 'admin' ? '/admin/dashboard' : '/dashboard')
+      navigate(user?.role === 'admin' ? '/admin/dashboard' : '/dashboard')
     } catch (err) {
       setError(err.message)
     } finally {
