@@ -5,7 +5,7 @@ import { Mail, Phone, MapPin, Send, Twitter, Facebook, Instagram, Linkedin, Chec
 const contactInfo = [
   { icon: Mail, title: 'Email Support', details: 'Info@northstarmarketsint.com', description: 'Response within 24 hours' },
   { icon: Phone, title: 'Phone Support', details: '+1 888 511 0840', description: 'Available during business hours' },
-  { icon: MapPin, title: 'Headquarters', details: 'Singapore', description: 'Asia Pacific' },
+  { icon: MapPin, title: 'Headquarters', details: 'Raffles Place, Singapore', description: 'Asia Pacific' },
 ]
 
 const socialLinks = [
@@ -137,9 +137,16 @@ export default function Contact() {
             <h2 className="text-3xl md:text-4xl font-bold mb-4 text-white">Our <span className="bg-gradient-to-r from-indigo-400 via-cyan-400 to-emerald-400 bg-clip-text text-transparent">Location</span></h2>
           </motion.div>
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="bg-[#12121a] border border-white/[0.08] rounded-2xl overflow-hidden">
-            <div className="aspect-[21/9] bg-gradient-to-br from-indigo-500/10 to-cyan-500/10 flex items-center justify-center">
-              <div className="text-center"><MapPin className="w-12 h-12 text-indigo-400 mx-auto mb-3" /><p className="text-sm text-gray-300">Interactive map coming soon</p></div>
-            </div>
+            <iframe 
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d997.1883571890262!2d103.8504501736225!3d1.2837606977725767!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31a1902753571b3f%3A0x3915d73311c9a1a5!2sRaffles%20Place%2C%20Singapore!5e0!3m2!1sen!2sus!4v1700000000000!5m2!1sen!2sus" 
+              width="100%" 
+              height="450" 
+              style={{ border: 0 }} 
+              allowFullScreen="" 
+              loading="lazy" 
+              referrerPolicy="no-referrer-when-downgrade"
+              className="w-full"
+            />
           </motion.div>
         </div>
       </section>
