@@ -67,8 +67,8 @@ export default function Footer() {
           <div className="min-w-0">
             <h4 className="text-white font-semibold mb-3">Contact</h4>
             <ul className="space-y-2">
-              <li className="flex items-center gap-2 text-gray-300 text-sm break-all"><Mail className="w-3.5 h-3.5 flex-shrink-0" />support@northstarmarkets.com</li>
-              <li className="flex items-center gap-2 text-gray-300 text-sm"><Phone className="w-3.5 h-3.5 flex-shrink-0" />+1 (888) 123-4567</li>
+              <li className="flex items-center gap-2 text-gray-300 text-sm break-all"><Mail className="w-3.5 h-3.5 flex-shrink-0" />Info@northstarmarketsint.com</li>
+              <li className="flex items-center gap-2 text-gray-300 text-sm"><Phone className="w-3.5 h-3.5 flex-shrink-0" />+1 888 511 0840</li>
               <li className="flex items-start gap-2 text-gray-300 text-sm"><MapPin className="w-3.5 h-3.5 mt-0.5" />Singapore</li>
             </ul>
           </div>

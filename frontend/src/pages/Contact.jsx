@@ -3,9 +3,9 @@ import { motion } from 'framer-motion'
 import { Mail, Phone, MapPin, Send, Twitter, Facebook, Instagram, Linkedin, CheckCircle } from 'lucide-react'
 
 const contactInfo = [
-  { icon: Mail, title: 'Email Support', details: 'support@northstarmarkets.com', description: 'Response within 24 hours' },
-  { icon: Phone, title: 'Phone Support', details: '+1 (888) 123-4567', description: 'Available during business hours' },
-  { icon: MapPin, title: 'Headquarters', details: 'New York, NY 10001', description: 'United States' },
+  { icon: Mail, title: 'Email Support', details: 'Info@northstarmarketsint.com', description: 'Response within 24 hours' },
+  { icon: Phone, title: 'Phone Support', details: '+1 888 511 0840', description: 'Available during business hours' },
+  { icon: MapPin, title: 'Headquarters', details: 'Singapore', description: 'Asia Pacific' },
 ]
 
 const socialLinks = [
