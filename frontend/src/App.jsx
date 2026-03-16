@@ -23,10 +23,12 @@ import AdminActivityLogs from './pages/AdminActivityLogs'
 import AdminSettings from './pages/AdminSettings'
 import ProtectedRoute from './components/ProtectedRoute'
 import AdminRoute from './components/AdminRoute'
+import ErrorBoundary from './components/ErrorBoundary'
 
 function App() {
   return (
-    <Router>
+    <ErrorBoundary>
+      <Router>
       <Routes>
         <Route path="/" element={<MainLayout />}>
           <Route index element={<Home />} />
@@ -59,6 +61,7 @@ function App() {
         </Route>
       </Routes>
     </Router>
+    </ErrorBoundary>
   )
 }
 
