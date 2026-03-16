@@ -149,8 +149,8 @@ export default function Home() {
               </div>
 
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6 leading-tight text-white">
-                Trade the Future with<br />
-                <span className="bg-gradient-to-r from-indigo-400 via-cyan-400 to-emerald-400 bg-clip-text text-transparent">North Star Markets</span>
+                North Star Markets<br />
+                <span className="bg-gradient-to-r from-indigo-400 via-cyan-400 to-emerald-400 bg-clip-text text-transparent">Global Financial Markets & Trading Insights</span>
               </h1>
 
               <p className="text-lg text-gray-300 mb-8 max-w-lg">Experience next-generation trading with institutional-grade tools, lightning-fast execution, and unmatched security.</p>

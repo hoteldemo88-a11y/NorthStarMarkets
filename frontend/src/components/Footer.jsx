@@ -21,7 +21,7 @@ export default function Footer() {
               </div>
               <span className="text-xl font-bold bg-gradient-to-r from-indigo-400 via-cyan-400 to-emerald-400 bg-clip-text text-transparent">North Star Markets</span>
             </Link>
-            <p className="text-gray-300 text-sm mb-4 max-w-xs leading-relaxed">Trade with confidence on a secure and fast platform.</p>
+            <p className="text-gray-300 text-sm mb-4 max-w-xs leading-relaxed">North Star Markets provides global market insights, trading research, and financial market access to clients worldwide.</p>
             <div className="flex flex-col gap-2 mb-4 max-w-xs">
               <Link to="/open-account" className="w-full text-center px-4 py-2.5 text-sm font-semibold text-white bg-gradient-to-r from-indigo-600 to-cyan-500 rounded-lg hover:from-indigo-500 hover:to-cyan-400 transition-all">Open Account</Link>
             </div>
@@ -69,7 +69,7 @@ export default function Footer() {
             <ul className="space-y-2">
               <li className="flex items-center gap-2 text-gray-300 text-sm break-all"><Mail className="w-3.5 h-3.5 flex-shrink-0" />support@northstarmarkets.com</li>
               <li className="flex items-center gap-2 text-gray-300 text-sm"><Phone className="w-3.5 h-3.5 flex-shrink-0" />+1 (888) 123-4567</li>
-              <li className="flex items-start gap-2 text-gray-300 text-sm"><MapPin className="w-3.5 h-3.5 mt-0.5" />Global</li>
+              <li className="flex items-start gap-2 text-gray-300 text-sm"><MapPin className="w-3.5 h-3.5 mt-0.5" />Singapore</li>
             </ul>
           </div>
         </div>
@@ -77,9 +77,15 @@ export default function Footer() {
         <div className="mt-8 pt-6 border-t border-white/[0.08] flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-gray-300 text-sm">© {new Date().getFullYear()} North Star Markets. All rights reserved.</p>
           <div className="flex flex-wrap justify-center gap-4 sm:gap-6">
-            <Link to="/about" className="text-gray-300 text-sm hover:text-white transition-colors">Terms</Link>
-            <Link to="/about" className="text-gray-300 text-sm hover:text-white transition-colors">Privacy</Link>
+            <Link to="/about" className="text-gray-300 text-sm hover:text-white transition-colors">Privacy Policy</Link>
+            <Link to="/about" className="text-gray-300 text-sm hover:text-white transition-colors">Cookie Policy</Link>
+            <Link to="/about" className="text-gray-300 text-sm hover:text-white transition-colors">Risk Disclosure</Link>
+            <Link to="/about" className="text-gray-300 text-sm hover:text-white transition-colors">Terms & Conditions</Link>
           </div>
+        </div>
+
+        <div className="mt-4 pt-4 border-t border-white/[0.08]">
+          <p className="text-gray-400 text-xs text-center">Risk Disclosure: Trading financial markets involves significant risk and may not be suitable for all individuals. Past performance is not indicative of future results.</p>
         </div>
       </div>
     </footer>

@@ -257,9 +257,9 @@ export default function TradingHero() {
               transition={{ delay: 0.3 }}
               className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-bold text-white mb-4 lg:mb-6 leading-tight"
             >
-              Trade the Future with{' '}
+              North Star Markets{' '}
               <span className="bg-gradient-to-r from-indigo-400 via-cyan-400 via-60% to-emerald-400 bg-clip-text text-transparent">
-                North Star
+                Global Financial Markets & Trading Insights
               </span>
             </motion.h1>
             
