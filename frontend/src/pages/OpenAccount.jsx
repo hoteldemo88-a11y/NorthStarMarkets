@@ -36,6 +36,7 @@ const stepConfig = [
   const initialData = {
   username: '',
   email: '',
+  confirmEmail: '',
   password: '',
   confirmPassword: '',
   firstName: '',
@@ -175,6 +176,7 @@ export default function OpenAccount() {
     if (step === 0) {
       if (!formData.username.trim()) nextErrors.username = 'Username is required'
       if (!/^\S+@\S+\.\S+$/.test(formData.email)) nextErrors.email = 'Enter a valid email'
+      if (formData.email !== formData.confirmEmail) nextErrors.confirmEmail = 'Emails do not match'
       if ((formData.password || '').length < 8) nextErrors.password = 'Password must be at least 8 characters'
       if (formData.password !== formData.confirmPassword) nextErrors.confirmPassword = 'Passwords do not match'
     }
@@ -296,6 +298,7 @@ export default function OpenAccount() {
                   <div className="grid sm:grid-cols-2 gap-4">
                     <InputField icon={FaUser} label="Username" value={formData.username} onChange={(v) => setField('username', v)} error={errors.username} />
                     <InputField icon={FaEnvelope} label="Email" type="email" value={formData.email} onChange={(v) => setField('email', v)} error={errors.email} />
+                    <InputField icon={FaEnvelope} label="Confirm Email" type="email" value={formData.confirmEmail} onChange={(v) => setField('confirmEmail', v)} error={errors.confirmEmail} />
                     <InputField icon={FaLock} label="Password" type="password" value={formData.password} onChange={(v) => setField('password', v)} error={errors.password} className="sm:col-span-2" />
                     <InputField icon={FaLock} label="Confirm Password" type="password" value={formData.confirmPassword} onChange={(v) => setField('confirmPassword', v)} error={errors.confirmPassword} className="sm:col-span-2" />
                   </div>
