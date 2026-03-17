@@ -15,6 +15,7 @@ const transporter = nodemailer.createTransport({
 
 export async function sendPasswordResetEmail(email, resetToken) {
   const resetUrl = `${process.env.FRONTEND_URL || 'http://localhost:5173'}/reset-password/${resetToken}`
+  const logoUrl = process.env.EMAIL_LOGO_URL || 'https://northstarmarkets.com/nortstar.png'
   
   const mailOptions = {
     from: process.env.SMTP_FROM || 'North Star Markets <mailer@northstarmarketsint.com>',
@@ -30,7 +31,7 @@ export async function sendPasswordResetEmail(email, resetToken) {
       <body style="font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 20px; margin: 0;">
         <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
           <div style="background-color: #1a1a2e; color: #ffffff; padding: 30px; text-align: center;">
-            <h1 style="margin: 0; font-size: 24px;">North Star Markets</h1>
+            <img src="${logoUrl}" alt="North Star Markets" style="max-width: 150px; height: auto; margin-bottom: 10px;" />
             <p style="margin: 10px 0 0; font-size: 14px; opacity: 0.8;">Password Reset Request</p>
           </div>
           <div style="padding: 40px 30px;">
