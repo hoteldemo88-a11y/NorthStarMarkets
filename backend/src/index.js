@@ -9,6 +9,7 @@ import { initDatabase } from './config/initDb.js'
 import authRoutes from './routes/auth.routes.js'
 import clientRoutes from './routes/client.routes.js'
 import adminRoutes from './routes/admin.routes.js'
+import passwordRoutes from './routes/password.routes.js'
 import { closeExpiredTrades } from './utils/trades.js'
 
 const __filename = fileURLToPath(import.meta.url)
@@ -31,6 +32,7 @@ app.get('/api/health', (_req, res) => {
 app.use('/api/auth', authRoutes)
 app.use('/api/client', clientRoutes)
 app.use('/api/admin', adminRoutes)
+app.use('/api/password', passwordRoutes)
 
 app.use((err, _req, res, _next) => {
   console.error(err)
