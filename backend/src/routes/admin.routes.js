@@ -139,6 +139,27 @@ router.patch('/users/:id/balance', async (req, res) => {
   return res.json({ message: 'Balance updated' })
 })
 
+router.patch('/users/:id/set-balance', async (req, res) => {
+  const userId = Number(req.params.id)
+  const newBalance = Number(req.body.balance || 0)
+
+  if (!Number.isFinite(newBalance) || newBalance < 0) {
+    return res.status(400).json({ message: 'Valid balance amount required' })
+  }
+
+  const [[client]] = await pool.query('SELECT id, balance FROM users WHERE id = ? AND role = "client" LIMIT 1', [userId])
+  if (!client) {
+    return res.status(404).json({ message: 'Client not found' })
+  }
+
+  const oldBalance = Number(client.balance) || 0
+  const difference = newBalance - oldBalance
+
+  await pool.query('UPDATE users SET balance = ? WHERE id = ?', [newBalance, userId])
+  await logActivity(req.user.id, `Set user(${userId}) balance from ${oldBalance} to ${newBalance}`)
+  return res.json({ message: 'Balance set successfully', newBalance, difference })
+})
+
 router.patch('/users/:id/verify', async (req, res) => {
   const userId = Number(req.params.id)
   const [[user]] = await pool.query('SELECT id, verification_status FROM users WHERE id = ? AND role = "client" LIMIT 1', [userId])
