@@ -11,6 +11,8 @@ import Faq from './pages/Faq'
 import Careers from './pages/Careers'
 import Contact from './pages/Contact'
 import Login from './pages/Login'
+import ForgotPassword from './pages/ForgotPassword'
+import ResetPassword from './pages/ResetPassword'
 import OpenAccount from './pages/OpenAccount'
 import ClientDashboard from './pages/ClientDashboard'
 import ClientKYC from './pages/ClientKYC'
@@ -42,6 +44,8 @@ function App() {
           <Route path="careers" element={<Careers />} />
           <Route path="contact" element={<Contact />} />
           <Route path="login" element={<Login />} />
+          <Route path="forgot-password" element={<ForgotPassword />} />
+          <Route path="reset-password/:token" element={<ResetPassword />} />
           <Route path="open-account" element={<OpenAccount />} />
         </Route>
 
