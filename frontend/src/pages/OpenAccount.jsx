@@ -146,6 +146,8 @@ export default function OpenAccount() {
   const { user, loading: authLoading, register } = useAuth()
   const navigate = useNavigate()
 
+  const progress = useMemo(() => Math.round(((step + 1) / stepConfig.length) * 100), [step])
+
   if (authLoading) {
     return <div className="min-h-screen bg-[#090910] text-white flex items-center justify-center">Loading...</div>
   }
@@ -154,8 +156,6 @@ export default function OpenAccount() {
     navigate(user.role === 'admin' ? '/admin/dashboard' : '/dashboard', { replace: true })
     return null
   }
-
-  const progress = useMemo(() => Math.round(((step + 1) / stepConfig.length) * 100), [step])
   const currentStep = stepConfig[step]
 
   const setField = (name, value) => {
