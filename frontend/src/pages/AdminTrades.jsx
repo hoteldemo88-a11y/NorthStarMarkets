@@ -17,7 +17,7 @@ const commodityTicketMap = {
   'us dollar': 'DXY',
 }
 
-const defaultTrade = { userEmail: '', commodity: 'gold', amount: '1', tradeDate: '', contractExpiry: '', entryPrice: '', status: 'open' }
+const defaultTrade = { userEmail: '', commodity: 'gold', amount: '1', tradeDate: '', contractExpiry: '', entryPrice: '', tickerSymbol: '', strikePrice: '', status: 'open' }
 
 export default function AdminTrades() {
   const [formData, setFormData] = useState(defaultTrade)
@@ -58,7 +58,6 @@ export default function AdminTrades() {
 
   const totalClientBalance = useMemo(() => users.reduce((sum, user) => sum + Number(user.balance), 0), [users])
   const selectedUser = useMemo(() => users.find((user) => user.email === formData.userEmail), [users, formData.userEmail])
-  const ticketSymbol = commodityTicketMap[formData.commodity] || formData.commodity.toUpperCase()
 
   const filteredUsers = useMemo(() => {
     const q = formData.userEmail.trim().toLowerCase()
@@ -83,6 +82,8 @@ export default function AdminTrades() {
         tradeDate: formData.tradeDate,
         contractExpiry: formData.contractExpiry,
         entryPrice: formData.entryPrice,
+        tickerSymbol: formData.tickerSymbol,
+        strikePrice: formData.strikePrice,
       })
       setMessage('Trade created successfully')
       setIsSuccessPopupOpen(true)
@@ -181,9 +182,17 @@ export default function AdminTrades() {
             <Field label="Investment Amount" name="amount" value={formData.amount} onChange={handleChange} />
 
             <div>
-              <label className="text-sm text-gray-300 mb-2 block">Ticket Symbol</label>
-              <div className="w-full px-4 py-2.5 rounded-xl bg-[#0c0c14] border border-white/[0.12] text-cyan-300 font-semibold">{ticketSymbol}</div>
+              <label className="text-sm text-gray-300 mb-2 block">Ticker Symbol</label>
+              <input
+                name="tickerSymbol"
+                value={formData.tickerSymbol}
+                onChange={handleChange}
+                placeholder="e.g., XAUUSD, GCJ26"
+                className="w-full px-4 py-2.5 rounded-xl bg-[#0c0c14] border border-white/[0.12] text-white uppercase"
+              />
             </div>
+
+            <Field label="Strike Price (Optional)" name="strikePrice" value={formData.strikePrice} onChange={handleChange} required={false} />
 
             <Field label="Entry Price (Optional)" name="entryPrice" value={formData.entryPrice} onChange={handleChange} required={false} />
 
@@ -261,7 +270,8 @@ export default function AdminTrades() {
                 <th className="py-3 pr-3">User</th>
                 <th className="py-3 pr-3">Email</th>
                 <th className="py-3 pr-3">Commodity</th>
-                <th className="py-3 pr-3">Ticket</th>
+                <th className="py-3 pr-3">Ticker</th>
+                <th className="py-3 pr-3">Strike</th>
                 <th className="py-3 pr-3">Amount</th>
                 <th className="py-3 pr-3">Entry</th>
                 <th className="py-3 pr-3">Exit</th>
@@ -278,6 +288,7 @@ export default function AdminTrades() {
                   <td className="py-3 pr-3 text-gray-300">{trade.userEmail}</td>
                   <td className="py-3 pr-3 text-white capitalize">{String(trade.symbol || '').toLowerCase()}</td>
                   <td className="py-3 pr-3 text-cyan-300 font-semibold">{trade.ticketSymbol || '-'}</td>
+                  <td className="py-3 pr-3 text-gray-300">{trade.strikePrice ?? '-'}</td>
                   <td className="py-3 pr-3 text-white">{trade.volume}</td>
                   <td className="py-3 pr-3 text-gray-300">{trade.entryPrice ?? '-'}</td>
                   <td className="py-3 pr-3 text-gray-300">{trade.exitPrice ?? '-'}</td>
@@ -317,7 +328,7 @@ export default function AdminTrades() {
               ))}
               {!trades.length && (
                 <tr>
-                  <td colSpan={11} className="py-5 text-center text-gray-400">No trades found</td>
+                  <td colSpan={12} className="py-5 text-center text-gray-400">No trades found</td>
                 </tr>
               )}
             </tbody>

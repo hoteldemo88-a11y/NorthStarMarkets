@@ -127,6 +127,7 @@ function TradingChart({ symbol }) {
     const ws = new WebSocket(`wss://stream.binance.com:9443/ws/${symbol.toLowerCase()}@kline_15m`)
 
     ws.onmessage = (event) => {
+      if (!chartRef.current || !chartContainerRef.current) return
       const data = JSON.parse(event.data)
       const kline = data.k
       
@@ -142,8 +143,8 @@ function TradingChart({ symbol }) {
     }
 
     const handleResize = () => {
-      if (chartContainerRef.current) {
-        chart.applyOptions({ width: chartContainerRef.clientWidth })
+      if (chartContainerRef.current && chartRef.current) {
+        chart.applyOptions({ width: chartContainerRef.current.clientWidth })
       }
     }
 
@@ -152,7 +153,10 @@ function TradingChart({ symbol }) {
     return () => {
       window.removeEventListener('resize', handleResize)
       ws.close()
-      chart.remove()
+      if (chartRef.current) {
+        chartRef.current.remove()
+        chartRef.current = null
+      }
     }
   }, [symbol])
 

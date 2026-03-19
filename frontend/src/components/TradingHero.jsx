@@ -170,6 +170,7 @@ function TradingChart({ symbol }) {
     const ws = new WebSocket(`wss://stream.binance.com:9443/ws/${symbol.toLowerCase()}@kline_15m`)
 
     ws.onmessage = (event) => {
+      if (!chartRef.current || !chartContainerRef.current) return
       const data = JSON.parse(event.data)
       const kline = data.k
       
@@ -185,7 +186,7 @@ function TradingChart({ symbol }) {
     }
 
     const handleResize = () => {
-      if (chartContainerRef.current) {
+      if (chartContainerRef.current && chartRef.current) {
         chart.applyOptions({ width: chartContainerRef.current.clientWidth })
       }
     }
@@ -195,7 +196,10 @@ function TradingChart({ symbol }) {
     return () => {
       window.removeEventListener('resize', handleResize)
       ws.close()
-      chart.remove()
+      if (chartRef.current) {
+        chartRef.current.remove()
+        chartRef.current = null
+      }
     }
   }, [symbol])
 
@@ -262,19 +266,6 @@ export default function TradingHero() {
     fetchMarketData(activeMarket)
     const interval = setInterval(() => fetchMarketData(activeMarket), 30000)
     return () => clearInterval(interval)
-  }, [activeMarket, fetchMarketData])
-      }
-      setPrice(newPrice)
-      setHigh24h(parseFloat(data.h))
-      setLow24h(parseFloat(data.l))
-      setPriceChange(parseFloat(data.P))
-    }
-
-    return () => {
-      if (wsRef.current) {
-        wsRef.current.close()
-      }
-    }
   }, [activeMarket, fetchMarketData])
 
   const stats = [

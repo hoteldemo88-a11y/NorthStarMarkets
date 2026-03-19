@@ -21,17 +21,28 @@ export function AuthProvider({ children }) {
     setLoading(true)
     try {
       const endpoint = role === 'admin' ? '/admin/login' : '/auth/login'
-      const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+      const url = `${API_BASE_URL}${endpoint}`
+      console.log('Login URL:', url)
+      const response = await fetch(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(credentials),
       })
-      const data = await response.json()
+      console.log('Response status:', response.status)
+      const text = await response.text()
+      console.log('Response body:', text)
+      let data
+      try {
+        data = JSON.parse(text)
+      } catch {
+        throw new Error(`Server error: ${text.substring(0, 200)}`)
+      }
       if (!response.ok) throw new Error(data.message || 'Login failed')
       setUser(data.user)
       localStorage.setItem('token', data.token)
       return data.user
     } catch (error) {
+      console.error('Login error:', error)
       throw error
     } finally {
       setLoading(false)
