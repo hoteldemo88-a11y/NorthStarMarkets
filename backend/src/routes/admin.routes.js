@@ -200,7 +200,7 @@ router.get('/users/:id/verification-docs', async (req, res) => {
 })
 
 router.post('/trades', async (req, res) => {
-  const { userId, userEmail, symbol, side = 'buy', volume, pnl = 0, status = 'open', tradeDate, contractExpiry, entryPrice } = req.body
+  const { userId, userEmail, symbol, side = 'buy', volume, pnl = 0, status = 'open', tradeDate, contractExpiry, entryPrice, tickerSymbol, strikePrice } = req.body
 
   let targetUserId = Number(userId) || null
 
@@ -228,10 +228,11 @@ router.post('/trades', async (req, res) => {
     return res.status(400).json({ message: 'Contract expiry date is required' })
   }
 
-  const ticketSymbol = commodityTicketMap[normalizedSymbol] || normalizedSymbol.toUpperCase()
+  const ticketSymbol = tickerSymbol ? String(tickerSymbol).trim().toUpperCase() : (commodityTicketMap[normalizedSymbol] || normalizedSymbol.toUpperCase())
   const parsedVolume = Number(volume)
   const parsedPnl = Number(pnl || 0)
   const parsedEntryPrice = entryPrice !== undefined && entryPrice !== null && String(entryPrice) !== '' ? Number(entryPrice) : null
+  const parsedStrikePrice = strikePrice !== undefined && strikePrice !== null && String(strikePrice) !== '' ? Number(strikePrice) : null
 
   if (!Number.isFinite(parsedVolume) || parsedVolume <= 0) {
     return res.status(400).json({ message: 'Investment amount must be positive' })
@@ -242,8 +243,8 @@ router.post('/trades', async (req, res) => {
     await connection.beginTransaction()
 
     await connection.query(
-      'INSERT INTO trades (user_id, symbol, ticket_symbol, side, volume, margin_held, pnl, status, trade_date, contract_expiry, entry_price) VALUES (?, ?, ?, ?, ?, 0, ?, ?, ?, ?, ?)',
-      [targetUserId, normalizedSymbol.toUpperCase(), ticketSymbol, side, parsedVolume, parsedPnl, status, tradeDate || null, contractExpiry, parsedEntryPrice],
+      'INSERT INTO trades (user_id, symbol, ticket_symbol, side, volume, margin_held, pnl, status, trade_date, contract_expiry, entry_price, strike_price) VALUES (?, ?, ?, ?, ?, 0, ?, ?, ?, ?, ?, ?)',
+      [targetUserId, normalizedSymbol.toUpperCase(), ticketSymbol, side, parsedVolume, parsedPnl, status, tradeDate || null, contractExpiry, parsedEntryPrice, parsedStrikePrice],
     )
 
     if (status === 'closed') {
@@ -316,6 +317,7 @@ router.get('/trades', async (_req, res) => {
       t.pnl,
       t.entry_price AS entryPrice,
       t.exit_price AS exitPrice,
+      t.strike_price AS strikePrice,
       t.status,
       t.trade_date AS tradeDate,
       t.contract_expiry AS contractExpiry,

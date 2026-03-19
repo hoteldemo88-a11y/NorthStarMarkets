@@ -119,6 +119,15 @@ export async function initDatabase() {
     await connection.query('ALTER TABLE trades ADD COLUMN exit_price DECIMAL(12,4) NULL')
   }
 
+  const [strikePriceColumn] = await connection.query(
+    `SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = ? AND TABLE_NAME = 'trades' AND COLUMN_NAME = 'strike_price' LIMIT 1`,
+    [database],
+  )
+
+  if (!strikePriceColumn.length) {
+    await connection.query('ALTER TABLE trades ADD COLUMN strike_price DECIMAL(12,4) NULL')
+  }
+
   const [idNumberColumn] = await connection.query(
     `SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = ? AND TABLE_NAME = 'users' AND COLUMN_NAME = 'id_number' LIMIT 1`,
     [database],

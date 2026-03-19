@@ -46,6 +46,7 @@ CREATE TABLE IF NOT EXISTS trades (
   pnl DECIMAL(12, 2) NOT NULL DEFAULT 0,
   entry_price DECIMAL(12, 4) NULL,
   exit_price DECIMAL(12, 4) NULL,
+  strike_price DECIMAL(12, 4) NULL,
   status ENUM('open', 'closed') NOT NULL DEFAULT 'open',
   trade_date DATE NULL,
   contract_expiry DATE NULL,
