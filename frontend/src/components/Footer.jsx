@@ -1,12 +1,10 @@
 import { Link } from 'react-router-dom'
-import { Twitter, Linkedin, Facebook, Instagram, Mail, MapPin, Phone } from 'lucide-react'
+import { Twitter, Linkedin, Mail, MapPin, Phone } from 'lucide-react'
 import { motion } from 'framer-motion'
 
 const socialLinks = [
-  { icon: Twitter, href: '#' },
-  { icon: Linkedin, href: '#' },
-  { icon: Facebook, href: '#' },
-  { icon: Instagram, href: '#' },
+  { icon: Twitter, href: 'https://x.com/INTNorthStar' },
+  { icon: Linkedin, href: 'https://linkedin.com/in/intnorthstar' },
 ]
 
 export default function Footer() {
