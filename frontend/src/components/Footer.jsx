@@ -1,9 +1,9 @@
 import { Link } from 'react-router-dom'
-import { Twitter, Linkedin, Mail, MapPin, Phone } from 'lucide-react'
+import { X, Linkedin, Mail, MapPin, Phone } from 'lucide-react'
 import { motion } from 'framer-motion'
 
 const socialLinks = [
-  { icon: Twitter, href: 'https://x.com/INTNorthStar' },
+  { icon: X, href: 'https://x.com/INTNorthStar' },
   { icon: Linkedin, href: 'https://linkedin.com/in/intnorthstar' },
 ]
 

@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { Mail, Phone, MapPin, Send, Twitter, Linkedin, CheckCircle } from 'lucide-react'
+import { Mail, Phone, MapPin, Send, X, Linkedin, CheckCircle } from 'lucide-react'
 
 const contactInfo = [
   { icon: Mail, title: 'Email Support', details: 'Info@northstarmarketsint.com', description: 'Response within 24 hours' },
@@ -9,7 +9,7 @@ const contactInfo = [
 ]
 
 const socialLinks = [
-  { icon: Twitter, href: 'https://x.com/INTNorthStar', color: 'hover:text-blue-400' },
+  { icon: X, href: 'https://x.com/INTNorthStar', color: 'hover:text-white' },
   { icon: Linkedin, href: 'https://linkedin.com/in/intnorthstar', color: 'hover:text-blue-500' },
 ]
 
