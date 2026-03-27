@@ -1,18 +1,20 @@
-import { useState, useEffect, useRef, useCallback } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { useState, useEffect, useRef } from 'react'
+import { motion } from 'framer-motion'
 import { createChart } from 'lightweight-charts'
 import { Link } from 'react-router-dom'
 import { TrendingUp, TrendingDown, Star, ChevronRight, Activity, Zap, Shield, Clock, CreditCard, Users, Award, Globe, Menu, X } from 'lucide-react'
 
-const COINGECKO_API = 'https://api.coingecko.com/api/v3'
-
 const markets = [
-  { id: 'BTC', name: 'Bitcoin', symbol: 'bitcoin', pair: 'BTC/USDT', icon: '₿', color: '#F7931A' },
-  { id: 'ETH', name: 'Ethereum', symbol: 'ethereum', pair: 'ETH/USDT', icon: 'Ξ', color: '#627EEA' },
-  { id: 'SOL', name: 'Solana', symbol: 'solana', pair: 'SOL/USDT', icon: '◎', color: '#00FFA3' },
-  { id: 'XAU', name: 'Gold', symbol: 'xaeur', pair: 'XAU/USD', icon: '⬡', color: '#FFD700' },
-  { id: 'EUR', name: 'Euro', symbol: 'eur', pair: 'EUR/USD', icon: '€', color: '#003399' },
+  { id: 'XAU', name: 'Gold', symbol: 'gold', pair: 'XAU/USD', icon: 'Au', color: '#FFD700' },
+  { id: 'XAG', name: 'Silver', symbol: 'silver', pair: 'XAG/USD', icon: 'Ag', color: '#C0C0C0' },
+  { id: 'WTI', name: 'Crude Oil', symbol: 'crude', pair: 'WTI/USD', icon: 'Oil', color: '#FF6B35' },
 ]
+
+const COMMODITY_PRICES = {
+  gold: { price: 3012.50, high: 3045.00, low: 2985.25, change: 0.85 },
+  silver: { price: 33.45, high: 34.20, low: 32.80, change: 1.25 },
+  crude: { price: 78.65, high: 80.20, low: 77.45, change: -0.62 },
+}
 
 function FloatingOrbs() {
   return (
@@ -58,10 +60,9 @@ function TradingChart({ symbol }) {
   const chartContainerRef = useRef(null)
   const chartRef = useRef(null)
   const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(false)
 
   const getBasePrice = (sym) => {
-    const prices = { btcusdt: 45000, ethusdt: 2500, solusdt: 100, xaueur: 2100, eurusdt: 1.08 }
+    const prices = { gold: 3012, silver: 33.45, crude: 78.65 }
     return prices[sym.toLowerCase()] || 1000
   }
 
@@ -72,11 +73,11 @@ function TradingChart({ symbol }) {
     const interval = 900
 
     for (let i = count; i > 0; i--) {
-      const change = (Math.random() - 0.5) * basePrice * 0.02
+      const change = (Math.random() - 0.5) * basePrice * 0.01
       const open = price
       const close = price + change
-      const high = Math.max(open, close) + Math.random() * basePrice * 0.005
-      const low = Math.min(open, close) - Math.random() * basePrice * 0.005
+      const high = Math.max(open, close) + Math.random() * basePrice * 0.002
+      const low = Math.min(open, close) - Math.random() * basePrice * 0.002
 
       data.push({
         time: now - (i * interval),
@@ -94,7 +95,6 @@ function TradingChart({ symbol }) {
     if (!chartContainerRef.current) return
 
     setLoading(true)
-    setError(false)
 
     const chart = createChart(chartContainerRef.current, {
       layout: {
@@ -133,57 +133,10 @@ function TradingChart({ symbol }) {
 
     chartRef.current = chart
 
-    const fetchHistoricalData = async () => {
-      try {
-        const response = await fetch(
-          `https://api.binance.com/api/v3/klines?symbol=${symbol.toUpperCase()}&interval=15m&limit=200`
-        )
-        const data = await response.json()
-        
-        if (!data || data.length === 0) {
-          setError(true)
-          setLoading(false)
-          return
-        }
-        
-        const candleData = data.map(d => ({
-          time: d[0] / 1000,
-          open: parseFloat(d[1]),
-          high: parseFloat(d[2]),
-          low: parseFloat(d[3]),
-          close: parseFloat(d[4]),
-        }))
-        
-        candleSeries.setData(candleData)
-        chart.timeScale().fitContent()
-        setLoading(false)
-      } catch (error) {
-        console.log('Using mock data for', symbol)
-        const mockData = generateMockData(getBasePrice(symbol))
-        candleSeries.setData(mockData)
-        chart.timeScale().fitContent()
-      }
-    }
-
-    fetchHistoricalData()
-
-    const ws = new WebSocket(`wss://stream.binance.com:9443/ws/${symbol.toLowerCase()}@kline_15m`)
-
-    ws.onmessage = (event) => {
-      if (!chartRef.current || !chartContainerRef.current) return
-      const data = JSON.parse(event.data)
-      const kline = data.k
-      
-      const candle = {
-        time: kline.t / 1000,
-        open: parseFloat(kline.o),
-        high: parseFloat(kline.h),
-        low: parseFloat(kline.l),
-        close: parseFloat(kline.c),
-      }
-      
-      candleSeries.update(candle)
-    }
+    const mockData = generateMockData(getBasePrice(symbol))
+    candleSeries.setData(mockData)
+    chart.timeScale().fitContent()
+    setLoading(false)
 
     const handleResize = () => {
       if (chartContainerRef.current && chartRef.current) {
@@ -195,7 +148,6 @@ function TradingChart({ symbol }) {
 
     return () => {
       window.removeEventListener('resize', handleResize)
-      ws.close()
       if (chartRef.current) {
         chartRef.current.remove()
         chartRef.current = null
@@ -210,11 +162,6 @@ function TradingChart({ symbol }) {
           <div className="w-6 h-6 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin" />
         </div>
       )}
-      {error && (
-        <div className="absolute inset-0 flex items-center justify-center bg-[#0a0a0f] text-gray-400 text-sm">
-          Chart unavailable
-        </div>
-      )}
       <div ref={chartContainerRef} className="w-full h-full" />
     </div>
   )
@@ -222,56 +169,35 @@ function TradingChart({ symbol }) {
 
 export default function TradingHero() {
   const [activeMarket, setActiveMarket] = useState(markets[0])
-  const [price, setPrice] = useState(null)
-  const [priceChange, setPriceChange] = useState(0)
-  const [priceDirection, setPriceDirection] = useState(null)
-  const [high24h, setHigh24h] = useState(0)
-  const [low24h, setLow24h] = useState(0)
-
-  const MOCK_PRICES = {
-    bitcoin: { price: 67420, high: 68200, low: 66500, change: 2.34 },
-    ethereum: { price: 3520, high: 3600, low: 3450, change: 1.85 },
-    solana: { price: 145.50, high: 148.20, low: 142.30, change: 3.12 },
-    xaeur: { price: 2150, high: 2180, low: 2120, change: 0.45 },
-    eur: { price: 1.08, high: 1.09, low: 1.07, change: -0.12 },
-  }
-
-  const fetchMarketData = useCallback(async (market) => {
-    try {
-      const response = await fetch(
-        `${COINGECKO_API}/coins/markets?vs_currency=usd&ids=${market.symbol}&sparkline=false`
-      )
-      if (!response.ok) throw new Error('API Error')
-      const data = await response.json()
-      if (data && data.length > 0) {
-        setPrice(data[0].current_price)
-        setHigh24h(data[0].high_24h)
-        setLow24h(data[0].low_24h)
-        setPriceChange(data[0].price_change_percentage_24h || 0)
-        return
-      }
-    } catch (error) {
-      console.log('Using mock data for', market.symbol)
-    }
-    
-    // Fallback to mock data
-    const mock = MOCK_PRICES[market.symbol] || { price: 1000, high: 1100, low: 900, change: 0 }
-    setPrice(mock.price)
-    setHigh24h(mock.high)
-    setLow24h(mock.low)
-    setPriceChange(mock.change)
-  }, [])
+  const [price, setPrice] = useState(COMMODITY_PRICES.gold.price)
+  const [priceChange, setPriceChange] = useState(COMMODITY_PRICES.gold.change)
+  const [high24h, setHigh24h] = useState(COMMODITY_PRICES.gold.high)
+  const [low24h, setLow24h] = useState(COMMODITY_PRICES.gold.low)
 
   useEffect(() => {
-    fetchMarketData(activeMarket)
-    const interval = setInterval(() => fetchMarketData(activeMarket), 30000)
+    const data = COMMODITY_PRICES[activeMarket.symbol]
+    if (data) {
+      setPrice(data.price)
+      setHigh24h(data.high)
+      setLow24h(data.low)
+      setPriceChange(data.change)
+    }
+
+    const interval = setInterval(() => {
+      const data = COMMODITY_PRICES[activeMarket.symbol]
+      if (data) {
+        const fluctuation = (Math.random() - 0.5) * data.price * 0.001
+        setPrice(prev => prev + fluctuation)
+      }
+    }, 3000)
+
     return () => clearInterval(interval)
-  }, [activeMarket, fetchMarketData])
+  }, [activeMarket])
 
   const stats = [
     { label: '24h High', value: high24h ? `$${high24h.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : '—' },
     { label: '24h Low', value: low24h ? `$${low24h.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : '—' },
-    { label: 'Spread', value: '0.01', highlight: true },
+    { label: 'Spread', value: activeMarket.symbol === 'gold' ? '0.50' : activeMarket.symbol === 'silver' ? '0.02' : '0.05', highlight: true },
     { label: 'Leverage', value: '1:200', highlight: true },
     { label: 'Exec', value: '<50ms' },
     { label: 'Swap', value: 'Free', green: true },
