@@ -10,10 +10,67 @@ const markets = [
   { id: 'WTI', name: 'Crude Oil', symbol: 'crude', pair: 'WTI/USD', icon: 'Oil', color: '#FF6B35' },
 ]
 
-const COMMODITY_PRICES = {
-  gold: { price: 3012.50, high: 3045.00, low: 2985.25, change: 0.85 },
-  silver: { price: 33.45, high: 34.20, low: 32.80, change: 1.25 },
-  crude: { price: 78.65, high: 80.20, low: 77.45, change: -0.62 },
+const MOCK_PRICES = {
+  gold: { price: 4651.07, high: 4664.52, low: 4616.64, change: -0.17 },
+  silver: { price: 72.72, high: 73.14, low: 71.80, change: -0.24 },
+  crude: { price: 90.84, high: 92.50, low: 89.20, change: 1.25 },
+}
+
+let cachedPricesHero = null
+let lastFetchTimeHero = 0
+const CACHE_DURATION = 5000
+
+const fetchRealTimePricesHero = async () => {
+  const now = Date.now()
+  if (cachedPricesHero && (now - lastFetchTimeHero) < CACHE_DURATION) {
+    return cachedPricesHero
+  }
+
+  try {
+    const [goldRes, silverRes, oilRes] = await Promise.all([
+      fetch('https://query1.finance.yahoo.com/v8/finance/chart/GC%3DF?interval=1d&range=1d'),
+      fetch('https://query1.finance.yahoo.com/v8/finance/chart/SI%3DF?interval=1d&range=1d'),
+      fetch('https://query1.finance.yahoo.com/v8/finance/chart/CL%3DF?interval=1d&range=1d'),
+    ])
+
+    const [goldData, silverData, oilData] = await Promise.all([
+      goldRes.json(),
+      silverRes.json(),
+      oilRes.json(),
+    ])
+
+    const prices = {
+      gold: {
+        price: goldData?.chart?.result?.[0]?.meta?.regularMarketPrice || 4651.07,
+        high: goldData?.chart?.result?.[0]?.indicators?.quote?.[0]?.high?.[0] || 4721.20,
+        low: goldData?.chart?.result?.[0]?.indicators?.quote?.[0]?.low?.[0] || 4641.40,
+        change: ((goldData?.chart?.result?.[0]?.meta?.regularMarketPrice - goldData?.chart?.result?.[0]?.meta?.chartPreviousClose) / goldData?.chart?.result?.[0]?.meta?.chartPreviousClose * 100) || -0.17
+      },
+      silver: {
+        price: silverData?.chart?.result?.[0]?.meta?.regularMarketPrice || 72.72,
+        high: silverData?.chart?.result?.[0]?.indicators?.quote?.[0]?.high?.[0] || 73.61,
+        low: silverData?.chart?.result?.[0]?.indicators?.quote?.[0]?.low?.[0] || 71.67,
+        change: ((silverData?.chart?.result?.[0]?.meta?.regularMarketPrice - silverData?.chart?.result?.[0]?.meta?.chartPreviousClose) / silverData?.chart?.result?.[0]?.meta?.chartPreviousClose * 100) || -0.24
+      },
+      crude: {
+        price: oilData?.chart?.result?.[0]?.meta?.regularMarketPrice || 90.84,
+        high: oilData?.chart?.result?.[0]?.indicators?.quote?.[0]?.high?.[0] || 116.56,
+        low: oilData?.chart?.result?.[0]?.indicators?.quote?.[0]?.low?.[0] || 111.28,
+        change: ((oilData?.chart?.result?.[0]?.meta?.regularMarketPrice - oilData?.chart?.result?.[0]?.meta?.chartPreviousClose) / oilData?.chart?.result?.[0]?.meta?.chartPreviousClose * 100) || 1.25
+      },
+    }
+
+    cachedPricesHero = prices
+    lastFetchTimeHero = now
+    return prices
+  } catch (error) {
+    console.log('Using fallback prices', error)
+    return {
+      gold: { price: 4651.07, high: 4664.52, low: 4616.64, change: -0.17 },
+      silver: { price: 72.72, high: 73.14, low: 71.80, change: -0.24 },
+      crude: { price: 90.84, high: 92.50, low: 89.20, change: 1.25 },
+    }
+  }
 }
 
 function FloatingOrbs() {
@@ -169,29 +226,51 @@ function TradingChart({ symbol }) {
 
 export default function TradingHero() {
   const [activeMarket, setActiveMarket] = useState(markets[0])
-  const [price, setPrice] = useState(COMMODITY_PRICES.gold.price)
-  const [priceChange, setPriceChange] = useState(COMMODITY_PRICES.gold.change)
-  const [high24h, setHigh24h] = useState(COMMODITY_PRICES.gold.high)
-  const [low24h, setLow24h] = useState(COMMODITY_PRICES.gold.low)
+  const [price, setPrice] = useState(MOCK_PRICES.gold.price)
+  const [priceChange, setPriceChange] = useState(MOCK_PRICES.gold.change)
+  const [high24h, setHigh24h] = useState(MOCK_PRICES.gold.high)
+  const [low24h, setLow24h] = useState(MOCK_PRICES.gold.low)
+  const isRealTimeRef = useRef(true)
+  const apiDataRef = useRef(null)
 
   useEffect(() => {
-    const data = COMMODITY_PRICES[activeMarket.symbol]
-    if (data) {
-      setPrice(data.price)
-      setHigh24h(data.high)
-      setLow24h(data.low)
-      setPriceChange(data.change)
+    let isActive = true
+
+    const fetchPrice = async () => {
+      if (!isActive) return
+
+      const apiPrices = await fetchRealTimePricesHero()
+      if (!isActive) return
+      apiDataRef.current = apiPrices
+
+      const mockData = MOCK_PRICES[activeMarket.symbol]
+      const apiData = apiPrices[activeMarket.symbol]
+      
+      if (isRealTimeRef.current && apiData) {
+        setPrice(apiData.price)
+        setHigh24h(apiData.high)
+        setLow24h(apiData.low)
+        setPriceChange(apiData.change)
+      } else if (mockData) {
+        const fluctuation = (Math.random() - 0.5) * mockData.price * 0.0002
+        setPrice(mockData.price + fluctuation)
+        setHigh24h(mockData.high)
+        setLow24h(mockData.low)
+        setPriceChange(mockData.change)
+      }
     }
 
+    fetchPrice()
+
     const interval = setInterval(() => {
-      const data = COMMODITY_PRICES[activeMarket.symbol]
-      if (data) {
-        const fluctuation = (Math.random() - 0.5) * data.price * 0.001
-        setPrice(prev => prev + fluctuation)
-      }
+      isRealTimeRef.current = !isRealTimeRef.current
+      fetchPrice()
     }, 3000)
 
-    return () => clearInterval(interval)
+    return () => {
+      isActive = false
+      clearInterval(interval)
+    }
   }, [activeMarket])
 
   const stats = [
