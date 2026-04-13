@@ -10,7 +10,7 @@ const contactInfo = [
 
 const socialLinks = [
   { icon: X, href: 'https://x.com/INTNorthStar', color: 'hover:text-white' },
-  { icon: Linkedin, href: 'https://linkedin.com/in/intnorthstar', color: 'hover:text-blue-500' },
+  { icon: Linkedin, href: 'https://www.linkedin.com/company/north-star-int', color: 'hover:text-blue-500' },
 ]
 
 export default function Contact() {

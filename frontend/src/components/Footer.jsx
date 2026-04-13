@@ -4,7 +4,7 @@ import { motion } from 'framer-motion'
 
 const socialLinks = [
   { icon: X, href: 'https://x.com/INTNorthStar' },
-  { icon: Linkedin, href: 'https://linkedin.com/in/intnorthstar' },
+  { icon: Linkedin, href: 'https://www.linkedin.com/company/north-star-int' },
 ]
 
 export default function Footer() {
