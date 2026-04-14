@@ -3,6 +3,8 @@
 
 User-agent: *
 Allow: /
+Allow: /northstartmarket.png
+Allow: /og-image.png
 
 # Sitemap
 Sitemap: https://northstarmarketsint.com/sitemap.xml

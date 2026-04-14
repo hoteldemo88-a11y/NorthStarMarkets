@@ -63,6 +63,16 @@ export default function Footer() {
           </div>
 
           <div className="min-w-0">
+            <h4 className="text-white font-semibold mb-3">Resources</h4>
+            <ul className="space-y-2">
+              <li><Link to="/gold-price-today" className="text-gray-300 text-sm hover:text-white transition-colors">Gold Price Today</Link></li>
+              <li><Link to="/silver-price-today" className="text-gray-300 text-sm hover:text-white transition-colors">Silver Price Today</Link></li>
+              <li><Link to="/forex-trading-guide" className="text-gray-300 text-sm hover:text-white transition-colors">Forex Guide</Link></li>
+              <li><Link to="/markets" className="text-gray-300 text-sm hover:text-white transition-colors">All Markets</Link></li>
+            </ul>
+          </div>
+
+          <div className="min-w-0">
             <h4 className="text-white font-semibold mb-3">Contact</h4>
             <ul className="space-y-2">
               <li className="flex items-center gap-2 text-gray-300 text-sm break-all"><Mail className="w-3.5 h-3.5 flex-shrink-0" />Info@northstarmarketsint.com</li>
