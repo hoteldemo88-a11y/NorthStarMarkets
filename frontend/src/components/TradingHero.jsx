@@ -8,12 +8,16 @@ const markets = [
   { id: 'XAU', name: 'Gold', symbol: 'gold', pair: 'XAU/USD', icon: 'Au', color: '#FFD700' },
   { id: 'XAG', name: 'Silver', symbol: 'silver', pair: 'XAG/USD', icon: 'Ag', color: '#C0C0C0' },
   { id: 'WTI', name: 'Crude Oil', symbol: 'crude', pair: 'WTI/USD', icon: 'Oil', color: '#FF6B35' },
+  { id: 'BTC', name: 'Bitcoin', symbol: 'bitcoin', pair: 'BTC/USD', icon: '₿', color: '#F7931A' },
+  { id: 'ETH', name: 'Ethereum', symbol: 'ethereum', pair: 'ETH/USD', icon: 'Ξ', color: '#627EEA' },
 ]
 
 const MOCK_PRICES = {
-  gold: { price: 4747.70, high: 4781.00, low: 4730.10, change: -0.37 },
-  silver: { price: 76.60, high: 77.50, low: 75.80, change: 0.19 },
-  crude: { price: 78.50, high: 80.20, low: 77.80, change: 1.25 },
+  gold: { price: 4788.76, high: 4812.80, low: 4750.00, change: 1.10 },
+  silver: { price: 77.40, high: 78.50, low: 76.00, change: 5.08 },
+  crude: { price: 91.38, high: 95.00, low: 90.00, change: -3.50 },
+  bitcoin: { price: 74763.31, high: 75200.00, low: 73900.00, change: 0.30 },
+  ethereum: { price: 2370.51, high: 2400.00, low: 2350.00, change: 0.03 },
 }
 
 let cachedPricesHero = null
@@ -36,9 +40,11 @@ const fetchRealTimePricesHero = async () => {
   } catch (error) {
     console.log('Using fallback prices', error)
     return {
-      gold: { price: 4747.70, high: 4781.00, low: 4730.10, change: -0.37 },
-      silver: { price: 76.60, high: 77.50, low: 75.80, change: 0.19 },
-      crude: { price: 78.50, high: 80.20, low: 77.80, change: 1.25 },
+      gold: { price: 4788.76, high: 4812.80, low: 4750.00, change: 1.10 },
+      silver: { price: 77.40, high: 78.50, low: 76.00, change: 5.08 },
+      crude: { price: 91.38, high: 95.00, low: 90.00, change: -3.50 },
+      bitcoin: { price: 74763.31, high: 75200.00, low: 73900.00, change: 0.30 },
+      ethereum: { price: 2370.51, high: 2400.00, low: 2350.00, change: 0.03 },
     }
   }
 }
@@ -89,7 +95,7 @@ function TradingChart({ symbol }) {
   const [loading, setLoading] = useState(true)
 
   const getBasePrice = (sym) => {
-    const prices = { gold: 4747.70, silver: 76.60, crude: 78.50 }
+    const prices = { gold: 4788.76, silver: 77.40, crude: 91.38, bitcoin: 74763.31, ethereum: 2370.51 }
     return prices[sym.toLowerCase()] || 1000
   }
 
