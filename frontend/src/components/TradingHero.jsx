@@ -11,9 +11,9 @@ const markets = [
 ]
 
 const MOCK_PRICES = {
-  gold: { price: 4651.07, high: 4664.52, low: 4616.64, change: -0.17 },
-  silver: { price: 72.72, high: 73.14, low: 71.80, change: -0.24 },
-  crude: { price: 90.84, high: 92.50, low: 89.20, change: 1.25 },
+  gold: { price: 4747.70, high: 4781.00, low: 4730.10, change: -0.37 },
+  silver: { price: 76.60, high: 77.50, low: 75.80, change: 0.19 },
+  crude: { price: 78.50, high: 80.20, low: 77.80, change: 1.25 },
 }
 
 let cachedPricesHero = null
@@ -27,48 +27,18 @@ const fetchRealTimePricesHero = async () => {
   }
 
   try {
-    const [goldRes, silverRes, oilRes] = await Promise.all([
-      fetch('https://query1.finance.yahoo.com/v8/finance/chart/GC%3DF?interval=1d&range=1d'),
-      fetch('https://query1.finance.yahoo.com/v8/finance/chart/SI%3DF?interval=1d&range=1d'),
-      fetch('https://query1.finance.yahoo.com/v8/finance/chart/CL%3DF?interval=1d&range=1d'),
-    ])
-
-    const [goldData, silverData, oilData] = await Promise.all([
-      goldRes.json(),
-      silverRes.json(),
-      oilRes.json(),
-    ])
-
-    const prices = {
-      gold: {
-        price: goldData?.chart?.result?.[0]?.meta?.regularMarketPrice || 4651.07,
-        high: goldData?.chart?.result?.[0]?.indicators?.quote?.[0]?.high?.[0] || 4721.20,
-        low: goldData?.chart?.result?.[0]?.indicators?.quote?.[0]?.low?.[0] || 4641.40,
-        change: ((goldData?.chart?.result?.[0]?.meta?.regularMarketPrice - goldData?.chart?.result?.[0]?.meta?.chartPreviousClose) / goldData?.chart?.result?.[0]?.meta?.chartPreviousClose * 100) || -0.17
-      },
-      silver: {
-        price: silverData?.chart?.result?.[0]?.meta?.regularMarketPrice || 72.72,
-        high: silverData?.chart?.result?.[0]?.indicators?.quote?.[0]?.high?.[0] || 73.61,
-        low: silverData?.chart?.result?.[0]?.indicators?.quote?.[0]?.low?.[0] || 71.67,
-        change: ((silverData?.chart?.result?.[0]?.meta?.regularMarketPrice - silverData?.chart?.result?.[0]?.meta?.chartPreviousClose) / silverData?.chart?.result?.[0]?.meta?.chartPreviousClose * 100) || -0.24
-      },
-      crude: {
-        price: oilData?.chart?.result?.[0]?.meta?.regularMarketPrice || 90.84,
-        high: oilData?.chart?.result?.[0]?.indicators?.quote?.[0]?.high?.[0] || 116.56,
-        low: oilData?.chart?.result?.[0]?.indicators?.quote?.[0]?.low?.[0] || 111.28,
-        change: ((oilData?.chart?.result?.[0]?.meta?.regularMarketPrice - oilData?.chart?.result?.[0]?.meta?.chartPreviousClose) / oilData?.chart?.result?.[0]?.meta?.chartPreviousClose * 100) || 1.25
-      },
-    }
-
-    cachedPricesHero = prices
+    const res = await fetch(`${import.meta.env.VITE_API_URL || ''}/api/prices`)
+    const data = await res.json()
+    
+    cachedPricesHero = data
     lastFetchTimeHero = now
-    return prices
+    return data
   } catch (error) {
     console.log('Using fallback prices', error)
     return {
-      gold: { price: 4651.07, high: 4664.52, low: 4616.64, change: -0.17 },
-      silver: { price: 72.72, high: 73.14, low: 71.80, change: -0.24 },
-      crude: { price: 90.84, high: 92.50, low: 89.20, change: 1.25 },
+      gold: { price: 4747.70, high: 4781.00, low: 4730.10, change: -0.37 },
+      silver: { price: 76.60, high: 77.50, low: 75.80, change: 0.19 },
+      crude: { price: 78.50, high: 80.20, low: 77.80, change: 1.25 },
     }
   }
 }
@@ -119,7 +89,7 @@ function TradingChart({ symbol }) {
   const [loading, setLoading] = useState(true)
 
   const getBasePrice = (sym) => {
-    const prices = { gold: 3012, silver: 33.45, crude: 78.65 }
+    const prices = { gold: 4747.70, silver: 76.60, crude: 78.50 }
     return prices[sym.toLowerCase()] || 1000
   }
 
@@ -230,8 +200,7 @@ export default function TradingHero() {
   const [priceChange, setPriceChange] = useState(MOCK_PRICES.gold.change)
   const [high24h, setHigh24h] = useState(MOCK_PRICES.gold.high)
   const [low24h, setLow24h] = useState(MOCK_PRICES.gold.low)
-  const isRealTimeRef = useRef(true)
-  const apiDataRef = useRef(null)
+  const realPriceRef = useRef(null)
 
   useEffect(() => {
     let isActive = true
@@ -241,35 +210,31 @@ export default function TradingHero() {
 
       const apiPrices = await fetchRealTimePricesHero()
       if (!isActive) return
-      apiDataRef.current = apiPrices
 
-      const mockData = MOCK_PRICES[activeMarket.symbol]
       const apiData = apiPrices[activeMarket.symbol]
-      
-      if (isRealTimeRef.current && apiData) {
+      realPriceRef.current = apiData.price
+
+      if (apiData) {
         setPrice(apiData.price)
         setHigh24h(apiData.high)
         setLow24h(apiData.low)
         setPriceChange(apiData.change)
-      } else if (mockData) {
-        const fluctuation = (Math.random() - 0.5) * mockData.price * 0.0002
-        setPrice(mockData.price + fluctuation)
-        setHigh24h(mockData.high)
-        setLow24h(mockData.low)
-        setPriceChange(mockData.change)
       }
     }
 
     fetchPrice()
 
-    const interval = setInterval(() => {
-      isRealTimeRef.current = !isRealTimeRef.current
-      fetchPrice()
+    const dummyInterval = setInterval(() => {
+      if (realPriceRef.current) {
+        const basePrice = realPriceRef.current
+        const fluctuation = (Math.random() - 0.5) * basePrice * 0.0003
+        setPrice(basePrice + fluctuation)
+      }
     }, 3000)
 
     return () => {
       isActive = false
-      clearInterval(interval)
+      clearInterval(dummyInterval)
     }
   }, [activeMarket])
 
@@ -451,9 +416,7 @@ export default function TradingHero() {
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0.5, y: 10 }}
                       transition={{ duration: 0.2 }}
-                      className={`text-4xl font-bold tracking-tight ${
-                        priceDirection === 'up' ? 'text-emerald-400' : priceDirection === 'down' ? 'text-red-400' : 'text-white'
-                      }`}
+                      className="text-4xl font-bold tracking-tight text-white"
                     >
                       ${price?.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) || '—'}
                     </motion.div>
