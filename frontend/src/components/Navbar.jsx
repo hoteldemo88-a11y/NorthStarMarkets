@@ -41,7 +41,7 @@ export default function Navbar() {
           {/* Logo */}
           <Link to="/" className="flex items-center gap-3 group">
             <div className="relative w-12 h-12 overflow-hidden group-hover:scale-105 transition-transform duration-300">
-              <img src="/nortstar.png" alt="North Star Markets" className="w-full h-full object-contain" />
+              <img src="/northstar.png" alt="North Star Markets" className="w-full h-full object-contain" />
             </div>
             <div>
               <span className="text-lg font-bold bg-gradient-to-r from-indigo-400 via-cyan-400 to-emerald-400 bg-clip-text text-transparent">North Star</span>

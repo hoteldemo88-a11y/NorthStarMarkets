@@ -15,7 +15,7 @@ export default function Footer() {
           <div className="col-span-2 min-w-0">
             <Link to="/" className="flex items-center gap-3 mb-4">
               <div className="w-10 h-10 overflow-hidden">
-                <img src="/nortstar.png" alt="North Star Markets" className="w-full h-full object-contain" />
+                <img src="/northstar.png" alt="North Star Markets" className="w-full h-full object-contain" />
               </div>
               <span className="text-xl font-bold bg-gradient-to-r from-indigo-400 via-cyan-400 to-emerald-400 bg-clip-text text-transparent">North Star Markets</span>
             </Link>
