@@ -466,36 +466,6 @@ export default function Home() {
           </motion.div>
         </div>
       </section>
-
-      {/* SEO Content Section */}
-      <section className="py-16 bg-[#0a0a0f]">
-        <div className="max-w-4xl mx-auto px-4">
-          <img 
-            src="/northstartmarket.png" 
-            alt="North Star Markets trading platform preview"
-            className="w-full h-64 object-cover rounded-xl mb-10"
-          />
-          <h2 className="text-2xl font-bold text-white mb-4">Trade Gold, Silver, and Forex with Confidence</h2>
-          <p className="text-gray-300 mb-4 leading-relaxed">
-            North Star Markets is a leading online trading platform providing access to global financial markets. 
-            Trade gold, silver, crude oil, and major currency pairs with competitive spreads and lightning-fast execution. 
-            Our platform offers advanced charting tools, real-time price feeds, and professional-grade trading features 
-            suitable for both beginners and experienced traders.
-          </p>
-          <p className="text-gray-300 mb-4 leading-relaxed">
-            Whether you're interested in <Link to="/gold-price-today" className="text-amber-400 hover:underline">gold price today</Link>, 
-            looking for the latest <Link to="/silver-price-today" className="text-gray-300 hover:underline">silver price today</Link>, 
-            or want to learn <Link to="/forex-trading-guide" className="text-cyan-400 hover:underline">forex trading</Link>, 
-            North Star Markets provides the resources and tools you need to succeed in the financial markets.
-          </p>
-          <div className="flex flex-wrap gap-4 mt-6">
-            <Link to="/gold-price-today" className="px-4 py-2 bg-amber-500/20 text-amber-400 rounded-lg hover:bg-amber-500/30 transition-colors">Gold Prices</Link>
-            <Link to="/silver-price-today" className="px-4 py-2 bg-gray-500/20 text-gray-300 rounded-lg hover:bg-gray-500/30 transition-colors">Silver Prices</Link>
-            <Link to="/forex-trading-guide" className="px-4 py-2 bg-cyan-500/20 text-cyan-400 rounded-lg hover:bg-cyan-500/30 transition-colors">Forex Guide</Link>
-            <Link to="/markets" className="px-4 py-2 bg-indigo-500/20 text-indigo-400 rounded-lg hover:bg-indigo-500/30 transition-colors">All Markets</Link>
-          </div>
-        </div>
-      </section>
     </div>
   )
 }
