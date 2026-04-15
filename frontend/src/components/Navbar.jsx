@@ -7,15 +7,12 @@ import { useAuth } from '../context/AuthContext'
 const navLinks = [
   { name: 'Home', path: '/' },
   { name: 'Markets', path: '/markets' },
-  { name: 'Gold Price', path: '/gold-price-today' },
-  { name: 'Silver Price', path: '/silver-price-today' },
-  { name: 'Forex Guide', path: '/forex-trading-guide' },
   { name: 'Our Mission', path: '/our-goal' },
   { name: 'About Us', path: '/about' },
   { name: 'FAQs', path: '/faq' },
   { name: 'Careers', path: '/careers' },
   { name: 'Contact', path: '/contact' },
-  { name: 'Reviews', path: '/clients-reviews' },
+  { name: 'Client Reviews', path: '/clients-reviews' },
 ]
 
 export default function Navbar() {
