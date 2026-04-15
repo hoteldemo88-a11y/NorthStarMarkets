@@ -61,7 +61,7 @@ npm install
 # Install frontend dependencies
 echo "📥 Installing frontend dependencies..."
 cd "$FRONTEND_DIR"
-npm install
+npm install --legacy-peer-deps
 
 # Build frontend
 echo "🔨 Building frontend..."
