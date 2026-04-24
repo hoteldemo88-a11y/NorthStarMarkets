@@ -96,9 +96,9 @@ const testimonials = [
 ]
 
 const liveMarkets = [
-  { pair: 'BTC/USD', price: '74,763', change: '+0.30%', up: true },
+  { pair: 'BTC/USD', price: '74,242', change: '+0.10%', up: true },
   { pair: 'EUR/USD', price: '1.0785', change: '+0.08%', up: true },
-  { pair: 'GOLD', price: '4,788', change: '+1.10%', up: true },
+  { pair: 'GOLD', price: '4,824', change: '+0.50%', up: true },
   { pair: 'AAPL', price: '198.42', change: '+0.65%', up: true },
 ]
 
@@ -124,10 +124,10 @@ const features = [
 ]
 
 const liveMarketsData = [
-  { id: 'BTC', name: 'Bitcoin', pair: 'BTC/USD', price: 74763, change: 0.30, icon: Bitcoin },
-  { id: 'ETH', name: 'Ethereum', pair: 'ETH/USD', price: 2370, change: 0.03, icon: Activity },
+  { id: 'BTC', name: 'Bitcoin', pair: 'BTC/USD', price: 74242, change: 0.10, icon: Bitcoin },
+  { id: 'ETH', name: 'Ethereum', pair: 'ETH/USD', price: 2320, change: -0.15, icon: Activity },
   { id: 'EUR', name: 'Euro', pair: 'EUR/USD', price: 1.0785, change: 0.08, icon: Currency },
-  { id: 'GOLD', name: 'Gold', pair: 'XAU/USD', price: 4788, change: 1.10, icon: Gem },
+  { id: 'GOLD', name: 'Gold', pair: 'XAU/USD', price: 4824, change: 0.50, icon: Gem },
 ]
 
 export default function Home() {

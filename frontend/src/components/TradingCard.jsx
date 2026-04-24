@@ -11,11 +11,16 @@ const markets = [
 ]
 
 const MOCK_PRICES = {
-  gold: { price: 4788.76, high: 4812.80, low: 4750.00, change: 1.10 },
-  silver: { price: 77.40, high: 78.50, low: 76.00, change: 5.08 },
-  crude: { price: 91.38, high: 95.00, low: 90.00, change: -3.50 },
-  bitcoin: { price: 74763.31, high: 75200.00, low: 73900.00, change: 0.30 },
-  ethereum: { price: 2370.51, high: 2400.00, low: 2350.00, change: 0.03 },
+  gold: { price: 4727.05, high: 4730.42, low: 4726.28, change: 0.02 },
+  silver: { price: 76.52, high: 77.00, low: 75.50, change: 0.05 },
+  crude: { price: 65.00, high: 70.00, low: 60.00, change: -1.00 },
+  bitcoin: { price: 74000.00, high: 75000.00, low: 73000.00, change: 0.50 },
+  ethereum: { price: 1650.00, high: 1700.00, low: 1600.00, change: 0.30 },
+}
+
+const getBasePrice = (sym) => {
+  const prices = { gold: 4727.05, silver: 76.52, crude: 65.00, bitcoin: 74000, ethereum: 1650 }
+  return prices[sym.toLowerCase()] || 1000
 }
 
 let cachedPrices = null
@@ -38,11 +43,11 @@ const fetchRealTimePrices = async () => {
   } catch (error) {
     console.log('Using fallback prices', error)
     return {
-      gold: { price: 4788.76, high: 4812.80, low: 4750.00, change: 1.10 },
-      silver: { price: 77.40, high: 78.50, low: 76.00, change: 5.08 },
-      crude: { price: 91.38, high: 95.00, low: 90.00, change: -3.50 },
-      bitcoin: { price: 74763.31, high: 75200.00, low: 73900.00, change: 0.30 },
-      ethereum: { price: 2370.51, high: 2400.00, low: 2350.00, change: 0.03 },
+      gold: { price: 4729.33, high: 4750.00, low: 4700.00, change: 0.50 },
+      silver: { price: 76.52, high: 77.00, low: 75.50, change: 0.80 },
+      crude: { price: 90.24, high: 95.00, low: 88.00, change: -1.10 },
+      bitcoin: { price: 74242.52, high: 74814.54, low: 74145.62, change: 0.10 },
+      ethereum: { price: 2320.05, high: 2344.10, low: 2318.52, change: -0.15 },
     }
   }
 }
@@ -78,7 +83,7 @@ function TradingChart({ symbol, type }) {
   const [loading, setLoading] = useState(true)
 
   const getBasePrice = (sym) => {
-    const prices = { gold: 4788.76, silver: 77.40, crude: 91.38, bitcoin: 74763.31, ethereum: 2370.51 }
+    const prices = { gold: 4727.05, silver: 76.52, crude: 65.00, bitcoin: 74000, ethereum: 1650 }
     return prices[sym.toLowerCase()] || 1000
   }
 
@@ -161,45 +166,72 @@ function TradingChart({ symbol, type }) {
 
 export default function TradingCard() {
   const [activeMarket, setActiveMarket] = useState(markets[0])
-  const [price, setPrice] = useState(MOCK_PRICES.gold.price)
+  const [price, setPrice] = useState(getBasePrice(activeMarket.symbol))
   const [priceChange, setPriceChange] = useState(MOCK_PRICES.gold.change)
   const [high24h, setHigh24h] = useState(MOCK_PRICES.gold.high)
   const [low24h, setLow24h] = useState(MOCK_PRICES.gold.low)
   const realPriceRef = useRef(null)
+  const fetchCountRef = useRef(0)
 
   useEffect(() => {
+    fetchCountRef.current = 0
+    realPriceRef.current = null
+    
     let isActive = true
 
-    const fetchPrice = async () => {
+    const fetchRealPrice = async () => {
       if (!isActive) return
 
-      const apiPrices = await fetchRealTimePrices()
-      if (!isActive) return
-
-      const apiData = apiPrices[activeMarket.symbol]
-      realPriceRef.current = apiData.price
-
-      if (apiData) {
-        setPrice(apiData.price)
-        setHigh24h(apiData.high)
-        setLow24h(apiData.low)
-        setPriceChange(apiData.change)
+      try {
+        const res = await fetch(`${import.meta.env.VITE_API_URL || ''}/api/prices`)
+        if (!res.ok) throw new Error('API error')
+        const data = await res.json()
+        if (!isActive) return
+        
+        if (data && data[activeMarket.symbol]) {
+          const apiData = data[activeMarket.symbol]
+          realPriceRef.current = apiData.price
+          setPrice(apiData.price)
+          setHigh24h(apiData.high)
+          setLow24h(apiData.low)
+          setPriceChange(apiData.change)
+        }
+      } catch (error) {
+        console.log('Price fetch error, using fallback', error)
+        const fallback = MOCK_PRICES[activeMarket.symbol]
+        if (fallback) {
+          realPriceRef.current = fallback.price
+          setPrice(fallback.price)
+          setHigh24h(fallback.high)
+          setLow24h(fallback.low)
+          setPriceChange(fallback.change)
+        }
       }
     }
 
-    fetchPrice()
-
-    const dummyInterval = setInterval(() => {
+    const showDummy = () => {
       if (realPriceRef.current) {
         const basePrice = realPriceRef.current
-        const fluctuation = (Math.random() - 0.5) * basePrice * 0.0003
+        const fluctuation = (Math.random() - 0.5) * basePrice * 0.002
         setPrice(basePrice + fluctuation)
+      }
+    }
+
+    fetchRealPrice()
+
+    const priceInterval = setInterval(() => {
+      fetchCountRef.current++
+      if (fetchCountRef.current >= 3) {
+        fetchCountRef.current = 0
+        fetchRealPrice()
+      } else {
+        showDummy()
       }
     }, 3000)
 
     return () => {
       isActive = false
-      clearInterval(dummyInterval)
+      clearInterval(priceInterval)
     }
   }, [activeMarket])
 
