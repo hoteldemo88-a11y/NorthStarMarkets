@@ -44,7 +44,7 @@ const stepConfig = [
   phone: '',
   idType: '',
   idNumber: '',
-  country: '',
+  country: 'Canada',
   dateOfBirth: '',
   annualIncome: '',
   netWorth: '',
@@ -99,6 +99,127 @@ const getIdOptions = (country) => {
   return idTypeOptions[countryKey] || idTypeOptions.default
 }
 
+const countryList = [
+  { code: 'af', name: 'Afghanistan', dial: '+93', flag: '🇦🇫' },
+  { code: 'al', name: 'Albania', dial: '+355', flag: '🇦🇱' },
+  { code: 'dz', name: 'Algeria', dial: '+213', flag: '🇩🇿' },
+  { code: 'ad', name: 'Andorra', dial: '+376', flag: '🇦🇩' },
+  { code: 'ao', name: 'Angola', dial: '+244', flag: '🇦🇴' },
+  { code: 'ar', name: 'Argentina', dial: '+54', flag: '🇦🇷' },
+  { code: 'am', name: 'Armenia', dial: '+374', flag: '🇦🇲' },
+  { code: 'au', name: 'Australia', dial: '+61', flag: '🇦🇺' },
+  { code: 'at', name: 'Austria', dial: '+43', flag: '🇦🇹' },
+  { code: 'az', name: 'Azerbaijan', dial: '+994', flag: '🇦🇿' },
+  { code: 'bs', name: 'Bahamas', dial: '+1', flag: '🇧🇸' },
+  { code: 'bh', name: 'Bahrain', dial: '+973', flag: '🇧🇭' },
+  { code: 'bd', name: 'Bangladesh', dial: '+880', flag: '🇧🇩' },
+  { code: 'bb', name: 'Barbados', dial: '+1', flag: '🇧🇧' },
+  { code: 'by', name: 'Belarus', dial: '+375', flag: '🇧🇾' },
+  { code: 'be', name: 'Belgium', dial: '+32', flag: '🇧🇪' },
+  { code: 'bz', name: 'Belize', dial: '+501', flag: '🇧🇿' },
+  { code: 'bj', name: 'Benin', dial: '+229', flag: '🇧🇯' },
+  { code: 'bt', name: 'Bhutan', dial: '+975', flag: '🇧🇹' },
+  { code: 'bo', name: 'Bolivia', dial: '+591', flag: '🇧🇴' },
+  { code: 'ba', name: 'Bosnia', dial: '+387', flag: '🇧🇦' },
+  { code: 'bw', name: 'Botswana', dial: '+267', flag: '🇧🇼' },
+  { code: 'br', name: 'Brazil', dial: '+55', flag: '🇧🇷' },
+  { code: 'bn', name: 'Brunei', dial: '+673', flag: '🇧🇳' },
+  { code: 'bg', name: 'Bulgaria', dial: '+359', flag: '🇧🇬' },
+  { code: 'kh', name: 'Cambodia', dial: '+855', flag: '🇰🇭' },
+  { code: 'cm', name: 'Cameroon', dial: '+237', flag: '🇨🇲' },
+  { code: 'ca', name: 'Canada', dial: '+1', flag: '🇨🇦' },
+  { code: 'cl', name: 'Chile', dial: '+56', flag: '🇨🇱' },
+  { code: 'cn', name: 'China', dial: '+86', flag: '🇨🇳' },
+  { code: 'co', name: 'Colombia', dial: '+57', flag: '🇨🇴' },
+  { code: 'cr', name: 'Costa Rica', dial: '+506', flag: '🇨🇷' },
+  { code: 'hr', name: 'Croatia', dial: '+385', flag: '🇭🇷' },
+  { code: 'cu', name: 'Cuba', dial: '+53', flag: '🇨🇺' },
+  { code: 'cy', name: 'Cyprus', dial: '+357', flag: '🇨🇾' },
+  { code: 'cz', name: 'Czechia', dial: '+420', flag: '🇨🇿' },
+  { code: 'dk', name: 'Denmark', dial: '+45', flag: '🇩🇰' },
+  { code: 'do', name: 'Dominican Republic', dial: '+1', flag: '🇩🇴' },
+  { code: 'ec', name: 'Ecuador', dial: '+593', flag: '🇪🇨' },
+  { code: 'eg', name: 'Egypt', dial: '+20', flag: '🇪🇬' },
+  { code: 'sv', name: 'El Salvador', dial: '+503', flag: '🇸🇻' },
+  { code: 'ee', name: 'Estonia', dial: '+372', flag: '🇪🇪' },
+  { code: 'et', name: 'Ethiopia', dial: '+251', flag: '🇪🇹' },
+  { code: 'fi', name: 'Finland', dial: '+358', flag: '🇫🇮' },
+  { code: 'fr', name: 'France', dial: '+33', flag: '🇫🇷' },
+  { code: 'ge', name: 'Georgia', dial: '+995', flag: '🇬🇪' },
+  { code: 'de', name: 'Germany', dial: '+49', flag: '🇩🇪' },
+  { code: 'gh', name: 'Ghana', dial: '+233', flag: '🇬🇭' },
+  { code: 'gr', name: 'Greece', dial: '+30', flag: '🇬🇷' },
+  { code: 'gt', name: 'Guatemala', dial: '+502', flag: '🇬🇹' },
+  { code: 'hn', name: 'Honduras', dial: '+504', flag: '🇭🇳' },
+  { code: 'hu', name: 'Hungary', dial: '+36', flag: '🇭🇺' },
+  { code: 'is', name: 'Iceland', dial: '+354', flag: '🇮🇸' },
+  { code: 'in', name: 'India', dial: '+91', flag: '🇮🇳' },
+  { code: 'id', name: 'Indonesia', dial: '+62', flag: '🇮🇩' },
+  { code: 'ir', name: 'Iran', dial: '+98', flag: '🇮🇷' },
+  { code: 'iq', name: 'Iraq', dial: '+964', flag: '🇮🇶' },
+  { code: 'ie', name: 'Ireland', dial: '+353', flag: '🇮🇪' },
+  { code: 'il', name: 'Israel', dial: '+972', flag: '🇮🇱' },
+  { code: 'it', name: 'Italy', dial: '+39', flag: '🇮🇹' },
+  { code: 'jm', name: 'Jamaica', dial: '+1', flag: '🇯🇲' },
+  { code: 'jp', name: 'Japan', dial: '+81', flag: '🇯🇵' },
+  { code: 'jo', name: 'Jordan', dial: '+962', flag: '🇯🇴' },
+  { code: 'kz', name: 'Kazakhstan', dial: '+7', flag: '🇰🇿' },
+  { code: 'ke', name: 'Kenya', dial: '+254', flag: '🇰🇪' },
+  { code: 'kr', name: 'South Korea', dial: '+82', flag: '🇰🇷' },
+  { code: 'kw', name: 'Kuwait', dial: '+965', flag: '🇰🇼' },
+  { code: 'lb', name: 'Lebanon', dial: '+961', flag: '🇱🇧' },
+  { code: 'lt', name: 'Lithuania', dial: '+370', flag: '🇱🇹' },
+  { code: 'lu', name: 'Luxembourg', dial: '+352', flag: '🇱🇺' },
+  { code: 'my', name: 'Malaysia', dial: '+60', flag: '🇲🇾' },
+  { code: 'mv', name: 'Maldives', dial: '+960', flag: '🇲🇻' },
+  { code: 'mt', name: 'Malta', dial: '+356', flag: '🇲🇹' },
+  { code: 'mx', name: 'Mexico', dial: '+52', flag: '🇲🇽' },
+  { code: 'md', name: 'Moldova', dial: '+373', flag: '🇲🇩' },
+  { code: 'mc', name: 'Monaco', dial: '+377', flag: '🇲🇨' },
+  { code: 'mn', name: 'Mongolia', dial: '+976', flag: '🇲🇳' },
+  { code: 'me', name: 'Montenegro', dial: '+382', flag: '🇲🇪' },
+  { code: 'ma', name: 'Morocco', dial: '+212', flag: '🇲🇦' },
+  { code: 'mz', name: 'Mozambique', dial: '+258', flag: '🇲🇿' },
+  { code: 'mm', name: 'Myanmar', dial: '+95', flag: '🇲🇲' },
+  { code: 'np', name: 'Nepal', dial: '+977', flag: '🇳🇵' },
+  { code: 'nl', name: 'Netherlands', dial: '+31', flag: '🇳🇱' },
+  { code: 'nz', name: 'New Zealand', dial: '+64', flag: '🇳🇿' },
+  { code: 'ni', name: 'Nicaragua', dial: '+505', flag: '🇳🇮' },
+  { code: 'ng', name: 'Nigeria', dial: '+234', flag: '🇳🇬' },
+  { code: 'no', name: 'Norway', dial: '+47', flag: '🇳🇴' },
+  { code: 'om', name: 'Oman', dial: '+968', flag: '🇴🇲' },
+  { code: 'pk', name: 'Pakistan', dial: '+92', flag: '🇵🇰' },
+  { code: 'pa', name: 'Panama', dial: '+507', flag: '🇵🇦' },
+  { code: 'pe', name: 'Peru', dial: '+51', flag: '🇵🇪' },
+  { code: 'ph', name: 'Philippines', dial: '+63', flag: '🇵🇭' },
+  { code: 'pl', name: 'Poland', dial: '+48', flag: '🇵🇱' },
+  { code: 'pt', name: 'Portugal', dial: '+351', flag: '🇵🇹' },
+  { code: 'qa', name: 'Qatar', dial: '+974', flag: '🇶🇦' },
+  { code: 'ro', name: 'Romania', dial: '+40', flag: '🇷🇴' },
+  { code: 'ru', name: 'Russia', dial: '+7', flag: '🇷🇺' },
+  { code: 'sa', name: 'Saudi Arabia', dial: '+966', flag: '🇸🇦' },
+  { code: 'rs', name: 'Serbia', dial: '+381', flag: '🇷🇸' },
+  { code: 'sg', name: 'Singapore', dial: '+65', flag: '🇸🇬' },
+  { code: 'sk', name: 'Slovakia', dial: '+421', flag: '🇸🇰' },
+  { code: 'si', name: 'Slovenia', dial: '+386', flag: '🇸🇮' },
+  { code: 'za', name: 'South Africa', dial: '+27', flag: '🇿🇦' },
+  { code: 'es', name: 'Spain', dial: '+34', flag: '🇪🇸' },
+  { code: 'lk', name: 'Sri Lanka', dial: '+94', flag: '🇱🇰' },
+  { code: 'se', name: 'Sweden', dial: '+46', flag: '🇸🇪' },
+  { code: 'ch', name: 'Switzerland', dial: '+41', flag: '🇨🇭' },
+  { code: 'tw', name: 'Taiwan', dial: '+886', flag: '🇹🇼' },
+  { code: 'th', name: 'Thailand', dial: '+66', flag: '🇹🇭' },
+  { code: 'tr', name: 'Turkey', dial: '+90', flag: '🇹🇷' },
+  { code: 'ua', name: 'Ukraine', dial: '+380', flag: '🇺🇦' },
+  { code: 'ae', name: 'UAE', dial: '+971', flag: '🇦🇪' },
+  { code: 'gb', name: 'United Kingdom', dial: '+44', flag: '🇬🇧' },
+  { code: 'us', name: 'United States', dial: '+1', flag: '🇺🇸' },
+  { code: 'uy', name: 'Uruguay', dial: '+598', flag: '🇺🇾' },
+  { code: 'uz', name: 'Uzbekistan', dial: '+998', flag: '🇺🇿' },
+  { code: 've', name: 'Venezuela', dial: '+58', flag: '🇻🇪' },
+  { code: 'vn', name: 'Vietnam', dial: '+84', flag: '🇻🇳' },
+]
+
 const options = {
   employmentStatus: ['Employed', 'Self-Employed', 'Student', 'Retired'],
   sourceOfFunds: ['Salary', 'Business Income', 'Investments', 'Savings'],
@@ -143,7 +264,8 @@ export default function OpenAccount() {
   const [errors, setErrors] = useState({})
   const [loading, setLoading] = useState(false)
   const [apiError, setApiError] = useState('')
-  const [countryIso, setCountryIso] = useState(getCountryFromLocale())
+  const [countryIso, setCountryIso] = useState('ca')
+  const [selectedCountry, setSelectedCountry] = useState('')
   const { user, loading: authLoading, register } = useAuth()
   const navigate = useNavigate()
 
@@ -312,28 +434,36 @@ export default function OpenAccount() {
                     <div className="sm:col-span-2">
                       <label className="text-sm text-gray-300 mb-2 block">Phone Number</label>
                       <div className="rounded-xl border border-white/[0.12] bg-[#0a0a0f] p-1.5">
-                        <PhoneInput
-                          country={countryIso}
-                          value={formData.phone}
-                          onChange={(value, countryData) => {
-                            setField('phone', value || '')
-                            setField('country', countryData?.name || '')
-                            if (countryData?.countryCode) setCountryIso(countryData.countryCode)
-                          }}
-                          countryCodeEditable={false}
-                          enableSearch
-                          disableSearchIcon
-                          inputClass="!w-full !h-11 !bg-transparent !border-0 !text-white !pl-14"
-                          buttonClass="!bg-transparent !border-0"
-                          containerClass="!w-full"
-                          dropdownClass="!bg-[#141421] !text-white"
-                          placeholder="Enter phone number"
-                        />
+                        <div className="flex flex-col sm:flex-row items-stretch gap-2">
+                          <select
+                            value={countryIso}
+                            onChange={(e) => {
+                              const selected = countryList.find(c => c.code === e.target.value)
+                              setCountryIso(e.target.value)
+                              setSelectedCountry(selected?.name || '')
+                              setField('country', selected?.name || '')
+                            }}
+                            className="w-full sm:w-auto bg-[#0a0a0f] text-white text-sm min-h-[44px] px-2 rounded-lg"
+                          >
+                            {countryList.map((c) => (
+                              <option key={c.code} value={c.code} className="bg-[#141421]">
+                                {c.flag} {c.name} {c.dial}
+                              </option>
+                            ))}
+                          </select>
+                          <input
+                            type="tel"
+                            value={formData.phone}
+                            onChange={(e) => setField('phone', e.target.value)}
+                            placeholder="Enter phone number"
+                            className="flex-1 bg-transparent border border-white/20 rounded-lg text-white outline-none px-3 py-2.5 min-h-[44px]"
+                          />
+                        </div>
                       </div>
                       {errors.phone && <p className="text-xs text-red-400 mt-1">{errors.phone}</p>}
                     </div>
 
-                    <InputField icon={FaGlobe} label="Country" value={formData.country} onChange={(v) => setField('country', v)} error={errors.country} readOnly />
+                    <InputField icon={FaGlobe} label="Country" value={formData.country || selectedCountry || ''} onChange={(v) => setField('country', v)} error={errors.country} readOnly />
                     <InputField icon={FaIdCard} label="Date of Birth" type="date" value={formData.dateOfBirth} onChange={(v) => setField('dateOfBirth', v)} error={errors.dateOfBirth} />
 
                     <div className="sm:col-span-2 mt-2 p-4 rounded-xl bg-amber-500/10 border border-amber-400/25">
