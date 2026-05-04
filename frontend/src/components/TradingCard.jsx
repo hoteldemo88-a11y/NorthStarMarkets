@@ -11,15 +11,15 @@ const markets = [
 ]
 
 const MOCK_PRICES = {
-  gold: { price: 4727.05, high: 4730.42, low: 4726.28, change: 0.02 },
-  silver: { price: 76.52, high: 77.00, low: 75.50, change: 0.05 },
-  crude: { price: 65.00, high: 70.00, low: 60.00, change: -1.00 },
-  bitcoin: { price: 74000.00, high: 75000.00, low: 73000.00, change: 0.50 },
-  ethereum: { price: 1650.00, high: 1700.00, low: 1600.00, change: 0.30 },
+  gold: { price: 4564.00, high: 4630.00, low: 4560.00, change: 0.25 },
+  silver: { price: 73.50, high: 74.50, low: 72.50, change: -0.85 },
+  crude: { price: 105.00, high: 106.00, low: 99.00, change: 1.20 },
+  bitcoin: { price: 78975.00, high: 80000.00, low: 78000.00, change: 0.35 },
+  ethereum: { price: 2340.00, high: 2400.00, low: 2308.00, change: 0.55 },
 }
 
 const getBasePrice = (sym) => {
-  const prices = { gold: 4727.05, silver: 76.52, crude: 65.00, bitcoin: 74000, ethereum: 1650 }
+  const prices = { gold: 4564.00, silver: 73.50, crude: 105.00, bitcoin: 78975.00, ethereum: 2340.00 }
   return prices[sym.toLowerCase()] || 1000
 }
 
@@ -43,11 +43,11 @@ const fetchRealTimePrices = async () => {
   } catch (error) {
     console.log('Using fallback prices', error)
     return {
-      gold: { price: 4729.33, high: 4750.00, low: 4700.00, change: 0.50 },
-      silver: { price: 76.52, high: 77.00, low: 75.50, change: 0.80 },
-      crude: { price: 90.24, high: 95.00, low: 88.00, change: -1.10 },
-      bitcoin: { price: 74242.52, high: 74814.54, low: 74145.62, change: 0.10 },
-      ethereum: { price: 2320.05, high: 2344.10, low: 2318.52, change: -0.15 },
+      gold: { price: 4564.00, high: 4630.00, low: 4560.00, change: 0.25 },
+      silver: { price: 73.50, high: 74.50, low: 72.50, change: -0.85 },
+      crude: { price: 105.00, high: 106.00, low: 99.00, change: 1.20 },
+      bitcoin: { price: 78975.00, high: 80000.00, low: 78000.00, change: 0.35 },
+      ethereum: { price: 2340.00, high: 2400.00, low: 2308.00, change: 0.55 },
     }
   }
 }
@@ -83,7 +83,7 @@ function TradingChart({ symbol, type }) {
   const [loading, setLoading] = useState(true)
 
   const getBasePrice = (sym) => {
-    const prices = { gold: 4727.05, silver: 76.52, crude: 65.00, bitcoin: 74000, ethereum: 1650 }
+    const prices = { gold: 4564.00, silver: 73.50, crude: 105.00, bitcoin: 78975.00, ethereum: 2340.00 }
     return prices[sym.toLowerCase()] || 1000
   }
 

@@ -59,34 +59,34 @@ app.get('/api/prices', async (_req, res) => {
 
     const prices = {
       gold: {
-        price: goldData?.chart?.result?.[0]?.meta?.regularMarketPrice || 4727.05,
-        high: goldData?.chart?.result?.[0]?.indicators?.quote?.[0]?.high?.[0] || 4730.42,
-        low: goldData?.chart?.result?.[0]?.indicators?.quote?.[0]?.low?.[0] || 4726.28,
-        change: ((goldData?.chart?.result?.[0]?.meta?.regularMarketPrice - goldData?.chart?.result?.[0]?.meta?.chartPreviousClose) / goldData?.chart?.result?.[0]?.meta?.chartPreviousClose * 100) || 0.02
+        price: goldData?.chart?.result?.[0]?.meta?.regularMarketPrice || 4564.00,
+        high: goldData?.chart?.result?.[0]?.indicators?.quote?.[0]?.high?.[0] || 4630.00,
+        low: goldData?.chart?.result?.[0]?.indicators?.quote?.[0]?.low?.[0] || 4560.00,
+        change: ((goldData?.chart?.result?.[0]?.meta?.regularMarketPrice - goldData?.chart?.result?.[0]?.meta?.chartPreviousClose) / goldData?.chart?.result?.[0]?.meta?.chartPreviousClose * 100) || 0.25
       },
       silver: {
-        price: silverData?.chart?.result?.[0]?.meta?.regularMarketPrice || 76.52,
-        high: silverData?.chart?.result?.[0]?.indicators?.quote?.[0]?.high?.[0] || 77.00,
-        low: silverData?.chart?.result?.[0]?.indicators?.quote?.[0]?.low?.[0] || 75.50,
-        change: ((silverData?.chart?.result?.[0]?.meta?.regularMarketPrice - silverData?.chart?.result?.[0]?.meta?.chartPreviousClose) / silverData?.chart?.result?.[0]?.meta?.chartPreviousClose * 100) || 0.05
+        price: silverData?.chart?.result?.[0]?.meta?.regularMarketPrice || 73.50,
+        high: silverData?.chart?.result?.[0]?.indicators?.quote?.[0]?.high?.[0] || 74.50,
+        low: silverData?.chart?.result?.[0]?.indicators?.quote?.[0]?.low?.[0] || 72.50,
+        change: ((silverData?.chart?.result?.[0]?.meta?.regularMarketPrice - silverData?.chart?.result?.[0]?.meta?.chartPreviousClose) / silverData?.chart?.result?.[0]?.meta?.chartPreviousClose * 100) || -0.85
       },
       crude: {
-        price: oilData?.chart?.result?.[0]?.meta?.regularMarketPrice || 90.24,
-        high: oilData?.chart?.result?.[0]?.indicators?.quote?.[0]?.high?.[0] || 95.00,
-        low: oilData?.chart?.result?.[0]?.indicators?.quote?.[0]?.low?.[0] || 88.00,
-        change: ((oilData?.chart?.result?.[0]?.meta?.regularMarketPrice - oilData?.chart?.result?.[0]?.meta?.chartPreviousClose) / oilData?.chart?.result?.[0]?.meta?.chartPreviousClose * 100) || -1.10
+        price: oilData?.chart?.result?.[0]?.meta?.regularMarketPrice || 105.00,
+        high: oilData?.chart?.result?.[0]?.indicators?.quote?.[0]?.high?.[0] || 106.00,
+        low: oilData?.chart?.result?.[0]?.indicators?.quote?.[0]?.low?.[0] || 99.00,
+        change: ((oilData?.chart?.result?.[0]?.meta?.regularMarketPrice - oilData?.chart?.result?.[0]?.meta?.chartPreviousClose) / oilData?.chart?.result?.[0]?.meta?.chartPreviousClose * 100) || 1.20
       },
       bitcoin: {
-        price: btcData?.chart?.result?.[0]?.meta?.regularMarketPrice || 74242.52,
-        high: btcData?.chart?.result?.[0]?.indicators?.quote?.[0]?.high?.[0] || 74814.54,
-        low: btcData?.chart?.result?.[0]?.indicators?.quote?.[0]?.low?.[0] || 74145.62,
-        change: ((btcData?.chart?.result?.[0]?.meta?.regularMarketPrice - btcData?.chart?.result?.[0]?.meta?.chartPreviousClose) / btcData?.chart?.result?.[0]?.meta?.chartPreviousClose * 100) || 0.10
+        price: btcData?.chart?.result?.[0]?.meta?.regularMarketPrice || 78975.00,
+        high: btcData?.chart?.result?.[0]?.indicators?.quote?.[0]?.high?.[0] || 80000.00,
+        low: btcData?.chart?.result?.[0]?.indicators?.quote?.[0]?.low?.[0] || 78000.00,
+        change: ((btcData?.chart?.result?.[0]?.meta?.regularMarketPrice - btcData?.chart?.result?.[0]?.meta?.chartPreviousClose) / btcData?.chart?.result?.[0]?.meta?.chartPreviousClose * 100) || 0.35
       },
       ethereum: {
-        price: ethData?.chart?.result?.[0]?.meta?.regularMarketPrice || 2320.05,
-        high: ethData?.chart?.result?.[0]?.indicators?.quote?.[0]?.high?.[0] || 2344.10,
-        low: ethData?.chart?.result?.[0]?.indicators?.quote?.[0]?.low?.[0] || 2318.52,
-        change: ((ethData?.chart?.result?.[0]?.meta?.regularMarketPrice - ethData?.chart?.result?.[0]?.meta?.chartPreviousClose) / ethData?.chart?.result?.[0]?.meta?.chartPreviousClose * 100) || -0.15
+        price: ethData?.chart?.result?.[0]?.meta?.regularMarketPrice || 2340.00,
+        high: ethData?.chart?.result?.[0]?.indicators?.quote?.[0]?.high?.[0] || 2400.00,
+        low: ethData?.chart?.result?.[0]?.indicators?.quote?.[0]?.low?.[0] || 2308.00,
+        change: ((ethData?.chart?.result?.[0]?.meta?.regularMarketPrice - ethData?.chart?.result?.[0]?.meta?.chartPreviousClose) / ethData?.chart?.result?.[0]?.meta?.chartPreviousClose * 100) || 0.55
       },
     }
 
@@ -100,11 +100,11 @@ app.get('/api/prices', async (_req, res) => {
     res.status(500).json({
       error: 'Failed to fetch prices',
       fallback: {
-        gold: { price: 4727.05, high: 4730.42, low: 4726.28, change: 0.02 },
-        silver: { price: 76.52, high: 77.00, low: 75.50, change: 0.05 },
-        crude: { price: 65.00, high: 70.00, low: 60.00, change: -1.00 },
-        bitcoin: { price: 74000.00, high: 75000.00, low: 73000.00, change: 0.50 },
-        ethereum: { price: 1650.00, high: 1700.00, low: 1600.00, change: 0.30 },
+        gold: { price: 4564.00, high: 4630.00, low: 4560.00, change: 0.25 },
+        silver: { price: 73.50, high: 74.50, low: 72.50, change: -0.85 },
+        crude: { price: 105.00, high: 106.00, low: 99.00, change: 1.20 },
+        bitcoin: { price: 78975.00, high: 80000.00, low: 78000.00, change: 0.35 },
+        ethereum: { price: 2340.00, high: 2400.00, low: 2308.00, change: 0.55 },
       }
     })
   }
