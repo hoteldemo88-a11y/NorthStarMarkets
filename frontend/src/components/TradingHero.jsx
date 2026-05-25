@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { motion } from 'framer-motion'
-import { createChart } from 'lightweight-charts'
+import { motion, AnimatePresence } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import { TrendingUp, TrendingDown, Star, ChevronRight, Activity, Zap, Shield, Clock, CreditCard, Users, Award, Globe, Menu, X } from 'lucide-react'
 
@@ -90,112 +89,60 @@ function GridPattern() {
 }
 
 function TradingChart({ symbol }) {
-  const chartContainerRef = useRef(null)
-  const chartRef = useRef(null)
-  const [loading, setLoading] = useState(true)
+  const containerId = `tv-chart-${symbol}`
 
-  const getBasePrice = (sym) => {
-    const prices = { gold: 4564.00, silver: 73.50, crude: 105.00, bitcoin: 78975.00, ethereum: 2340.00 }
-    return prices[sym.toLowerCase()] || 1000
+  const tvSymbolMap = {
+    gold: 'FOREXCOM:XAUUSD',
+    silver: 'FOREXCOM:XAGUSD',
+    crude: 'NYMEX:CL1!',
+    bitcoin: 'BITSTAMP:BTCUSD',
+    ethereum: 'BITSTAMP:ETHUSD'
   }
 
-  const generateMockData = (basePrice, count = 200) => {
-    const data = []
-    let price = basePrice
-    const now = Math.floor(Date.now() / 1000)
-    const interval = 900
-
-    for (let i = count; i > 0; i--) {
-      const change = (Math.random() - 0.5) * basePrice * 0.01
-      const open = price
-      const close = price + change
-      const high = Math.max(open, close) + Math.random() * basePrice * 0.002
-      const low = Math.min(open, close) - Math.random() * basePrice * 0.002
-
-      data.push({
-        time: now - (i * interval),
-        open,
-        high,
-        low,
-        close,
-      })
-      price = close
-    }
-    return data
-  }
+  const tvSymbol = tvSymbolMap[symbol.toLowerCase()] || `TVC:${symbol.toUpperCase()}`
 
   useEffect(() => {
-    if (!chartContainerRef.current) return
+    const container = document.getElementById(containerId)
+    if (!container) return
 
-    setLoading(true)
+    // Clear previous widget
+    container.innerHTML = '<div class="tradingview-widget-container__widget"></div>'
 
-    const chart = createChart(chartContainerRef.current, {
-      layout: {
-        background: { color: '#0a0a0f' },
-        textColor: '#9CA3AF',
-      },
-      grid: {
-        vertLines: { color: 'rgba(255,255,255,0.03)' },
-        horzLines: { color: 'rgba(255,255,255,0.03)' },
-      },
-      width: chartContainerRef.current.clientWidth,
-      height: 200,
-      timeScale: {
-        timeVisible: true,
-        secondsVisible: false,
-        borderColor: 'rgba(255,255,255,0.05)',
-      },
-      rightPriceScale: {
-        borderColor: 'rgba(255,255,255,0.05)',
-      },
-      crosshair: {
-        mode: 0,
-        vertLine: { color: 'rgba(99,102,241,0.4)', width: 1, style: 2 },
-        horzLine: { color: 'rgba(99,102,241,0.4)', width: 1, style: 2 },
-      },
-    })
-
-    const candleSeries = chart.addCandlestickSeries({
-      upColor: '#10B981',
-      downColor: '#EF4444',
-      borderUpColor: '#10B981',
-      borderDownColor: '#EF4444',
-      wickUpColor: '#10B981',
-      wickDownColor: '#EF4444',
-    })
-
-    chartRef.current = chart
-
-    const mockData = generateMockData(getBasePrice(symbol))
-    candleSeries.setData(mockData)
-    chart.timeScale().fitContent()
-    setLoading(false)
-
-    const handleResize = () => {
-      if (chartContainerRef.current && chartRef.current) {
-        chart.applyOptions({ width: chartContainerRef.current.clientWidth })
+    const script = document.createElement('script')
+    script.src = 'https://s3.tradingview.com/tv.js'
+    script.async = true
+    script.onload = () => {
+      if (window.TradingView && window.TradingView.widget) {
+        new window.TradingView.widget({
+          container_id: containerId,
+          autosize: true,
+          symbol: tvSymbol,
+          interval: 'D',
+          timezone: 'Etc/UTC',
+          theme: 'dark',
+          style: '1',
+          locale: 'en',
+          toolbar_bg: '#0a0a0f',
+          enable_publishing: false,
+          hide_top_toolbar: true,
+          hide_side_toolbar: true,
+          allow_symbol_change: false,
+          save_image: false,
+          studies: [],
+        })
       }
     }
-
-    window.addEventListener('resize', handleResize)
+    document.head.appendChild(script)
 
     return () => {
-      window.removeEventListener('resize', handleResize)
-      if (chartRef.current) {
-        chartRef.current.remove()
-        chartRef.current = null
-      }
+      // Cleanup: remove widget and script
+      if (container) container.innerHTML = '<div class="tradingview-widget-container__widget"></div>'
     }
-  }, [symbol])
+  }, [symbol, tvSymbol, containerId])
 
   return (
     <div className="w-full h-[200px] relative">
-      {loading && (
-        <div className="absolute inset-0 flex items-center justify-center bg-[#0a0a0f]">
-          <div className="w-6 h-6 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin" />
-        </div>
-      )}
-      <div ref={chartContainerRef} className="w-full h-full" />
+      <div id={containerId} className="tradingview-widget-container" style={{ width: '100%', height: '100%' }} />
     </div>
   )
 }

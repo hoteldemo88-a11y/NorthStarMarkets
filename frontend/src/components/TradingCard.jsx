@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
 import { motion } from 'framer-motion'
-import { createChart } from 'lightweight-charts'
 
 const markets = [
   { id: 'XAU', name: 'Gold', symbol: 'gold', pair: 'XAU/USD', icon: 'Au', color: '#FFD700', type: 'commodity' },
@@ -77,89 +76,60 @@ function generateMockData(basePrice, count = 100) {
   return data
 }
 
-function TradingChart({ symbol, type }) {
-  const chartContainerRef = useRef(null)
-  const chartRef = useRef(null)
-  const [loading, setLoading] = useState(true)
+function TradingChart({ symbol }) {
+  const containerId = `tv-chart-card-${symbol}`
 
-  const getBasePrice = (sym) => {
-    const prices = { gold: 4564.00, silver: 73.50, crude: 105.00, bitcoin: 78975.00, ethereum: 2340.00 }
-    return prices[sym.toLowerCase()] || 1000
+  const tvSymbolMap = {
+    gold: 'FOREXCOM:XAUUSD',
+    silver: 'FOREXCOM:XAGUSD',
+    crude: 'NYMEX:CL1!',
+    bitcoin: 'BITSTAMP:BTCUSD',
+    ethereum: 'BITSTAMP:ETHUSD'
   }
 
+  const tvSymbol = tvSymbolMap[symbol.toLowerCase()] || `TVC:${symbol.toUpperCase()}`
+
   useEffect(() => {
-    if (!chartContainerRef.current) return
+    const container = document.getElementById(containerId)
+    if (!container) return
 
-    setLoading(true)
+    // Clear previous widget
+    container.innerHTML = '<div class="tradingview-widget-container__widget"></div>'
 
-    const chart = createChart(chartContainerRef.current, {
-      layout: {
-        background: { color: '#0a0a0f' },
-        textColor: '#9CA3AF',
-      },
-      grid: {
-        vertLines: { color: 'rgba(255,255,255,0.03)' },
-        horzLines: { color: 'rgba(255,255,255,0.03)' },
-      },
-      width: chartContainerRef.current.clientWidth,
-      height: 180,
-      timeScale: {
-        timeVisible: true,
-        secondsVisible: false,
-        borderColor: 'rgba(255,255,255,0.05)',
-      },
-      rightPriceScale: {
-        borderColor: 'rgba(255,255,255,0.05)',
-      },
-      crosshair: {
-        mode: 0,
-        vertLine: { color: 'rgba(99,102,241,0.4)', width: 1, style: 2 },
-        horzLine: { color: 'rgba(99,102,241,0.4)', width: 1, style: 2 },
-      },
-    })
-
-    const candleSeries = chart.addCandlestickSeries({
-      upColor: '#10B981',
-      downColor: '#EF4444',
-      borderUpColor: '#10B981',
-      borderDownColor: '#EF4444',
-      wickUpColor: '#10B981',
-      wickDownColor: '#EF4444',
-    })
-
-    chartRef.current = chart
-
-    // Use mock data for commodities (no free API available)
-    const mockData = generateMockData(getBasePrice(symbol))
-    candleSeries.setData(mockData)
-    chart.timeScale().fitContent()
-    setLoading(false)
-
-    const handleResize = () => {
-      if (chartContainerRef.current && chartRef.current) {
-        chart.applyOptions({ width: chartContainerRef.current.clientWidth })
+    const script = document.createElement('script')
+    script.src = 'https://s3.tradingview.com/tv.js'
+    script.async = true
+    script.onload = () => {
+      if (window.TradingView && window.TradingView.widget) {
+        new window.TradingView.widget({
+          container_id: containerId,
+          autosize: true,
+          symbol: tvSymbol,
+          interval: 'D',
+          timezone: 'Etc/UTC',
+          theme: 'dark',
+          style: '1',
+          locale: 'en',
+          toolbar_bg: '#0a0a0f',
+          enable_publishing: false,
+          hide_top_toolbar: true,
+          hide_side_toolbar: true,
+          allow_symbol_change: false,
+          save_image: false,
+          studies: [],
+        })
       }
     }
-
-    window.addEventListener('resize', handleResize)
+    document.head.appendChild(script)
 
     return () => {
-      window.removeEventListener('resize', handleResize)
-      if (chartRef.current) {
-        chartRef.current.remove()
-        chartRef.current = null
-      }
+      if (container) container.innerHTML = '<div class="tradingview-widget-container__widget"></div>'
     }
-  }, [symbol])
+  }, [symbol, tvSymbol, containerId])
 
   return (
     <div className="w-full h-[180px] relative">
-      {loading && (
-        <div className="absolute inset-0 flex items-center justify-center bg-[#0a0a0f] z-10">
-          <div className="w-6 h-6 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin" />
-        </div>
-      )}
-      <div ref={chartContainerRef} className="w-full h-full" />
+      <div id={containerId} className="tradingview-widget-container" style={{ width: '100%', height: '100%' }} />
     </div>
   )
 }
@@ -315,7 +285,7 @@ export default function TradingCard() {
 
           {/* Chart */}
           <div className="mb-4 rounded-xl overflow-hidden bg-white/[0.02] border border-white/5">
-            <TradingChart symbol={activeMarket.symbol} type={activeMarket.type} />
+            <TradingChart symbol={activeMarket.symbol} />
           </div>
 
           {/* Stats */}
