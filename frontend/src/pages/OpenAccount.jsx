@@ -1,8 +1,6 @@
-import { useMemo, useState } from 'react'
+import { useMemo, useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { AnimatePresence, motion } from 'framer-motion'
-import PhoneInput from 'react-phone-input-2'
-import 'react-phone-input-2/lib/style.css'
 import {
   FaArrowLeft,
   FaArrowRight,
@@ -271,12 +269,17 @@ export default function OpenAccount() {
 
   const progress = useMemo(() => Math.round(((step + 1) / stepConfig.length) * 100), [step])
 
+  useEffect(() => {
+    if (user) {
+      navigate(user.role === 'admin' ? '/admin/dashboard' : '/dashboard', { replace: true })
+    }
+  }, [user, navigate])
+
   if (authLoading) {
     return <div className="min-h-screen bg-[#090910] text-white flex items-center justify-center">Loading...</div>
   }
 
   if (user) {
-    navigate(user.role === 'admin' ? '/admin/dashboard' : '/dashboard', { replace: true })
     return null
   }
   const currentStep = stepConfig[step]

@@ -11,7 +11,21 @@ export function AuthProvider({ children }) {
   useEffect(() => {
     const token = localStorage.getItem('token')
     if (token && !localStorage.getItem('demoMode')) {
-      setLoading(false)
+      fetch(`${API_BASE_URL}/auth/me`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+        .then((res) => {
+          if (!res.ok) throw new Error('Token invalid')
+          return res.json()
+        })
+        .then((data) => {
+          setUser(data.user)
+          setLoading(false)
+        })
+        .catch(() => {
+          localStorage.removeItem('token')
+          setLoading(false)
+        })
     } else {
       setLoading(false)
     }

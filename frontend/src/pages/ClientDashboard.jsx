@@ -133,7 +133,7 @@ export default function ClientDashboard() {
   const isPending = summary?.verificationStatus === 'pending'
   const isRejected = summary?.verificationStatus === 'rejected'
   const isDocumentsRequested = summary?.verificationStatus === 'documents_requested'
-  const hasKycDocuments = summary?.idFront && summary?.idBack
+  const hasKycDocuments = !!summary?.idFront
   const kycComplete = isVerified || hasKycDocuments
   const canTrade = isVerified || isPending
 

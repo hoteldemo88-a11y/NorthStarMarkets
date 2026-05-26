@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { jsPDF } from 'jspdf'
 import { Search, UserRound, Wallet, Eye, Edit3, Trash2, X, Download, AlertTriangle, CheckCircle, ShieldCheck, ShieldX, FileText } from 'lucide-react'
+import { API_BASE_URL } from '../services/api'
 import { adminApi } from '../services/adminApi'
 import { AdminPanel, SectionTitle, StatTile, TinyBars } from '../components/admin/AdminPrimitives'
 
@@ -24,6 +25,26 @@ export default function AdminUsers() {
   const [verifyReason, setVerifyReason] = useState('')
   const [verifyLoading, setVerifyLoading] = useState(false)
   const [verificationDocs, setVerificationDocs] = useState(null)
+
+  function docUrl(url) { return url ? url.split('#')[0].replace(/\/f_pdf\b|,f_pdf\b/g, '') : '' }
+  function isPdf(url) { return url ? url.split('#')[1] === 'pdf' || url.match(/\.pdf/i) : false }
+  function previewUrl(url) {
+    if (!url) return ''
+    const base = docUrl(url)
+    if (isPdf(url)) return base.replace('/image/upload/', '/image/upload/f_auto/')
+    return base
+  }
+  function viewDocUrl(url, userId) {
+    if (!url || !userId) return '#'
+    const token = localStorage.getItem('token')
+    if (isPdf(url)) return `${API_BASE_URL}/admin/users/${userId}/document?token=${encodeURIComponent(token || '')}`
+    return docUrl(url)
+  }
+  function FileBadge({ url }) {
+    if (!url) return null
+    if (isPdf(url)) return <span className="absolute top-2 left-2 px-2 py-0.5 rounded bg-red-500/80 text-white text-[10px] font-semibold uppercase">PDF</span>
+    return <span className="absolute top-2 left-2 px-2 py-0.5 rounded bg-blue-500/80 text-white text-[10px] font-semibold uppercase">IMG</span>
+  }
   const [loadingDocs, setLoadingDocs] = useState(false)
 
   const loadUsers = async () => {
@@ -456,25 +477,34 @@ export default function AdminUsers() {
                   <div className="p-4 rounded-xl bg-[#0d0d15] border border-amber-500/30">
                     <h4 className="text-sm font-semibold text-amber-300 mb-3 flex items-center gap-2">
                       <span>ID Proof (For Verification)</span>
-                      <span className={`text-xs px-2 py-0.5 rounded-full ${userDetails.id_front || userDetails.id_back ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-400/30' : 'bg-amber-500/20 text-amber-300 border border-amber-400/30'}`}>
-                        {userDetails.id_front || userDetails.id_back ? 'Submitted' : 'Not Submitted'}
+                      <span className={`text-xs px-2 py-0.5 rounded-full ${userDetails.id_front ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-400/30' : 'bg-amber-500/20 text-amber-300 border border-amber-400/30'}`}>
+                        {userDetails.id_front ? 'Submitted' : 'Not Submitted'}
                       </span>
                     </h4>
                     <div className="grid grid-cols-2 gap-3 text-sm">
                       <div><span className="text-gray-400">ID Type:</span> <span className="text-white ml-1 font-medium">{userDetails.id_type ? userDetails.id_type.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) : 'N/A'}</span></div>
                       <div><span className="text-gray-400">ID Number:</span> <span className="text-white ml-1 font-mono font-medium">{userDetails.id_number || 'N/A'}</span></div>
                     </div>
-                    {(userDetails.id_front || userDetails.id_back) && (
+                    {userDetails.id_front && (
                       <div className="mt-3 pt-3 border-t border-white/10">
-                        <p className="text-xs text-gray-400 mb-2">Uploaded Documents:</p>
-                        <div className="flex gap-2">
-                          {userDetails.id_front && (
-                            <a href={userDetails.id_front} target="_blank" rel="noopener noreferrer" className="text-xs text-cyan-300 hover:underline">View Front</a>
-                          )}
-                          {userDetails.id_back && (
-                            <a href={userDetails.id_back} target="_blank" rel="noopener noreferrer" className="text-xs text-cyan-300 hover:underline">View Back</a>
-                          )}
-                        </div>
+                        <p className="text-xs text-gray-400 mb-2">Uploaded Document:</p>
+                        {isPdf(userDetails.id_front) ? (
+                          <>
+                            <a href={viewDocUrl(userDetails.id_front, userDetails.id)} target="_blank" rel="noopener noreferrer" className="block group relative mb-2">
+                              <FileBadge url={userDetails.id_front} />
+                              <img src={previewUrl(userDetails.id_front)} alt="ID Document" className="w-full h-40 object-contain rounded-lg border border-white/10 bg-[#0a0a0f] group-hover:border-cyan-400/50 transition-colors" />
+                            </a>
+                            <a href={viewDocUrl(userDetails.id_front, userDetails.id)} target="_blank" rel="noopener noreferrer" className="text-xs text-cyan-300 hover:underline">View Document ↗</a>
+                          </>
+                        ) : (
+                          <>
+                            <a href={docUrl(userDetails.id_front)} target="_blank" rel="noopener noreferrer" className="block group relative mb-2">
+                              <FileBadge url={userDetails.id_front} />
+                              <img src={previewUrl(userDetails.id_front)} alt="ID Document" className="w-full h-40 object-contain rounded-lg border border-white/10 bg-[#0a0a0f] group-hover:border-cyan-400/50 transition-colors" />
+                            </a>
+                            <a href={docUrl(userDetails.id_front)} target="_blank" rel="noopener noreferrer" className="text-xs text-cyan-300 hover:underline">View Document ↗</a>
+                          </>
+                        )}
                       </div>
                     )}
                   </div>
@@ -743,32 +773,37 @@ export default function AdminUsers() {
                 )}
 
                 <div className="mb-6">
-                  <h4 className="text-sm font-semibold text-cyan-300 mb-3">KYC Documents</h4>
-                  <div className="grid sm:grid-cols-2 gap-4">
-                    <div className="p-4 rounded-xl bg-[#0a0a0f] border border-white/[0.08]">
-                      <p className="text-xs text-gray-400 mb-2">ID Front</p>
-                      {verificationDocs?.idFront ? (
-                        <a href={verificationDocs.idFront} target="_blank" rel="noopener noreferrer" className="block">
-                          <img src={verificationDocs.idFront} alt="ID Front" className="w-full h-48 object-contain rounded-lg border border-white/10 hover:border-cyan-400/50 transition-colors" />
-                        </a>
-                      ) : (
-                        <div className="h-48 flex items-center justify-center text-gray-500 border border-dashed border-white/10 rounded-lg">
-                          No ID Front Uploaded
-                        </div>
-                      )}
-                    </div>
-                    <div className="p-4 rounded-xl bg-[#0a0a0f] border border-white/[0.08]">
-                      <p className="text-xs text-gray-400 mb-2">ID Back</p>
-                      {verificationDocs?.idBack ? (
-                        <a href={verificationDocs.idBack} target="_blank" rel="noopener noreferrer" className="block">
-                          <img src={verificationDocs.idBack} alt="ID Back" className="w-full h-48 object-contain rounded-lg border border-white/10 hover:border-cyan-400/50 transition-colors" />
-                        </a>
-                      ) : (
-                        <div className="h-48 flex items-center justify-center text-gray-500 border border-dashed border-white/10 rounded-lg">
-                          No ID Back Uploaded
-                        </div>
-                      )}
-                    </div>
+                  <h4 className="text-sm font-semibold text-cyan-300 mb-3">KYC Document</h4>
+                  <div className="p-4 rounded-xl bg-[#0a0a0f] border border-white/[0.08]">
+                    <p className="text-xs text-gray-400 mb-2">Uploaded ID</p>
+                    {verificationDocs?.idFront ? (
+                      <div>
+                        {isPdf(verificationDocs.idFront) ? (
+                          <a href={viewDocUrl(verificationDocs.idFront, selectedUser.id)} target="_blank" rel="noopener noreferrer" className="block group relative">
+                            <FileBadge url={verificationDocs.idFront} />
+                            <img src={previewUrl(verificationDocs.idFront)} alt="ID Document" className="w-full h-48 object-contain rounded-lg border border-white/10 bg-[#0d0d15] group-hover:border-cyan-400/50 transition-colors" />
+                          </a>
+                        ) : (
+                          <a href={docUrl(verificationDocs.idFront)} target="_blank" rel="noopener noreferrer" className="block group relative">
+                            <FileBadge url={verificationDocs.idFront} />
+                            <img src={previewUrl(verificationDocs.idFront)} alt="ID Document" className="w-full h-48 object-contain rounded-lg border border-white/10 bg-[#0d0d15] group-hover:border-cyan-400/50 transition-colors" />
+                          </a>
+                        )}
+                        {isPdf(verificationDocs.idFront) ? (
+                          <div className="mt-2 flex gap-2">
+                            <a href={viewDocUrl(verificationDocs.idFront, selectedUser.id)} target="_blank" rel="noopener noreferrer" className="text-xs text-cyan-300 hover:underline">View Document ↗</a>
+                          </div>
+                        ) : (
+                          <div className="mt-2">
+                            <a href={docUrl(verificationDocs.idFront)} target="_blank" rel="noopener noreferrer" className="text-xs text-cyan-300 hover:underline">View Document ↗</a>
+                          </div>
+                        )}
+                      </div>
+                    ) : (
+                      <div className="h-48 flex items-center justify-center text-gray-500 border border-dashed border-white/10 rounded-lg">
+                        No ID Uploaded
+                      </div>
+                    )}
                   </div>
                 </div>
 

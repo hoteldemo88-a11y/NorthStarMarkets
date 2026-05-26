@@ -1,6 +1,8 @@
 import { Router } from 'express'
 import bcrypt from 'bcryptjs'
+import jwt from 'jsonwebtoken'
 import pool from '../config/db.js'
+import cloudinary from '../config/cloudinary.js'
 import { authenticate, requireAdmin } from '../middleware/auth.js'
 import { signToken } from '../utils/tokens.js'
 import { logActivity } from '../utils/activity.js'
@@ -77,17 +79,62 @@ router.post('/change-password', authenticate, async (req, res) => {
   return res.json({ message: 'Password updated successfully' })
 })
 
+router.get('/users/:id/document', async (req, res) => {
+  const authToken = req.query.token || req.headers.authorization?.split(' ')[1]
+  if (!authToken) return res.status(401).json({ message: 'Missing auth token' })
+
+  try {
+    const decoded = jwt.verify(authToken, process.env.JWT_SECRET)
+    if (decoded.role !== 'admin') return res.status(403).json({ message: 'Admin access required' })
+  } catch {
+    return res.status(401).json({ message: 'Invalid or expired token' })
+  }
+
+  const userId = Number(req.params.id)
+  const [[user]] = await pool.query('SELECT id_front FROM users WHERE id = ? AND role = "client" LIMIT 1', [userId])
+  if (!user || !user.id_front) return res.status(404).json({ message: 'No document found' })
+
+  const storedUrl = user.id_front.split('#')[0].replace(/\/f_pdf\b|,f_pdf\b/g, '')
+  const publicIdMatch = storedUrl.match(/\/v\d+\/(.+)\.\w+$/)
+  if (!publicIdMatch) return res.status(400).json({ message: 'Invalid document URL' })
+
+  const publicId = publicIdMatch[1]
+  const formatMatch = storedUrl.match(/\.(\w+)$/)
+  const format = formatMatch ? formatMatch[1] : 'pdf'
+
+  try {
+    const signedUrl = cloudinary.utils.private_download_url(publicId, format, {
+      resource_type: 'image',
+      type: 'upload',
+      attachment: false,
+    })
+
+    const docResponse = await fetch(signedUrl)
+    if (!docResponse.ok) throw new Error(`Cloudinary returned ${docResponse.status}`)
+
+    const contentType = docResponse.headers.get('content-type') || 'application/pdf'
+    res.setHeader('Content-Type', contentType)
+    res.setHeader('Content-Disposition', 'inline')
+
+    const buffer = await docResponse.arrayBuffer()
+    res.end(Buffer.from(buffer))
+  } catch (error) {
+    console.error('Document proxy error:', error)
+    res.status(502).json({ message: 'Failed to fetch document' })
+  }
+})
+
 router.use(authenticate, requireAdmin)
 
 router.get('/users', async (_req, res) => {
-  const [rows] = await pool.query('SELECT id, username, email, role, balance, country, status, verification_status AS verificationStatus, id_front AS idFront, id_back AS idBack, created_at FROM users WHERE role = "client" ORDER BY id DESC')
+  const [rows] = await pool.query('SELECT id, username, email, role, balance, country, status, verification_status AS verificationStatus, id_front AS idFront, created_at FROM users WHERE role = "client" ORDER BY id DESC')
   return res.json(rows)
 })
 
 router.get('/users/pending-verification', async (_req, res) => {
   const [rows] = await pool.query(
     `SELECT id, username, email, role, balance, country, status, verification_status AS verificationStatus, 
-    id_front AS idFront, id_back AS idBack, created_at 
+    id_front AS idFront, created_at 
     FROM users WHERE role = "client" AND verification_status = 'pending' ORDER BY id DESC`
   )
   return res.json(rows)
@@ -95,7 +142,7 @@ router.get('/users/pending-verification', async (_req, res) => {
 
 router.get('/users/:id', async (req, res) => {
   const userId = Number(req.params.id)
-  const [[user]] = await pool.query('SELECT id, username, email, balance, phone, id_type, id_number, country, date_of_birth, first_name, last_name, annual_income, net_worth, employment_status, source_of_funds, us_citizen, pep_status, tax_residency, risk_tolerance, investment_horizon, max_drawdown, years_trading, products_traded, average_trades_per_month, preferred_markets, strategy_style, preferred_leverage, status, created_at, id_front, id_back, verification_status, verification_notes FROM users WHERE id = ? AND role = "client" LIMIT 1', [userId])
+  const [[user]] = await pool.query('SELECT id, username, email, balance, phone, id_type, id_number, country, date_of_birth, first_name, last_name, annual_income, net_worth, employment_status, source_of_funds, us_citizen, pep_status, tax_residency, risk_tolerance, investment_horizon, max_drawdown, years_trading, products_traded, average_trades_per_month, preferred_markets, strategy_style, preferred_leverage, status, created_at, id_front, verification_status, verification_notes FROM users WHERE id = ? AND role = "client" LIMIT 1', [userId])
   if (!user) return res.status(404).json({ message: 'User not found' })
   return res.json(user)
 })
@@ -194,7 +241,7 @@ router.patch('/users/:id/request-documents', async (req, res) => {
 
 router.get('/users/:id/verification-docs', async (req, res) => {
   const userId = Number(req.params.id)
-  const [[user]] = await pool.query('SELECT id, id_front AS idFront, id_back AS idBack, verification_status AS verificationStatus, verification_notes AS verificationNotes FROM users WHERE id = ? AND role = "client" LIMIT 1', [userId])
+  const [[user]] = await pool.query('SELECT id, id_front AS idFront, verification_status AS verificationStatus, verification_notes AS verificationNotes FROM users WHERE id = ? AND role = "client" LIMIT 1', [userId])
   if (!user) return res.status(404).json({ message: 'User not found' })
   return res.json(user)
 })

@@ -178,7 +178,7 @@ router.post('/login', async (req, res) => {
 router.get('/me', authenticate, async (req, res) => {
   const [rows] = await pool.query(
     `SELECT id, username, email, role, country, risk_tolerance AS riskTolerance, 
-    verification_status AS verificationStatus, id_document AS idDocument, id_front AS idFront, id_back AS idBack 
+    verification_status AS verificationStatus, id_front AS idFront 
     FROM users WHERE id = ? LIMIT 1`, 
     [req.user.id]
   )
@@ -187,12 +187,12 @@ router.get('/me', authenticate, async (req, res) => {
 })
 
 router.post('/upload-id', authenticate, async (req, res) => {
-  const { idFront, idBack } = req.body
+  const { idFront } = req.body
   
   try {
     await pool.query(
-      'UPDATE users SET id_front = ?, id_back = ?, verification_status = COALESCE(verification_status, "pending") WHERE id = ?',
-      [idFront || null, idBack || null, req.user.id]
+      'UPDATE users SET id_front = ?, verification_status = COALESCE(verification_status, "pending") WHERE id = ?',
+      [idFront || null, req.user.id]
     )
     await logActivity(req.user.id, 'ID document uploaded')
     return res.json({ message: 'ID uploaded successfully' })
@@ -204,7 +204,7 @@ router.post('/upload-id', authenticate, async (req, res) => {
 
 router.get('/verification-status', authenticate, async (req, res) => {
   const [rows] = await pool.query(
-    'SELECT verification_status AS verificationStatus, id_document AS idDocument, id_front AS idFront, id_back AS idBack, verification_notes AS verificationNotes FROM users WHERE id = ? LIMIT 1',
+    'SELECT verification_status AS verificationStatus, id_front AS idFront, verification_notes AS verificationNotes FROM users WHERE id = ? LIMIT 1',
     [req.user.id]
   )
   if (!rows.length) return res.status(404).json({ message: 'User not found' })

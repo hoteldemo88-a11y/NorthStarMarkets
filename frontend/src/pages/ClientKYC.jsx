@@ -8,13 +8,11 @@ export default function ClientKYC() {
   const navigate = useNavigate()
   const [loading, setLoading] = useState(true)
   const [verificationStatus, setVerificationStatus] = useState(null)
-  const [idFrontPreview, setIdFrontPreview] = useState('')
-  const [idBackPreview, setIdBackPreview] = useState('')
+  const [idPreview, setIdPreview] = useState('')
   const [uploading, setUploading] = useState(false)
   const [message, setMessage] = useState('')
   const [submitted, setSubmitted] = useState(false)
-  const frontInputRef = useRef(null)
-  const backInputRef = useRef(null)
+  const inputRef = useRef(null)
 
   const [personalInfo, setPersonalInfo] = useState({
     idType: '',
@@ -25,7 +23,7 @@ export default function ClientKYC() {
     country: '',
   })
 
-  const [existingDocs, setExistingDocs] = useState({ idFront: false, idBack: false })
+  const [existingDocs, setExistingDocs] = useState({ idFront: false })
 
   function toDateInputValue(dateStr) {
     if (!dateStr) return ''
@@ -44,7 +42,6 @@ export default function ClientKYC() {
       setVerificationStatus(res.verificationStatus)
       setExistingDocs({
         idFront: !!res.idFront,
-        idBack: !!res.idBack,
       })
       if (res.profile) {
         setPersonalInfo({
@@ -63,7 +60,7 @@ export default function ClientKYC() {
     }
   }
 
-  const handleFileSelect = async (e, side) => {
+  const handleFileSelect = (e) => {
     const file = e.target.files?.[0]
     if (!file) return
 
@@ -80,16 +77,15 @@ export default function ClientKYC() {
 
     const reader = new FileReader()
     reader.onload = () => {
-      if (side === 'front') setIdFrontPreview(reader.result)
-      else setIdBackPreview(reader.result)
+      setIdPreview(reader.result)
       setMessage('')
     }
     reader.readAsDataURL(file)
   }
 
   const handleSubmit = async () => {
-    if (!idFrontPreview || !idBackPreview) {
-      setMessage('Please upload both ID front and back images')
+    if (!idPreview) {
+      setMessage('Please upload your ID document')
       return
     }
 
@@ -102,32 +98,19 @@ export default function ClientKYC() {
     setMessage('')
 
     try {
-      const uploadFront = async () => {
-        await apiRequest('/client/upload-id-front', {
-          method: 'POST',
-          body: JSON.stringify({ idFront: idFrontPreview }),
-        })
-      }
+      await apiRequest('/client/upload-id-front', {
+        method: 'POST',
+        body: JSON.stringify({ idFront: idPreview }),
+      })
 
-      const uploadBack = async () => {
-        await apiRequest('/client/upload-id-back', {
-          method: 'POST',
-          body: JSON.stringify({ idBack: idBackPreview }),
-        })
-      }
-
-      const updateInfo = async () => {
-        await apiRequest('/client/kyc-info', {
-          method: 'POST',
-          body: JSON.stringify({
-            idType: personalInfo.idType,
-            idNumber: personalInfo.idNumber,
-            dateOfBirth: personalInfo.dateOfBirth,
-          }),
-        })
-      }
-
-      await Promise.all([uploadFront(), uploadBack(), updateInfo()])
+      await apiRequest('/client/kyc-info', {
+        method: 'POST',
+        body: JSON.stringify({
+          idType: personalInfo.idType,
+          idNumber: personalInfo.idNumber,
+          dateOfBirth: personalInfo.dateOfBirth,
+        }),
+      })
       
       setMessage('Documents uploaded successfully!')
       
@@ -153,8 +136,8 @@ export default function ClientKYC() {
   }
 
   const isVerified = verificationStatus === 'verified'
-  const isPending = verificationStatus === 'pending' && (existingDocs.idFront || existingDocs.idBack)
-  const hasBothDocs = idFrontPreview && idBackPreview
+  const isPending = verificationStatus === 'pending' && existingDocs.idFront
+  const hasDoc = !!idPreview
 
   return (
     <div className="min-h-screen bg-[#090910] pt-28 pb-16 px-3 sm:px-4">
@@ -318,85 +301,56 @@ export default function ClientKYC() {
                 </div>
 
                 <div className="space-y-4 mb-6">
-                  <h3 className="text-lg font-semibold text-white">ID Document Photos</h3>
+                  <h3 className="text-lg font-semibold text-white">ID Document</h3>
                   <p className="text-sm text-gray-400">
-                    Upload clear photos of your identification document. You can take a photo with your camera or upload from gallery.
+                    Upload a clear photo or PDF of your identification document.
                   </p>
 
-                  <div className="grid sm:grid-cols-2 gap-4">
-                    <div className="p-4 rounded-xl bg-[#0a0a0f] border border-white/[0.08]">
-                      <label className="text-sm text-gray-300 mb-2 block">ID Front *</label>
-                      {idFrontPreview ? (
-                        <div className="relative">
-                          <img src={idFrontPreview} alt="ID Front" className="w-full h-48 object-cover rounded-lg" />
-                          <button 
-                            onClick={() => { setIdFrontPreview(''); setMessage('') }} 
-                            className="absolute top-2 right-2 w-7 h-7 rounded-full bg-red-500/80 text-white flex items-center justify-center"
-                          >
-                            <X className="w-4 h-4" />
-                          </button>
-                          <div className="mt-2 text-xs text-emerald-400 flex items-center gap-1">
-                            <CheckCircle className="w-3 h-3" /> Uploaded successfully
+                  <div className="p-4 rounded-xl bg-[#0a0a0f] border border-white/[0.08]">
+                    <label className="text-sm text-gray-300 mb-2 block">Upload ID *</label>
+                    {idPreview ? (
+                      <div className="relative">
+                        {idPreview.match(/^data:application\/pdf/) ? (
+                          <object data={idPreview} type="application/pdf" className="w-full h-48 rounded-lg border border-white/10">
+                            <div className="w-full h-48 flex items-center justify-center text-gray-400 bg-[#0d0d15] rounded-lg">
+                              <span className="text-xs text-gray-500">PDF preview not available</span>
+                            </div>
+                          </object>
+                        ) : (
+                          <div className="relative">
+                            <img src={idPreview} alt="ID Document" className="w-full h-48 object-contain rounded-lg" />
                           </div>
+                        )}
+                        <div className="mt-2 text-xs text-emerald-400 flex items-center gap-1">
+                          <CheckCircle className="w-3 h-3" /> Uploaded successfully
                         </div>
-                      ) : (
-                        <div className="flex flex-col items-center justify-center h-48 border-2 border-dashed border-white/20 rounded-lg">
-                          <Camera className="w-10 h-10 text-gray-500 mb-2" />
-                          <span className="text-sm text-gray-400">ID Front</span>
-                          <span className="text-xs text-gray-500 mt-1">Take photo or upload</span>
-                          <input 
-                            ref={frontInputRef}
-                            type="file" 
-                            accept="image/*,application/pdf"
-                            className="hidden" 
-                            onChange={(e) => handleFileSelect(e, 'front')} 
-                          />
-                          <button 
-                            onClick={() => frontInputRef.current?.click()}
-                            className="mt-3 px-4 py-2 text-sm bg-cyan-500/20 text-cyan-300 rounded-lg border border-cyan-400/30 hover:bg-cyan-500/30"
-                          >
-                            Camera / Upload
-                          </button>
-                        </div>
-                      )}
-                    </div>
-
-                    <div className="p-4 rounded-xl bg-[#0a0a0f] border border-white/[0.08]">
-                      <label className="text-sm text-gray-300 mb-2 block">ID Back *</label>
-                      {idBackPreview ? (
-                        <div className="relative">
-                          <img src={idBackPreview} alt="ID Back" className="w-full h-48 object-cover rounded-lg" />
-                          <button 
-                            onClick={() => { setIdBackPreview(''); setMessage('') }} 
-                            className="absolute top-2 right-2 w-7 h-7 rounded-full bg-red-500/80 text-white flex items-center justify-center"
-                          >
-                            <X className="w-4 h-4" />
-                          </button>
-                          <div className="mt-2 text-xs text-emerald-400 flex items-center gap-1">
-                            <CheckCircle className="w-3 h-3" /> Uploaded successfully
-                          </div>
-                        </div>
-                      ) : (
-                        <div className="flex flex-col items-center justify-center h-48 border-2 border-dashed border-white/20 rounded-lg">
-                          <Camera className="w-10 h-10 text-gray-500 mb-2" />
-                          <span className="text-sm text-gray-400">ID Back</span>
-                          <span className="text-xs text-gray-500 mt-1">Take photo or upload</span>
-                          <input 
-                            ref={backInputRef}
-                            type="file" 
-                            accept="image/*,application/pdf"
-                            className="hidden" 
-                            onChange={(e) => handleFileSelect(e, 'back')} 
-                          />
-                          <button 
-                            onClick={() => backInputRef.current?.click()}
-                            className="mt-3 px-4 py-2 text-sm bg-cyan-500/20 text-cyan-300 rounded-lg border border-cyan-400/30 hover:bg-cyan-500/30"
-                          >
-                            Camera / Upload
-                          </button>
-                        </div>
-                      )}
-                    </div>
+                        <button 
+                          onClick={() => { setIdPreview(''); setMessage('') }} 
+                          className="absolute top-2 right-2 w-7 h-7 rounded-full bg-red-500/80 text-white flex items-center justify-center"
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
+                      </div>
+                    ) : (
+                      <div className="flex flex-col items-center justify-center h-48 border-2 border-dashed border-white/20 rounded-lg">
+                        <Camera className="w-10 h-10 text-gray-500 mb-2" />
+                        <span className="text-sm text-gray-400">Upload ID</span>
+                        <span className="text-xs text-gray-500 mt-1">JPG, PNG, or PDF</span>
+                        <input 
+                          ref={inputRef}
+                          type="file" 
+                          accept="image/*,application/pdf"
+                          className="hidden" 
+                          onChange={handleFileSelect} 
+                        />
+                        <button 
+                          onClick={() => inputRef.current?.click()}
+                          className="mt-3 px-4 py-2 text-sm bg-cyan-500/20 text-cyan-300 rounded-lg border border-cyan-400/30 hover:bg-cyan-500/30"
+                        >
+                          Choose File
+                        </button>
+                      </div>
+                    )}
                   </div>
                 </div>
 
@@ -408,9 +362,9 @@ export default function ClientKYC() {
 
                 <button
                   onClick={handleSubmit}
-                  disabled={!hasBothDocs || uploading || submitted || !personalInfo.idType || !personalInfo.idNumber || !personalInfo.dateOfBirth}
+                  disabled={!hasDoc || uploading || submitted || !personalInfo.idType || !personalInfo.idNumber || !personalInfo.dateOfBirth}
                   className={`mt-6 w-full py-3 rounded-xl font-semibold flex items-center justify-center gap-2 transition-all ${
-                    hasBothDocs && !submitted && !uploading && personalInfo.idType && personalInfo.idNumber && personalInfo.dateOfBirth
+                    hasDoc && !submitted && !uploading && personalInfo.idType && personalInfo.idNumber && personalInfo.dateOfBirth
                       ? 'bg-gradient-to-r from-indigo-600 to-cyan-500 text-white hover:from-indigo-500 hover:to-cyan-400'
                       : 'bg-white/10 text-gray-400 cursor-not-allowed'
                   }`}
@@ -430,9 +384,9 @@ export default function ClientKYC() {
                   )}
                 </button>
 
-                {!hasBothDocs && !submitted && (
+                {!hasDoc && !submitted && (
                   <p className="text-xs text-center text-gray-500 mt-3">
-                    Please upload both ID front and back images and fill all required fields to submit
+                    Please upload your ID document and fill all required fields to submit
                   </p>
                 )}
               </>
