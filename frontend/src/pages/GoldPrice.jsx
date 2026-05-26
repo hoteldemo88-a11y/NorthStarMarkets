@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react'
 import { Helmet } from 'react-helmet-async'
 import { Link } from 'react-router-dom'
 import { TrendingUp, TrendingDown, Shield, Clock, Globe, Star, ChevronRight } from 'lucide-react'
@@ -44,6 +45,28 @@ Visit North Star Markets to access live gold prices and start trading with confi
 const sections = goldPriceContent.split('\n\n')
 
 export default function GoldPrice() {
+  const [goldPrice, setGoldPrice] = useState(null)
+  const [goldChange, setGoldChange] = useState(null)
+
+  useEffect(() => {
+    let active = true
+    const fetchPrice = async () => {
+      try {
+        const res = await fetch('/api/prices')
+        if (!res.ok) return
+        const data = await res.json()
+        if (!active) return
+        if (data?.gold) {
+          setGoldPrice(data.gold.price)
+          setGoldChange(data.gold.change)
+        }
+      } catch {}
+    }
+    fetchPrice()
+    const interval = setInterval(fetchPrice, 3600000)
+    return () => { active = false; clearInterval(interval) }
+  }, [])
+
   return (
     <>
       <Helmet>
@@ -76,13 +99,17 @@ export default function GoldPrice() {
               className="w-full h-64 object-cover rounded-xl mb-6"
             />
             <div className="flex items-center gap-4 mb-4">
-              <div className="flex items-center gap-2 text-emerald-400">
-                <TrendingUp className="w-5 h-5" />
-                <span className="text-2xl font-bold">$4,788.76</span>
+              <div className={`flex items-center gap-2 ${goldChange >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+                {goldChange >= 0 ? <TrendingUp className="w-5 h-5" /> : <TrendingDown className="w-5 h-5" />}
+                <span className="text-2xl font-bold">
+                  ${goldPrice ? goldPrice.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '—'}
+                </span>
               </div>
-              <span className="text-emerald-400 bg-emerald-400/10 px-3 py-1 rounded-full text-sm">
-                +1.10%
-              </span>
+              {goldChange != null && (
+                <span className={`${goldChange >= 0 ? 'text-emerald-400 bg-emerald-400/10' : 'text-red-400 bg-red-400/10'} px-3 py-1 rounded-full text-sm`}>
+                  {goldChange >= 0 ? '+' : ''}{goldChange.toFixed(2)}%
+                </span>
+              )}
             </div>
             <p className="text-gray-400 text-sm">Live gold price per ounce (XAU/USD)</p>
           </div>

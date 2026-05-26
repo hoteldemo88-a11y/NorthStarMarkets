@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import { Helmet } from 'react-helmet-async'
-import { TrendingUp, Shield, Zap, Globe, Users, Award, ChevronRight, ArrowRight, Star, Bitcoin, Activity, Currency, Wheat, Gem, Zap as EnergyIcon, ArrowUpRight, CheckCircle, Quote, Lock, Clock, CreditCard, HeadphonesIcon, TrendingDown, Play } from 'lucide-react'
+import { TrendingUp, Shield, Zap, Globe, Users, ChevronRight, ArrowRight, Star, Currency, Wheat, Gem, Zap as EnergyIcon, ArrowUpRight, CheckCircle, Quote, Clock, CreditCard, TrendingDown, Play } from 'lucide-react'
 import TradingCard from '../components/TradingCard'
 
 const stats = [
@@ -95,13 +95,6 @@ const testimonials = [
   { name: 'Jennifer Lee', role: 'Swing Trader', content: 'Great analytical tools and educational resources.', rating: 5, image: 'https://i.pravatar.cc/150?img=23' },
 ]
 
-const liveMarkets = [
-  { pair: 'BTC/USD', price: '74,242', change: '+0.10%', up: true },
-  { pair: 'EUR/USD', price: '1.0785', change: '+0.08%', up: true },
-  { pair: 'GOLD', price: '4,824', change: '+0.50%', up: true },
-  { pair: 'AAPL', price: '198.42', change: '+0.65%', up: true },
-]
-
 const traderCards = [
   { name: 'Alex Thompson', country: 'USA', profit: '+245%', trades: '12.5K+', winRate: '89%', badge: 'Top Trader', image: 'https://i.pravatar.cc/150?img=60' },
   { name: 'Maria Garcia', country: 'Spain', profit: '+189%', trades: '8.2K+', winRate: '85%', badge: 'Pro', image: 'https://i.pravatar.cc/150?img=45' },
@@ -121,13 +114,6 @@ const features = [
   { icon: Zap, title: 'Lightning Fast', desc: 'Sub-50ms execution' },
   { icon: Shield, title: 'Secure', desc: 'Bank-grade encryption' },
   { icon: CreditCard, title: 'No Fees', desc: 'Zero deposits' },
-]
-
-const liveMarketsData = [
-  { id: 'BTC', name: 'Bitcoin', pair: 'BTC/USD', price: 74242, change: 0.10, icon: Bitcoin },
-  { id: 'ETH', name: 'Ethereum', pair: 'ETH/USD', price: 2320, change: -0.15, icon: Activity },
-  { id: 'EUR', name: 'Euro', pair: 'EUR/USD', price: 1.0785, change: 0.08, icon: Currency },
-  { id: 'GOLD', name: 'Gold', pair: 'XAU/USD', price: 4824, change: 0.50, icon: Gem },
 ]
 
 export default function Home() {

@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react'
 import { Helmet } from 'react-helmet-async'
 import { Link } from 'react-router-dom'
 import { TrendingUp, TrendingDown, Shield, Clock, Globe, ChevronRight } from 'lucide-react'
@@ -52,6 +53,28 @@ Join thousands of traders at North Star Markets who trust us for accurate silver
 const sections = silverPriceContent.split('\n\n')
 
 export default function SilverPrice() {
+  const [silverPrice, setSilverPrice] = useState(null)
+  const [silverChange, setSilverChange] = useState(null)
+
+  useEffect(() => {
+    let active = true
+    const fetchPrice = async () => {
+      try {
+        const res = await fetch('/api/prices')
+        if (!res.ok) return
+        const data = await res.json()
+        if (!active) return
+        if (data?.silver) {
+          setSilverPrice(data.silver.price)
+          setSilverChange(data.silver.change)
+        }
+      } catch {}
+    }
+    fetchPrice()
+    const interval = setInterval(fetchPrice, 3600000)
+    return () => { active = false; clearInterval(interval) }
+  }, [])
+
   return (
     <>
       <Helmet>
@@ -84,13 +107,17 @@ export default function SilverPrice() {
               className="w-full h-64 object-cover rounded-xl mb-6"
             />
             <div className="flex items-center gap-4 mb-4">
-              <div className="flex items-center gap-2 text-emerald-400">
-                <TrendingUp className="w-5 h-5" />
-                <span className="text-2xl font-bold">$77.40</span>
+              <div className={`flex items-center gap-2 ${silverChange >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+                {silverChange >= 0 ? <TrendingUp className="w-5 h-5" /> : <TrendingDown className="w-5 h-5" />}
+                <span className="text-2xl font-bold">
+                  ${silverPrice ? silverPrice.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '—'}
+                </span>
               </div>
-              <span className="text-emerald-400 bg-emerald-400/10 px-3 py-1 rounded-full text-sm">
-                +5.08%
-              </span>
+              {silverChange != null && (
+                <span className={`${silverChange >= 0 ? 'text-emerald-400 bg-emerald-400/10' : 'text-red-400 bg-red-400/10'} px-3 py-1 rounded-full text-sm`}>
+                  {silverChange >= 0 ? '+' : ''}{silverChange.toFixed(2)}%
+                </span>
+              )}
             </div>
             <p className="text-gray-400 text-sm">Live silver price per ounce (XAG/USD)</p>
           </div>

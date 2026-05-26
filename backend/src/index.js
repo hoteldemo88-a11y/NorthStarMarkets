@@ -23,7 +23,64 @@ const app = express()
 const port = Number(process.env.PORT || 5000)
 
 let priceCache = { data: null, timestamp: 0 }
-const CACHE_TTL = 60000 // 60 seconds cache
+const CACHE_TTL = 300000 // 5 minutes cache
+
+const FALLBACK_PRICES = {
+  gold: { price: 2350.00, high: 2400.00, low: 2320.00, change: 0.35 },
+  silver: { price: 30.50, high: 31.20, low: 29.80, change: -0.42 },
+  crude: { price: 76.50, high: 78.00, low: 75.00, change: 0.85 },
+  bitcoin: { price: 102500.00, high: 105000.00, low: 100000.00, change: 1.25 },
+  ethereum: { price: 3650.00, high: 3750.00, low: 3550.00, change: 0.95 },
+}
+
+async function fetchYahooFinance(symbol) {
+  const urls = [
+    `https://query1.finance.yahoo.com/v8/finance/chart/${symbol}?interval=1d&range=1d`,
+    `https://query2.finance.yahoo.com/v8/finance/chart/${symbol}?interval=1d&range=1d`,
+  ]
+  for (const url of urls) {
+    try {
+      const res = await fetch(url, { signal: AbortSignal.timeout(5000) })
+      if (res.ok) {
+        const data = await res.json()
+        const meta = data?.chart?.result?.[0]?.meta
+        if (meta?.regularMarketPrice) return meta
+      }
+    } catch { }
+  }
+  return null
+}
+
+async function fetchMetalsLive() {
+  try {
+    const res = await fetch('https://api.metals.live/v1/spot/gold', { signal: AbortSignal.timeout(5000) })
+    if (res.ok) {
+      const data = await res.json()
+      return { gold: Number(data?.gold) || null, silver: Number(data?.silver) || null }
+    }
+  } catch { }
+  return { gold: null, silver: null }
+}
+
+async function fetchCoinGecko() {
+  try {
+    const res = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum&vs_currencies=usd', { signal: AbortSignal.timeout(5000) })
+    if (res.ok) {
+      const data = await res.json()
+      return { bitcoin: data?.bitcoin?.usd || null, ethereum: data?.ethereum?.usd || null }
+    }
+  } catch { }
+  return { bitcoin: null, ethereum: null }
+}
+
+function buildPriceEntry(price, prevClose, fallback) {
+  return {
+    price: price || fallback.price,
+    high: price ? price * 1.02 : fallback.high,
+    low: price ? price * 0.98 : fallback.low,
+    change: (price && prevClose) ? ((price - prevClose) / prevClose * 100) : fallback.change,
+  }
+}
 
 app.use(cors())
 app.use(express.json({ limit: '1mb' }))
@@ -41,53 +98,28 @@ app.get('/api/prices', async (_req, res) => {
   }
 
   try {
-    const [goldRes, silverRes, oilRes, btcRes, ethRes] = await Promise.all([
-      fetch('https://query1.finance.yahoo.com/v8/finance/chart/GC%3DF?interval=1d&range=1d'),
-      fetch('https://query1.finance.yahoo.com/v8/finance/chart/SI%3DF?interval=1d&range=1d'),
-      fetch('https://query1.finance.yahoo.com/v8/finance/chart/CL%3DF?interval=1d&range=1d'),
-      fetch('https://query1.finance.yahoo.com/v8/finance/chart/BTC-USD?interval=1d&range=1d'),
-      fetch('https://query1.finance.yahoo.com/v8/finance/chart/ETH-USD?interval=1d&range=1d'),
+    const [yahooGold, yahooSilver, yahooOil, yahooBtc, yahooEth, metals, coingecko] = await Promise.all([
+      fetchYahooFinance('GC%3DF'),
+      fetchYahooFinance('SI%3DF'),
+      fetchYahooFinance('CL%3DF'),
+      fetchYahooFinance('BTC-USD'),
+      fetchYahooFinance('ETH-USD'),
+      fetchMetalsLive(),
+      fetchCoinGecko(),
     ])
 
-    const [goldData, silverData, oilData, btcData, ethData] = await Promise.all([
-      goldRes.json(),
-      silverRes.json(),
-      oilRes.json(),
-      btcRes.json(),
-      ethRes.json(),
-    ])
+    const goldPrice = yahooGold?.regularMarketPrice || metals?.gold || FALLBACK_PRICES.gold.price
+    const silverPrice = yahooSilver?.regularMarketPrice || metals?.silver || FALLBACK_PRICES.silver.price
+    const crudePrice = yahooOil?.regularMarketPrice || FALLBACK_PRICES.crude.price
+    const btcPrice = yahooBtc?.regularMarketPrice || coingecko?.bitcoin || FALLBACK_PRICES.bitcoin.price
+    const ethPrice = yahooEth?.regularMarketPrice || coingecko?.ethereum || FALLBACK_PRICES.ethereum.price
 
     const prices = {
-      gold: {
-        price: goldData?.chart?.result?.[0]?.meta?.regularMarketPrice || 4564.00,
-        high: goldData?.chart?.result?.[0]?.indicators?.quote?.[0]?.high?.[0] || 4630.00,
-        low: goldData?.chart?.result?.[0]?.indicators?.quote?.[0]?.low?.[0] || 4560.00,
-        change: ((goldData?.chart?.result?.[0]?.meta?.regularMarketPrice - goldData?.chart?.result?.[0]?.meta?.chartPreviousClose) / goldData?.chart?.result?.[0]?.meta?.chartPreviousClose * 100) || 0.25
-      },
-      silver: {
-        price: silverData?.chart?.result?.[0]?.meta?.regularMarketPrice || 73.50,
-        high: silverData?.chart?.result?.[0]?.indicators?.quote?.[0]?.high?.[0] || 74.50,
-        low: silverData?.chart?.result?.[0]?.indicators?.quote?.[0]?.low?.[0] || 72.50,
-        change: ((silverData?.chart?.result?.[0]?.meta?.regularMarketPrice - silverData?.chart?.result?.[0]?.meta?.chartPreviousClose) / silverData?.chart?.result?.[0]?.meta?.chartPreviousClose * 100) || -0.85
-      },
-      crude: {
-        price: oilData?.chart?.result?.[0]?.meta?.regularMarketPrice || 105.00,
-        high: oilData?.chart?.result?.[0]?.indicators?.quote?.[0]?.high?.[0] || 106.00,
-        low: oilData?.chart?.result?.[0]?.indicators?.quote?.[0]?.low?.[0] || 99.00,
-        change: ((oilData?.chart?.result?.[0]?.meta?.regularMarketPrice - oilData?.chart?.result?.[0]?.meta?.chartPreviousClose) / oilData?.chart?.result?.[0]?.meta?.chartPreviousClose * 100) || 1.20
-      },
-      bitcoin: {
-        price: btcData?.chart?.result?.[0]?.meta?.regularMarketPrice || 78975.00,
-        high: btcData?.chart?.result?.[0]?.indicators?.quote?.[0]?.high?.[0] || 80000.00,
-        low: btcData?.chart?.result?.[0]?.indicators?.quote?.[0]?.low?.[0] || 78000.00,
-        change: ((btcData?.chart?.result?.[0]?.meta?.regularMarketPrice - btcData?.chart?.result?.[0]?.meta?.chartPreviousClose) / btcData?.chart?.result?.[0]?.meta?.chartPreviousClose * 100) || 0.35
-      },
-      ethereum: {
-        price: ethData?.chart?.result?.[0]?.meta?.regularMarketPrice || 2340.00,
-        high: ethData?.chart?.result?.[0]?.indicators?.quote?.[0]?.high?.[0] || 2400.00,
-        low: ethData?.chart?.result?.[0]?.indicators?.quote?.[0]?.low?.[0] || 2308.00,
-        change: ((ethData?.chart?.result?.[0]?.meta?.regularMarketPrice - ethData?.chart?.result?.[0]?.meta?.chartPreviousClose) / ethData?.chart?.result?.[0]?.meta?.chartPreviousClose * 100) || 0.55
-      },
+      gold: buildPriceEntry(goldPrice, yahooGold?.chartPreviousClose, FALLBACK_PRICES.gold),
+      silver: buildPriceEntry(silverPrice, yahooSilver?.chartPreviousClose, FALLBACK_PRICES.silver),
+      crude: buildPriceEntry(crudePrice, yahooOil?.chartPreviousClose, FALLBACK_PRICES.crude),
+      bitcoin: buildPriceEntry(btcPrice, yahooBtc?.chartPreviousClose, FALLBACK_PRICES.bitcoin),
+      ethereum: buildPriceEntry(ethPrice, yahooEth?.chartPreviousClose, FALLBACK_PRICES.ethereum),
     }
 
     priceCache = { data: prices, timestamp: now }
@@ -97,16 +129,7 @@ app.get('/api/prices', async (_req, res) => {
     if (priceCache.data) {
       return res.json(priceCache.data)
     }
-    res.status(500).json({
-      error: 'Failed to fetch prices',
-      fallback: {
-        gold: { price: 4564.00, high: 4630.00, low: 4560.00, change: 0.25 },
-        silver: { price: 73.50, high: 74.50, low: 72.50, change: -0.85 },
-        crude: { price: 105.00, high: 106.00, low: 99.00, change: 1.20 },
-        bitcoin: { price: 78975.00, high: 80000.00, low: 78000.00, change: 0.35 },
-        ethereum: { price: 2340.00, high: 2400.00, low: 2308.00, change: 0.55 },
-      }
-    })
+    res.status(500).json({ error: 'Failed to fetch prices', fallback: FALLBACK_PRICES })
   }
 })
 

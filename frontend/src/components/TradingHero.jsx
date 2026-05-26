@@ -136,7 +136,7 @@ export default function TradingHero() {
       if (!isActive) return
 
       try {
-        const res = await fetch(`${import.meta.env.VITE_API_URL || ''}/api/prices`)
+        const res = await fetch('/api/prices')
         const data = await res.json()
         if (!isActive) return
 
