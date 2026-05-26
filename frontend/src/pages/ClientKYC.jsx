@@ -67,9 +67,9 @@ export default function ClientKYC() {
     const file = e.target.files?.[0]
     if (!file) return
 
-    const validTypes = ['image/jpeg', 'image/png', 'image/jpg']
+    const validTypes = ['image/jpeg', 'image/png', 'image/jpg', 'application/pdf']
     if (!validTypes.includes(file.type)) {
-      setMessage('Please upload a valid image (JPG, PNG)')
+      setMessage('Please upload a valid file (JPG, PNG, PDF)')
       return
     }
 
@@ -347,8 +347,7 @@ export default function ClientKYC() {
                           <input 
                             ref={frontInputRef}
                             type="file" 
-                            accept="image/*"
-                            capture="environment"
+                            accept="image/*,application/pdf"
                             className="hidden" 
                             onChange={(e) => handleFileSelect(e, 'front')} 
                           />
@@ -385,8 +384,7 @@ export default function ClientKYC() {
                           <input 
                             ref={backInputRef}
                             type="file" 
-                            accept="image/*"
-                            capture="environment"
+                            accept="image/*,application/pdf"
                             className="hidden" 
                             onChange={(e) => handleFileSelect(e, 'back')} 
                           />

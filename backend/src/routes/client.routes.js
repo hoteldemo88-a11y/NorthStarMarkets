@@ -190,7 +190,7 @@ router.post('/upload-id-front', async (req, res) => {
     const uploadResult = await cloudinary.uploader.upload(idFront, {
       folder: 'kyc_documents',
       public_id: `id_front_${req.user.id}_${Date.now()}`,
-      resource_type: 'image',
+      resource_type: 'auto',
     })
 
     await pool.query(
@@ -218,7 +218,7 @@ router.post('/upload-id-back', async (req, res) => {
     const uploadResult = await cloudinary.uploader.upload(idBack, {
       folder: 'kyc_documents',
       public_id: `id_back_${req.user.id}_${Date.now()}`,
-      resource_type: 'image',
+      resource_type: 'auto',
     })
 
     await pool.query(
