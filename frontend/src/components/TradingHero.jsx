@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import { TrendingUp, TrendingDown, Star, ChevronRight, Activity, Zap, Shield, Clock, CreditCard, Users, Award, Globe, Menu, X } from 'lucide-react'
@@ -17,35 +17,6 @@ const MOCK_PRICES = {
   crude: { price: 105.00, high: 106.00, low: 99.00, change: 1.20 },
   bitcoin: { price: 78975.00, high: 80000.00, low: 78000.00, change: 0.35 },
   ethereum: { price: 2340.00, high: 2400.00, low: 2308.00, change: 0.55 },
-}
-
-let cachedPricesHero = null
-let lastFetchTimeHero = 0
-const CACHE_DURATION = 5000
-
-const fetchRealTimePricesHero = async () => {
-  const now = Date.now()
-  if (cachedPricesHero && (now - lastFetchTimeHero) < CACHE_DURATION) {
-    return cachedPricesHero
-  }
-
-  try {
-    const res = await fetch(`${import.meta.env.VITE_API_URL || ''}/api/prices`)
-    const data = await res.json()
-    
-    cachedPricesHero = data
-    lastFetchTimeHero = now
-    return data
-  } catch (error) {
-    console.log('Using fallback prices', error)
-    return {
-      gold: { price: 4564.00, high: 4630.00, low: 4560.00, change: 0.25 },
-      silver: { price: 73.50, high: 74.50, low: 72.50, change: -0.85 },
-      crude: { price: 105.00, high: 106.00, low: 99.00, change: 1.20 },
-      bitcoin: { price: 78975.00, high: 80000.00, low: 78000.00, change: 0.35 },
-      ethereum: { price: 2340.00, high: 2400.00, low: 2308.00, change: 0.55 },
-    }
-  }
 }
 
 function FloatingOrbs() {
@@ -92,11 +63,11 @@ function TradingChart({ symbol }) {
   const containerId = `tv-chart-${symbol}`
 
   const tvSymbolMap = {
-    gold: 'FOREXCOM:XAUUSD',
-    silver: 'FOREXCOM:XAGUSD',
-    crude: 'NYMEX:CL1!',
-    bitcoin: 'BITSTAMP:BTCUSD',
-    ethereum: 'BITSTAMP:ETHUSD'
+    gold: 'OANDA:XAUUSD',
+    silver: 'OANDA:XAGUSD',
+    crude: 'OANDA:WTICOUSD',
+    bitcoin: 'COINBASE:BTCUSD',
+    ethereum: 'COINBASE:ETHUSD'
   }
 
   const tvSymbol = tvSymbolMap[symbol.toLowerCase()] || `TVC:${symbol.toUpperCase()}`
@@ -113,14 +84,14 @@ function TradingChart({ symbol }) {
     script.async = true
     script.onload = () => {
       if (window.TradingView && window.TradingView.widget) {
-        new window.TradingView.widget({
+          new window.TradingView.widget({
           container_id: containerId,
           autosize: true,
           symbol: tvSymbol,
           interval: 'D',
           timezone: 'Etc/UTC',
           theme: 'dark',
-          style: '1',
+          style: '2',
           locale: 'en',
           toolbar_bg: '#0a0a0f',
           enable_publishing: false,
@@ -129,6 +100,10 @@ function TradingChart({ symbol }) {
           allow_symbol_change: false,
           save_image: false,
           studies: [],
+          hide_legend: true,
+          withdateranges: false,
+          shownav: false,
+          height: 200,
         })
       }
     }
@@ -153,13 +128,8 @@ export default function TradingHero() {
   const [priceChange, setPriceChange] = useState(MOCK_PRICES.gold.change)
   const [high24h, setHigh24h] = useState(MOCK_PRICES.gold.high)
   const [low24h, setLow24h] = useState(MOCK_PRICES.gold.low)
-  const realPriceRef = useRef(null)
-  const fetchCountRef = useRef(0)
 
   useEffect(() => {
-    fetchCountRef.current = 0
-    realPriceRef.current = null
-    
     let isActive = true
 
     const fetchRealPrice = async () => {
@@ -171,7 +141,6 @@ export default function TradingHero() {
         if (!isActive) return
 
         const apiData = data[activeMarket.symbol]
-        realPriceRef.current = apiData.price
 
         if (apiData) {
           setPrice(apiData.price)
@@ -184,25 +153,9 @@ export default function TradingHero() {
       }
     }
 
-    const showDummy = () => {
-      if (realPriceRef.current) {
-        const basePrice = realPriceRef.current
-        const fluctuation = (Math.random() - 0.5) * basePrice * 0.002
-        setPrice(basePrice + fluctuation)
-      }
-    }
-
     fetchRealPrice()
 
-    const priceInterval = setInterval(() => {
-      fetchCountRef.current++
-      if (fetchCountRef.current >= 3) {
-        fetchCountRef.current = 0
-        fetchRealPrice()
-      } else {
-        showDummy()
-      }
-    }, 3000)
+    const priceInterval = setInterval(fetchRealPrice, 3600000)
 
     return () => {
       isActive = false

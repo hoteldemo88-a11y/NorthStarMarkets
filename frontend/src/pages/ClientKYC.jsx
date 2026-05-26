@@ -27,6 +27,13 @@ export default function ClientKYC() {
 
   const [existingDocs, setExistingDocs] = useState({ idFront: false, idBack: false })
 
+  function toDateInputValue(dateStr) {
+    if (!dateStr) return ''
+    const d = new Date(dateStr)
+    if (isNaN(d.getTime())) return ''
+    return d.toISOString().split('T')[0]
+  }
+
   useEffect(() => {
     loadVerificationStatus()
   }, [])
@@ -43,7 +50,7 @@ export default function ClientKYC() {
         setPersonalInfo({
           idType: res.profile.idType || '',
           idNumber: res.profile.idNumber || '',
-          dateOfBirth: res.profile.dateOfBirth || '',
+          dateOfBirth: toDateInputValue(res.profile.dateOfBirth),
           firstName: res.profile.firstName || '',
           lastName: res.profile.lastName || '',
           country: res.profile.country || '',

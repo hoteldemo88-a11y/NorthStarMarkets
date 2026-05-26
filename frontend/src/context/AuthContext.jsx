@@ -57,7 +57,13 @@ export function AuthProvider({ children }) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
       })
-      const res = await response.json()
+      const text = await response.text()
+      let res
+      try {
+        res = JSON.parse(text)
+      } catch {
+        throw new Error(`Server error: ${text.substring(0, 200)}`)
+      }
       if (!response.ok) throw new Error(res.message || 'Registration failed')
       setUser(res.user)
       localStorage.setItem('token', res.token)

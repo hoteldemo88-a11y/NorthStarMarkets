@@ -200,6 +200,15 @@ export async function initDatabase() {
     await connection.query('ALTER TABLE users ADD COLUMN id_back VARCHAR(255) NULL')
   }
 
+  const [dobColumn] = await connection.query(
+    `SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = ? AND TABLE_NAME = 'users' AND COLUMN_NAME = 'date_of_birth' LIMIT 1`,
+    [database],
+  )
+
+  if (!dobColumn.length) {
+    await connection.query('ALTER TABLE users ADD COLUMN date_of_birth DATE NULL')
+  }
+
   const [initialDepositColumn] = await connection.query(
     `SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = ? AND TABLE_NAME = 'users' AND COLUMN_NAME = 'initial_deposit' LIMIT 1`,
     [database],
