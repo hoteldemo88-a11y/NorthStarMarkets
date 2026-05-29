@@ -21,4 +21,5 @@ export const adminApi = {
   rejectVerification: (userId, reason) => apiRequest(`/admin/users/${userId}/reject-verification`, { method: 'PATCH', body: JSON.stringify({ reason }) }),
   requestDocuments: (userId, message) => apiRequest(`/admin/users/${userId}/request-documents`, { method: 'PATCH', body: JSON.stringify({ message }) }),
   getVerificationDocs: (userId) => apiRequest(`/admin/users/${userId}/verification-docs`),
+  setAccountNumber: (userId, accountNumber) => apiRequest(`/admin/users/${userId}/account-number`, { method: 'PATCH', body: JSON.stringify({ accountNumber }) }),
 }

@@ -344,9 +344,17 @@ export default function ClientDashboard() {
               </div>
             )}
             {isVerified ? (
-              <div className="mt-3 inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-emerald-400/30 bg-emerald-500/10 text-emerald-200 text-xs">
-                <ShieldCheck className="w-3.5 h-3.5" />
-                Account Verified
+              <div className="mt-3 flex flex-wrap items-center gap-2">
+                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-emerald-400/30 bg-emerald-500/10 text-emerald-200 text-xs">
+                  <ShieldCheck className="w-3.5 h-3.5" />
+                  Account Verified
+                </div>
+                {summary.profile.accountNumber && (
+                  <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-cyan-400/30 bg-cyan-500/10 text-cyan-200 text-xs font-mono">
+                    <Wallet className="w-3.5 h-3.5" />
+                    #{summary.profile.accountNumber}
+                  </div>
+                )}
               </div>
             ) : isPending ? (
               <div className="mt-3 inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-amber-400/30 bg-amber-500/10 text-amber-200 text-xs">
@@ -514,6 +522,9 @@ export default function ClientDashboard() {
               <ProfileInfo label="Country" value={summary.profile.country || 'N/A'} />
               <ProfileInfo label="Risk Profile" value={summary.profile.riskTolerance || 'N/A'} />
               <ProfileInfo label="Verification" value={isVerified ? 'Verified' : summary.verificationStatus || 'Pending'} />
+              {summary.profile.accountNumber && (
+                <ProfileInfo label="Account Number" value={summary.profile.accountNumber} />
+              )}
             </div>
           </div>
           {profileMessage && <p className="text-sm text-gray-300 mt-3">{profileMessage}</p>}

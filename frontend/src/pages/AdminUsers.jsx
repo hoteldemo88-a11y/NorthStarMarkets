@@ -25,6 +25,9 @@ export default function AdminUsers() {
   const [verifyReason, setVerifyReason] = useState('')
   const [verifyLoading, setVerifyLoading] = useState(false)
   const [verificationDocs, setVerificationDocs] = useState(null)
+  const [accountNumber, setAccountNumber] = useState('')
+  const [accountNumberLoading, setAccountNumberLoading] = useState(false)
+  const [accountNumberMsg, setAccountNumberMsg] = useState('')
 
   function docUrl(url) { return url ? url.split('#')[0].replace(/\/f_pdf\b|,f_pdf\b/g, '') : '' }
   function isPdf(url) { return url ? url.split('#')[1] === 'pdf' || url.match(/\.pdf/i) : false }
@@ -385,6 +388,7 @@ export default function AdminUsers() {
                 <th className="py-3 pr-3">Email</th>
                 <th className="py-3 pr-3">Status</th>
                 <th className="py-3 pr-3">Verification</th>
+                <th className="py-3 pr-3">Account #</th>
                 <th className="py-3 pr-3">Balance</th>
                 <th className="py-3 pr-3">Joined</th>
                 <th className="py-3 pr-3">Actions</th>
@@ -423,6 +427,7 @@ export default function AdminUsers() {
                       </span>
                     )}
                   </td>
+                  <td className="py-3 pr-3 text-gray-200 font-mono text-xs">{user.accountNumber || '—'}</td>
                   <td className="py-3 pr-3 text-cyan-300 font-medium">${Number(user.balance).toLocaleString()}</td>
                   <td className="py-3 pr-3 text-gray-400">{user.created_at ? new Date(user.created_at).toLocaleDateString() : 'N/A'}</td>
                   <td className="py-3 pr-3">
@@ -471,6 +476,7 @@ export default function AdminUsers() {
                       <div><span className="text-gray-400">Country:</span> <span className="text-white ml-1">{userDetails.country || 'N/A'}</span></div>
                       <div><span className="text-gray-400">Date of Birth:</span> <span className="text-white ml-1">{userDetails.date_of_birth || 'N/A'}</span></div>
                       <div><span className="text-gray-400">Status:</span> <span className={`ml-1 ${userDetails.status === 'suspended' ? 'text-red-300' : 'text-emerald-300'}`}>{userDetails.status === 'suspended' ? 'Suspended' : 'Active'}</span></div>
+                      <div><span className="text-gray-400">Account Number:</span> <span className="text-white ml-1 font-mono">{userDetails.account_number || 'Not set'}</span></div>
                     </div>
                   </div>
 
@@ -819,13 +825,50 @@ export default function AdminUsers() {
             )}
 
             <div className="space-y-3">
-              <button onClick={() => setVerifyAction('approve')} className={`w-full p-4 rounded-xl border text-left flex items-center gap-3 transition-colors ${verifyAction === 'approve' ? 'bg-emerald-500/20 border-emerald-400/40 text-white' : 'border-white/10 text-gray-300 hover:bg-white/5'}`}>
+              <button onClick={() => { setVerifyAction('approve'); setAccountNumber(''); setAccountNumberMsg('') }} className={`w-full p-4 rounded-xl border text-left flex items-center gap-3 transition-colors ${verifyAction === 'approve' ? 'bg-emerald-500/20 border-emerald-400/40 text-white' : 'border-white/10 text-gray-300 hover:bg-white/5'}`}>
                 <CheckCircle className="w-5 h-5 text-emerald-300" />
                 <div>
                   <p className="font-medium">Approve Verification</p>
                   <p className="text-xs text-gray-400">Mark this user as verified and allow full access</p>
                 </div>
               </button>
+
+              {verifyAction === 'approve' && (
+                <div className="mt-3 p-4 rounded-xl bg-[#0d0d15] border border-emerald-400/30">
+                  <label className="text-sm text-gray-300 mb-2 block">Account Number <span className="text-emerald-400">*</span></label>
+                  <div className="flex gap-2">
+                    <input
+                      value={accountNumber}
+                      onChange={(e) => setAccountNumber(e.target.value)}
+                      placeholder="e.g. NSM-100001"
+                      className="flex-1 px-4 py-2.5 rounded-xl bg-[#0a0a0f] border border-white/[0.12] text-white focus:outline-none focus:border-emerald-500 font-mono"
+                    />
+                    <button
+                      onClick={async () => {
+                        if (!accountNumber.trim()) { setAccountNumberMsg('Enter an account number'); return }
+                        setAccountNumberLoading(true)
+                        setAccountNumberMsg('')
+                        try {
+                          await adminApi.setAccountNumber(selectedUser.id, accountNumber.trim())
+                          setAccountNumberMsg('Account number saved')
+                          loadUsers()
+                        } catch (err) {
+                          setAccountNumberMsg(err.message)
+                        } finally {
+                          setAccountNumberLoading(false)
+                        }
+                      }}
+                      disabled={accountNumberLoading}
+                      className="px-4 py-2.5 rounded-xl bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 hover:bg-emerald-500/25 transition-colors text-sm font-semibold disabled:opacity-50"
+                    >
+                      {accountNumberLoading ? 'Saving...' : 'Save'}
+                    </button>
+                  </div>
+                  {accountNumberMsg && (
+                    <p className={`text-xs mt-1 ${accountNumberMsg === 'Account number saved' ? 'text-emerald-300' : 'text-red-300'}`}>{accountNumberMsg}</p>
+                  )}
+                </div>
+              )}
 
               <button onClick={() => setVerifyAction('request')} className={`w-full p-4 rounded-xl border text-left flex items-center gap-3 transition-colors ${verifyAction === 'request' ? 'bg-amber-500/20 border-amber-400/40 text-white' : 'border-white/10 text-gray-300 hover:bg-white/5'}`}>
                 <FileText className="w-5 h-5 text-amber-300" />
