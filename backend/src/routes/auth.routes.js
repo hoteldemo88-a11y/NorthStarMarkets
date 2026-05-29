@@ -178,7 +178,7 @@ router.post('/login', async (req, res) => {
 router.get('/me', authenticate, async (req, res) => {
   const [rows] = await pool.query(
     `SELECT id, username, email, role, country, risk_tolerance AS riskTolerance, 
-    verification_status AS verificationStatus, id_front AS idFront 
+    verification_status AS verificationStatus, id_front AS idFront, account_number AS accountNumber
     FROM users WHERE id = ? LIMIT 1`, 
     [req.user.id]
   )

@@ -127,7 +127,7 @@ router.get('/users/:id/document', async (req, res) => {
 router.use(authenticate, requireAdmin)
 
 router.get('/users', async (_req, res) => {
-  const [rows] = await pool.query('SELECT id, username, email, role, balance, country, status, verification_status AS verificationStatus, id_front AS idFront, created_at FROM users WHERE role = "client" ORDER BY id DESC')
+  const [rows] = await pool.query('SELECT id, username, email, role, balance, country, status, verification_status AS verificationStatus, id_front AS idFront, account_number AS accountNumber, created_at FROM users WHERE role = "client" ORDER BY id DESC')
   return res.json(rows)
 })
 
@@ -142,7 +142,7 @@ router.get('/users/pending-verification', async (_req, res) => {
 
 router.get('/users/:id', async (req, res) => {
   const userId = Number(req.params.id)
-  const [[user]] = await pool.query('SELECT id, username, email, balance, phone, id_type, id_number, country, date_of_birth, first_name, last_name, annual_income, net_worth, employment_status, source_of_funds, us_citizen, pep_status, tax_residency, risk_tolerance, investment_horizon, max_drawdown, years_trading, products_traded, average_trades_per_month, preferred_markets, strategy_style, preferred_leverage, status, created_at, id_front, verification_status, verification_notes FROM users WHERE id = ? AND role = "client" LIMIT 1', [userId])
+  const [[user]] = await pool.query('SELECT id, username, email, balance, phone, id_type, id_number, country, date_of_birth, first_name, last_name, annual_income, net_worth, employment_status, source_of_funds, us_citizen, pep_status, tax_residency, risk_tolerance, investment_horizon, max_drawdown, years_trading, products_traded, average_trades_per_month, preferred_markets, strategy_style, preferred_leverage, status, created_at, id_front, verification_status, verification_notes, account_number FROM users WHERE id = ? AND role = "client" LIMIT 1', [userId])
   if (!user) return res.status(404).json({ message: 'User not found' })
   return res.json(user)
 })
@@ -205,6 +205,22 @@ router.patch('/users/:id/set-balance', async (req, res) => {
   await pool.query('UPDATE users SET balance = ? WHERE id = ?', [newBalance, userId])
   await logActivity(req.user.id, `Set user(${userId}) balance from ${oldBalance} to ${newBalance}`)
   return res.json({ message: 'Balance set successfully', newBalance, difference })
+})
+
+router.patch('/users/:id/account-number', async (req, res) => {
+  const userId = Number(req.params.id)
+  const { accountNumber } = req.body
+
+  if (!accountNumber || String(accountNumber).trim() === '') {
+    return res.status(400).json({ message: 'Account number is required' })
+  }
+
+  const [[user]] = await pool.query('SELECT id FROM users WHERE id = ? AND role = "client" LIMIT 1', [userId])
+  if (!user) return res.status(404).json({ message: 'User not found' })
+
+  await pool.query('UPDATE users SET account_number = ? WHERE id = ?', [String(accountNumber).trim(), userId])
+  await logActivity(req.user.id, `Account number set for user(${userId}): ${accountNumber}`)
+  return res.json({ message: 'Account number updated successfully', accountNumber: String(accountNumber).trim() })
 })
 
 router.patch('/users/:id/verify', async (req, res) => {
