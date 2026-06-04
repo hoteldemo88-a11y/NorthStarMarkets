@@ -471,6 +471,8 @@ export default function ClientDashboard() {
                     <p className="text-sm text-white">{trade.symbol}</p>
                     <p className="text-xs text-gray-400">{trade.side.toUpperCase()} • {trade.volume} lots • {trade.ticketSymbol || 'N/A'}</p>
                     {trade.contractExpiry && <p className="text-[11px] text-gray-500 mt-0.5">Contract Expiry: {trade.contractExpiry}</p>}
+                    {trade.strikePrice != null && <p className="text-[11px] text-cyan-400 mt-0.5">Strike: ${Number(trade.strikePrice).toLocaleString()}</p>}
+                    {trade.entryPrice != null && <p className="text-[11px] text-amber-400 mt-0.5">Entry: ${Number(trade.entryPrice).toLocaleString()}</p>}
                   </div>
                   <div className="text-right">
                     <p className={`text-sm font-semibold ${Number(trade.pnl) >= 0 ? 'text-emerald-300' : 'text-red-300'}`}>
