@@ -245,7 +245,7 @@ export default function OurGoal() {
             <h2 className="text-3xl md:text-4xl font-bold mb-5 text-white">Ready to Start Trading?</h2>
             <p className="text-lg text-gray-300 mb-8">Join thousands of traders who trust North Star Markets.</p>
             <div className="flex flex-wrap justify-center gap-4">
-              <Link to="/open-account" className="inline-flex items-center gap-2 px-8 py-4 text-base font-semibold text-white bg-gradient-to-r from-indigo-600 to-cyan-500 rounded-xl hover:from-indigo-500 hover:to-cyan-400 transition-all duration-300 shadow-lg shadow-indigo-500/25">Open Account <ArrowRight className="w-5 h-5" /></Link>
+              <Link to="/open-account" className="inline-flex items-center gap-2 px-8 py-4 text-base font-semibold text-white bg-gradient-to-r from-indigo-600 to-cyan-500 rounded-xl hover:from-indigo-500 hover:to-cyan-400 transition-all duration-300 shadow-lg shadow-indigo-500/25">Get Started <ArrowRight className="w-5 h-5" /></Link>
               <Link to="/markets" className="inline-flex items-center gap-2 px-8 py-4 text-base font-semibold text-white bg-white/[0.05] border border-white/10 rounded-xl hover:bg-white/[0.1] transition-all">Explore Markets</Link>
             </div>
           </motion.div>

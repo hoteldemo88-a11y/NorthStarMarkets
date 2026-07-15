@@ -1,5 +1,6 @@
 import express from 'express'
 import cors from 'cors'
+import helmet from 'helmet'
 import bcrypt from 'bcryptjs'
 import dotenv from 'dotenv'
 import path from 'path'
@@ -82,7 +83,73 @@ function buildPriceEntry(price, prevClose, fallback) {
   }
 }
 
-app.use(cors())
+app.use(cors({
+  origin: process.env.ALLOWED_ORIGINS
+    ? process.env.ALLOWED_ORIGINS.split(',')
+    : ['https://northstarmarketsglobal.com', 'http://localhost:5173', 'http://localhost:3000'],
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+}))
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: [
+        "'self'",
+        "'unsafe-inline'",
+        "'unsafe-eval'",
+        "https://s3.tradingview.com",
+        "https://s.tradingview.com",
+      ],
+      styleSrc: [
+        "'self'",
+        "'unsafe-inline'",
+        "https://fonts.googleapis.com",
+        "https://s3.tradingview.com",
+      ],
+      fontSrc: [
+        "'self'",
+        "https://fonts.gstatic.com",
+      ],
+      imgSrc: [
+        "'self'",
+        "data:",
+        "blob:",
+        "https://i.pravatar.cc",
+        "https://s3.tradingview.com",
+      ],
+      connectSrc: [
+        "'self'",
+        "https://query1.finance.yahoo.com",
+        "https://query2.finance.yahoo.com",
+        "https://api.metals.live",
+        "https://api.coingecko.com",
+        "https://s.tradingview.com",
+      ],
+      frameSrc: [
+        "'self'",
+        "https://s.tradingview.com",
+      ],
+      objectSrc: ["'none'"],
+      mediaSrc: ["'self'"],
+      frameAncestors: ["'self'"],
+    },
+  },
+  crossOriginEmbedderPolicy: false,
+  crossOriginResourcePolicy: { policy: 'cross-origin' },
+  hsts: {
+    maxAge: 31536000,
+    includeSubDomains: true,
+    preload: true,
+  },
+  referrerPolicy: { policy: 'strict-origin-when-cross-origin' },
+  noSniff: true,
+  xssFilter: true,
+  frameguard: { action: 'sameorigin' },
+  hidePoweredBy: true,
+  permittedCrossDomainPolicies: { permittedPolicies: 'none' },
+}))
 app.use(express.json({ limit: '1mb' }))
 app.use('/uploads', express.static(path.join(__dirname, '..', '..', 'uploads')))
 

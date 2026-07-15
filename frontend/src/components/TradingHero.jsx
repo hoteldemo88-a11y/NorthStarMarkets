@@ -237,7 +237,7 @@ export default function TradingHero() {
                 className="group relative px-5 sm:px-6 py-2.5 sm:py-3 bg-gradient-to-r from-indigo-600 via-purple-500 to-cyan-500 text-white font-semibold rounded-xl overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-indigo-500/25 text-sm sm:text-base"
               >
                 <span className="relative z-10 flex items-center gap-2">
-                  Open Account <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                  Get Started <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </span>
               </Link>
               <Link 

@@ -18,7 +18,7 @@ export async function sendPasswordResetEmail(email, resetToken) {
   const logoUrl = process.env.EMAIL_LOGO_URL || 'https://northstarmarkets.com/nortstar.png'
   
   const mailOptions = {
-    from: process.env.SMTP_FROM || 'North Star Markets <mailer@northstarmarketsint.com>',
+    from: process.env.SMTP_FROM || 'North Star Markets <mailer@northstarmarketsglobal.com>',
     to: email,
     subject: 'Password Reset - North Star Markets',
     html: `

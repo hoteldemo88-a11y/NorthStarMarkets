@@ -21,7 +21,7 @@ export default function Footer() {
             </Link>
             <p className="text-gray-300 text-sm mb-4 max-w-xs leading-relaxed">North Star Markets provides global market insights, trading research, and financial market access to clients worldwide.</p>
             <div className="flex flex-col gap-2 mb-4 max-w-xs">
-              <Link to="/open-account" className="w-full text-center px-4 py-2.5 text-sm font-semibold text-white bg-gradient-to-r from-indigo-600 to-cyan-500 rounded-lg hover:from-indigo-500 hover:to-cyan-400 transition-all">Open Account</Link>
+              <Link to="/open-account" className="w-full text-center px-4 py-2.5 text-sm font-semibold text-white bg-gradient-to-r from-indigo-600 to-cyan-500 rounded-lg hover:from-indigo-500 hover:to-cyan-400 transition-all">Get Started</Link>
             </div>
             <div className="flex gap-2.5">
               {socialLinks.map((social, i) => (
@@ -75,7 +75,7 @@ export default function Footer() {
           <div className="min-w-0">
             <h4 className="text-white font-semibold mb-3">Contact</h4>
             <ul className="space-y-2">
-              <li className="flex items-center gap-2 text-gray-300 text-sm break-all"><Mail className="w-3.5 h-3.5 flex-shrink-0" />Info@northstarmarketsint.com</li>
+              <li className="flex items-center gap-2 text-gray-300 text-sm break-all"><Mail className="w-3.5 h-3.5 flex-shrink-0" />Info@northstarmarketsglobal.com</li>
               <li className="flex items-center gap-2 text-gray-300 text-sm"><Phone className="w-3.5 h-3.5 flex-shrink-0" />+1 888 511 0840</li>
               <li className="flex items-start gap-2 text-gray-300 text-sm"><MapPin className="w-3.5 h-3.5 mt-0.5" />Singapore</li>
             </ul>

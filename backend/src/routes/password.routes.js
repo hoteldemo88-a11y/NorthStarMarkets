@@ -20,10 +20,9 @@ router.post('/forgot-password', async (req, res) => {
       'SELECT id, email FROM users WHERE email = ? LIMIT 1',
       [email]
     )
-    console.log('User found:', user)
 
     if (!user) {
-      return res.status(404).json({ message: 'This email does not exist in our database' })
+      return res.status(200).json({ message: 'If an account with that email exists, a reset link has been sent.' })
     }
 
     const token = crypto.randomBytes(32).toString('hex')
@@ -41,7 +40,7 @@ router.post('/forgot-password', async (req, res) => {
       console.log('Email sent')
     } catch (emailError) {
       console.error('Email send error:', emailError.message)
-      return res.status(500).json({ message: 'Failed to send email: ' + emailError.message })
+      return res.status(500).json({ message: 'An error occurred. Please try again later.' })
     }
 
     await logActivity(user.id, 'Password reset requested')
@@ -49,7 +48,7 @@ router.post('/forgot-password', async (req, res) => {
     return res.status(200).json({ message: 'Password reset link sent to your email' })
   } catch (error) {
     console.error('Forgot password error:', error)
-    return res.status(500).json({ error: error.message, stack: error.stack })
+    return res.status(500).json({ message: 'An error occurred. Please try again later.' })
   }
 })
 

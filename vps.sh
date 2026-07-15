@@ -46,11 +46,11 @@ CLOUDINARY_API_KEY=373115673631775
 CLOUDINARY_API_SECRET=rjBNynEX6wxyaQBUTmQOC-0HcA0
 SMTP_HOST=smtp.hostinger.com
 SMTP_PORT=465
-SMTP_USER=mailer@northstarmarketsint.com
+SMTP_USER=mailer@northstarmarketsglobal.com
 SMTP_PASS=+8Cii!gM
-SMTP_FROM=North Star Markets <mailer@northstarmarketsint.com>
-FRONTEND_URL=https://northstarmarketsint.com
-EMAIL_LOGO_URL=https://northstarmarketsint.com/nortstar.png
+SMTP_FROM=North Star Markets <mailer@northstarmarketsglobal.com>
+FRONTEND_URL=https://northstarmarketsglobal.com
+EMAIL_LOGO_URL=https://northstarmarketsglobal.com/nortstar.png
 EOF
 
 # Install backend dependencies (always update to get latest packages)

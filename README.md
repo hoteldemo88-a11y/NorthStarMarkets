@@ -10,7 +10,7 @@ Modern multi-page fintech platform with client and admin portals.
 ## Frontend Features
 
 - Marketing pages: Home, About, Markets, FAQ, Careers, Contact, Clients Reviews
-- Navbar includes `Login` and `Open Account` on all public pages
+- Navbar includes `Login` and `Get Started` on all public pages
 - Multi-step account opening form:
   - Create account
   - Personal information

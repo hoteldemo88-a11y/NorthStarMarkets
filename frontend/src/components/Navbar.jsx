@@ -77,7 +77,7 @@ export default function Navbar() {
                   to="/open-account"
                   className="group relative px-6 py-2.5 text-sm font-bold text-white bg-gradient-to-r from-indigo-600 via-indigo-600 to-cyan-500 rounded-xl hover:from-indigo-500 hover:to-cyan-400 transition-all duration-300 shadow-lg shadow-indigo-500/30 hover:shadow-indigo-500/50 flex items-center gap-2"
                 >
-                  <span>Open Account</span>
+                  <span>Get Started</span>
                   <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </Link>
               </>
@@ -147,7 +147,7 @@ export default function Navbar() {
                       Login
                     </Link>
                     <Link to="/open-account" className="block w-full px-6 py-4 text-center text-base font-bold text-white bg-gradient-to-r from-indigo-600 to-cyan-500 rounded-xl shadow-lg shadow-indigo-500/30 flex items-center justify-center gap-2">
-                      <span>Open Account</span>
+                      <span>Get Started</span>
                       <ArrowRight className="w-5 h-5" />
                     </Link>
                   </>

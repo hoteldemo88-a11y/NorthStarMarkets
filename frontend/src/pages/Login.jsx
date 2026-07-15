@@ -87,7 +87,7 @@ export default function Login() {
           <p className="text-sm text-gray-300 mt-6">
             New here?{' '}
             <Link to="/open-account" className="text-cyan-300 hover:text-cyan-200">
-              Open Account
+              Get Started
             </Link>
           </p>
         </motion.div>

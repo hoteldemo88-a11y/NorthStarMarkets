@@ -121,10 +121,10 @@ export default function ForexGuide() {
         <meta name="description" content="Complete forex trading guide for beginners. Learn forex trading strategies, technical analysis, and how to trade currency pairs at North Star Markets." />
         <meta property="og:title" content="Forex Trading Guide | Learn Forex Trading | North Star Markets" />
         <meta property="og:description" content="Complete forex trading guide for beginners. Learn forex trading strategies, technical analysis, and how to trade currency pairs." />
-        <meta property="og:image" content="https://northstarmarketsint.com/northstartmarket.png" />
-        <meta property="og:url" content="https://northstarmarketsint.com/forex-trading-guide" />
+        <meta property="og:image" content="https://northstarmarketsglobal.com/northstartmarket.png" />
+        <meta property="og:url" content="https://northstarmarketsglobal.com/forex-trading-guide" />
         <meta property="og:type" content="website" />
-        <link rel="canonical" href="https://northstarmarketsint.com/forex-trading-guide" />
+        <link rel="canonical" href="https://northstarmarketsglobal.com/forex-trading-guide" />
       </Helmet>
 
       <div className="min-h-screen bg-[#0a0a0f] pt-20">
@@ -203,7 +203,7 @@ export default function ForexGuide() {
               to="/open-account" 
               className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-indigo-600 to-cyan-500 text-white rounded-lg font-semibold hover:from-indigo-500 hover:to-cyan-400 transition-all"
             >
-              Open Account <ChevronRight className="w-4 h-4" />
+              Get Started <ChevronRight className="w-4 h-4" />
             </Link>
           </div>
 

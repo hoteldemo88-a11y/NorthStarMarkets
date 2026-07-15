@@ -124,9 +124,9 @@ export default function Home() {
         <meta name="description" content="Trade global markets with North Star Markets. Access Forex, commodities, metals (gold, silver), energy, and cryptocurrencies with professional tools, tight spreads, and lightning-fast execution." />
         <meta property="og:title" content="North Star Markets | Global Trading Platform" />
         <meta property="og:description" content="Trade global markets with professional-grade tools. Access Forex, commodities, metals, and energy markets." />
-        <meta property="og:image" content="https://northstarmarketsint.com/northstartmarket.png" />
-        <meta property="og:url" content="https://northstarmarketsint.com/" />
-        <link rel="canonical" href="https://northstarmarketsint.com/" />
+        <meta property="og:image" content="https://northstarmarketsglobal.com/northstartmarket.png" />
+        <meta property="og:url" content="https://northstarmarketsglobal.com/" />
+        <link rel="canonical" href="https://northstarmarketsglobal.com/" />
       </Helmet>
       {/* Hero */}
       <section className="relative min-h-screen flex items-center pt-20 overflow-hidden">
@@ -153,7 +153,7 @@ export default function Home() {
 
               <div className="flex flex-wrap gap-4 mb-8">
                 <Link to="/open-account" className="px-8 py-4 text-base font-semibold text-white bg-gradient-to-r from-indigo-600 to-indigo-600 rounded-xl hover:from-indigo-500 hover:to-indigo-500 transition-all duration-300 shadow-lg shadow-indigo-500/25 flex items-center gap-2">
-                  Open Account <ArrowRight className="w-5 h-5" />
+                  Get Started <ArrowRight className="w-5 h-5" />
                 </Link>
                 <Link to="/markets" className="px-8 py-4 text-base font-semibold text-white bg-[#12121a] border border-white/[0.15] rounded-xl hover:bg-white/[0.05] transition-all flex items-center gap-2">
                   <Play className="w-4 h-4" /> Learn More
