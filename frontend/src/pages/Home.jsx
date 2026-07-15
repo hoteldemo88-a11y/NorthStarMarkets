@@ -447,7 +447,7 @@ export default function Home() {
             <h2 className="text-3xl md:text-5xl font-bold mb-5 text-white">Ready to Start Trading?</h2>
             <p className="text-lg text-gray-300 mb-8">Join over 150,000 traders today.</p>
             <div className="flex flex-wrap justify-center gap-4">
-              <Link to="/open-account" className="px-10 py-4 text-base font-semibold text-white bg-gradient-to-r from-indigo-600 to-indigo-600 rounded-xl hover:from-indigo-500 hover:to-indigo-500 transition-all duration-300 shadow-lg shadow-indigo-500/25">Open Free Account</Link>
+              <Link to="/open-account" className="px-10 py-4 text-base font-semibold text-white bg-gradient-to-r from-indigo-600 to-indigo-600 rounded-xl hover:from-indigo-500 hover:to-indigo-500 transition-all duration-300 shadow-lg shadow-indigo-500/25">Get Startede Account</Link>
             </div>
           </motion.div>
         </div>
