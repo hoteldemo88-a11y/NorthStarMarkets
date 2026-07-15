@@ -1,5 +1,5 @@
 # Robots.txt for North Star Markets
-# https://www.northstarmarketsint.com
+# https://northstarmarketsglobal.com
 
 User-agent: *
 Allow: /
@@ -7,7 +7,7 @@ Allow: /northstartmarket.png
 Allow: /og-image.png
 
 # Sitemap
-Sitemap: https://northstarmarketsint.com/sitemap.xml
+Sitemap: https://northstarmarketsglobal.com/sitemap.xml
 
 # Crawl-delay
 Crawl-delay: 1
