@@ -8,7 +8,7 @@ const faqCategories = [
     title: 'About North Star Markets',
     icon: Building2,
     faqs: [
-      { question: 'What is North Star Markets?', answer: 'North Star Markets provides lightning speed access to the financial markets (Currencies, Agricultural Commodities, Metals, Energy and Stocks/Shares) through regulated Tier-1 liquidity providers, for a seamless trading experience!' },
+      { question: 'What is North Star Markets?', answer: 'North Star Markets provides lightning speed access to the financial markets (Currencies, Agricultural Commodities, Metals, Energy and Stocks/Shares) through regulated Tier-1 liquidity providers, for a seamless Market Experience!' },
     ],
   },
   {

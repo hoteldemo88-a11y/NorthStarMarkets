@@ -41,7 +41,7 @@ const marketData = {
     intro: `Energy commodities power the global economy and are among the most actively traded markets worldwide. Prices are influenced by geopolitical tensions, supply and demand dynamics, production levels, and economic growth.`,
     description: `At North Star Markets, traders can access key energy markets including:`,
     items: ['Brent Crude Oil', 'WTI Crude Oil', 'Natural Gas'],
-    outro: `Energy markets provide significant trading opportunities due to their volatility and sensitivity to global economic and political developments.`
+    outro: `Energy markets provide significant Market Outlook due to their volatility and sensitivity to global economic and political developments.`
   }
 }
 

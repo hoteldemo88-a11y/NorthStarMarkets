@@ -81,7 +81,7 @@ const fees = [
 ]
 
 const testimonials = [
-  { name: 'Sarah Chen', role: 'Professional Trader', content: 'North Star Markets has completely transformed my trading experience. The execution speed is unmatched.', rating: 5, image: 'https://i.pravatar.cc/150?img=1' },
+  { name: 'Sarah Chen', role: 'Professional Trader', content: 'North Star Markets has completely transformed my Market Experience. The execution speed is unmatched.', rating: 5, image: 'https://i.pravatar.cc/150?img=1' },
   { name: 'Michael Rodriguez', role: 'Fund Manager', content: 'Best platform I have ever used. Institutional-grade tools and security.', rating: 5, image: 'https://i.pravatar.cc/150?img=3' },
   { name: 'Emily Watson', role: 'Day Trader', content: 'Everything exceeds my expectations. Highly recommended!', rating: 5, image: 'https://i.pravatar.cc/150?img=5' },
   { name: 'David Kim', role: 'Algo Trader', content: 'The API is lightning fast and the spreads are incredibly tight.', rating: 5, image: 'https://i.pravatar.cc/150?img=8' },
@@ -120,9 +120,9 @@ export default function Home() {
   return (
     <div className="bg-[#0a0a0f] w-full max-w-full overflow-x-hidden">
       <Helmet>
-        <title>North Star Markets | Global Trading Platform | Forex, Commodities, Metals & Energy</title>
+        <title>North Star Markets | Global Market Resources | Forex, Commodities, Metals & Energy</title>
         <meta name="description" content="Trade global markets with North Star Markets. Access Forex, commodities, metals (gold, silver), energy, and cryptocurrencies with professional tools, tight spreads, and lightning-fast execution." />
-        <meta property="og:title" content="North Star Markets | Global Trading Platform" />
+        <meta property="og:title" content="North Star Markets | Global Market Resources" />
         <meta property="og:description" content="Trade global markets with professional-grade tools. Access Forex, commodities, metals, and energy markets." />
         <meta property="og:image" content="https://northstarmarketsglobal.com/northstartmarket.png" />
         <meta property="og:url" content="https://northstarmarketsglobal.com/" />
@@ -444,7 +444,7 @@ export default function Home() {
         
         <div className="relative z-10 max-w-4xl mx-auto px-3 sm:px-4 lg:px-6 text-center">
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
-            <h2 className="text-3xl md:text-5xl font-bold mb-5 text-white">Ready to Start Trading?</h2>
+            <h2 className="text-3xl md:text-5xl font-bold mb-5 text-white">Ready for Market Insights?</h2>
             <p className="text-lg text-gray-300 mb-8">Join over 150,000 traders today.</p>
             <div className="flex flex-wrap justify-center gap-4">
               <Link to="/open-account" className="px-10 py-4 text-base font-semibold text-white bg-gradient-to-r from-indigo-600 to-indigo-600 rounded-xl hover:from-indigo-500 hover:to-indigo-500 transition-all duration-300 shadow-lg shadow-indigo-500/25">Get Started</Link>

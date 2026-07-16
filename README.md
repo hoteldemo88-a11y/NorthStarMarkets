@@ -17,7 +17,7 @@ Modern multi-page fintech platform with client and admin portals.
   - Financial information
   - Compliance questions
   - Risk profile
-  - Trading experience
+  - Market Experience
   - Investment preferences
 - Client dashboard:
   - Account balance

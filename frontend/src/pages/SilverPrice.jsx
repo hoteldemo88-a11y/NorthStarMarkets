@@ -6,7 +6,7 @@ import { TrendingUp, TrendingDown, Shield, Clock, Globe, ChevronRight } from 'lu
 const silverPriceContent = `
 ## Silver Prices Today - Market Analysis
 
-Silver, often called the "poor man's gold," offers excellent trading opportunities for investors seeking exposure to precious metals. At North Star Markets, we provide real-time silver prices to help you make informed trading decisions.
+Silver, often called the "poor man's gold," offers excellent Market Outlook for investors seeking exposure to precious metals. At North Star Markets, we provide real-time silver prices to help you make informed trading decisions.
 
 ### Current Silver Market Overview
 
@@ -42,7 +42,7 @@ Today's silver market shows strong momentum with prices reflecting both industri
 
 - Portfolio Diversification: Add stability to your investment mix
 - Inflation Hedge: Protect against purchasing power erosion
-- High Volatility: Greater trading opportunities compared to gold
+- High Volatility: Greater Market Outlook compared to gold
 - Accessibility: Lower entry point than gold per ounce
 
 ### Start Trading Silver Today

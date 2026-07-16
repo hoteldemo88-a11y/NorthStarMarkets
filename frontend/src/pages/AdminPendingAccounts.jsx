@@ -132,7 +132,7 @@ export default function AdminPendingAccounts() {
                   <InfoRow icon={Shield} label="Net Worth" value={account.netWorth} />
                   <InfoRow icon={Shield} label="Source of Funds" value={account.sourceOfFunds} />
                   <InfoRow icon={Shield} label="Risk Tolerance" value={account.riskTolerance} />
-                  <InfoRow icon={Shield} label="Trading Experience" value={account.yearsTrading} />
+                  <InfoRow icon={Shield} label="Market Experience" value={account.yearsTrading} />
                   <InfoRow icon={Shield} label="US Citizen" value={account.usCitizen} />
                   <InfoRow icon={Shield} label="PEP Status" value={account.pepStatus} />
                   <InfoRow icon={Shield} label="Tax Residency" value={account.taxResidency} />

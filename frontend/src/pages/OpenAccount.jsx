@@ -27,7 +27,7 @@ const stepConfig = [
   { key: 'financial', title: 'Financial Information', subtitle: 'Understand your financial profile', icon: FaWallet },
   { key: 'compliance', title: 'Compliance Questions', subtitle: 'Regulatory identity checks', icon: FaShieldAlt },
   { key: 'risk', title: 'Risk Profile', subtitle: 'Select your risk appetite', icon: FaSlidersH },
-  { key: 'experience', title: 'Trading Experience', subtitle: 'Track your market background', icon: FaChartLine },
+  { key: 'experience', title: 'Market Experience', subtitle: 'Track your market background', icon: FaChartLine },
   { key: 'preferences', title: 'Investment Preferences', subtitle: 'Configure your strategy preferences', icon: FaPiggyBank },
 ]
 
