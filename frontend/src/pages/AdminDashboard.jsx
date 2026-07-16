@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { Activity, ArrowRight, Bell, ClipboardList, ShieldCheck, Sparkles, Users, Wallet, X } from 'lucide-react'
+import { Activity, ArrowRight, Bell, ClipboardList, ShieldCheck, Sparkles, Users, Wallet, X, UserCheck } from 'lucide-react'
 import { adminApi } from '../services/adminApi'
 import { AdminPanel, LineChart, SectionTitle, StatTile, StatusPill, TinyBars } from '../components/admin/AdminPrimitives'
 
@@ -11,7 +11,7 @@ export default function AdminDashboard() {
   const [logs, setLogs] = useState([])
   const [error, setError] = useState('')
 
-  const [notifications, setNotifications] = useState({ pendingRequests: 0, newTrades: 0 })
+  const [notifications, setNotifications] = useState({ pendingRequests: 0, newTrades: 0, pendingAccounts: 0 })
   const [lastChecked, setLastChecked] = useState(() => new Date().toISOString())
   const [notificationPopup, setNotificationPopup] = useState({ open: false, title: '', message: '' })
   const notificationCheckRef = useRef(null)
@@ -20,10 +20,11 @@ export default function AdminDashboard() {
   const checkNotifications = async () => {
     try {
       const notifs = await adminApi.getNotifications(lastChecked)
-      const totalNew = notifs.pendingRequests + notifs.newTrades
+      const totalNew = notifs.pendingRequests + notifs.newTrades + notifs.pendingAccounts
       
       if (totalNew > 0) {
         let message = ''
+        if (notifs.pendingAccounts > 0) message += `${notifs.pendingAccounts} pending account${notifs.pendingAccounts > 1 ? 's' : ''} `
         if (notifs.pendingRequests > 0) message += `${notifs.pendingRequests} pending request${notifs.pendingRequests > 1 ? 's' : ''} `
         if (notifs.newTrades > 0) message += `${notifs.newTrades} new trade${notifs.newTrades > 1 ? 's' : ''} `
         

@@ -107,11 +107,11 @@ router.post('/register', async (req, res) => {
 
   const [result] = await pool.query(
     `INSERT INTO users (
-      username,email,password_hash,role,first_name,last_name,phone,country,date_of_birth,
+      username,email,password_hash,role,status,first_name,last_name,phone,country,date_of_birth,
       annual_income,net_worth,employment_status,source_of_funds,us_citizen,pep_status,tax_residency,
       risk_tolerance,investment_horizon,max_drawdown,years_trading,products_traded,
       average_trades_per_month,preferred_markets,strategy_style,preferred_leverage
-    ) VALUES (?, ?, ?, 'client', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    ) VALUES (?, ?, ?, 'client', 'pending', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     [
       username,
       email,
@@ -140,12 +140,12 @@ router.post('/register', async (req, res) => {
     ],
   )
 
-  const [rows] = await pool.query('SELECT id, username, email, role, country, risk_tolerance AS riskTolerance FROM users WHERE id = ?', [result.insertId])
-  const user = rows[0]
-  const token = signToken(user)
-  await logActivity(user.id, `New account opened by ${user.email}`)
+  await logActivity(result.insertId, `New account registration by ${email} - pending approval`)
 
-  return res.status(201).json({ token, user })
+  return res.status(201).json({
+    message: 'Registration submitted successfully. Your account is pending admin approval. You will be able to log in once approved.',
+    pending: true,
+  })
 })
 
 router.post('/login', async (req, res) => {
@@ -155,6 +155,10 @@ router.post('/login', async (req, res) => {
 
   if (!user) return res.status(401).json({ message: 'Invalid credentials' })
   
+  if (user.status === 'pending') {
+    return res.status(403).json({ message: 'Your account is pending admin approval. Please wait for an admin to approve your registration.' })
+  }
+
   if (user.status === 'suspended') {
     return res.status(403).json({ message: 'Your account has been suspended. Please contact support.' })
   }

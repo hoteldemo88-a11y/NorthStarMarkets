@@ -143,7 +143,15 @@ export async function initDatabase() {
   )
 
   if (!statusColumn.length) {
-    await connection.query('ALTER TABLE users ADD COLUMN status ENUM(\'active\', \'suspended\') NOT NULL DEFAULT \'active\'')
+    await connection.query(`ALTER TABLE users ADD COLUMN status ENUM('pending', 'active', 'suspended') NOT NULL DEFAULT 'pending'`)
+  } else {
+    const [statusEnum] = await connection.query(
+      `SELECT COLUMN_TYPE FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = ? AND TABLE_NAME = 'users' AND COLUMN_NAME = 'status'`,
+      [database]
+    )
+    if (statusEnum.length && !statusEnum[0].COLUMN_TYPE.includes('pending')) {
+      await connection.query(`ALTER TABLE users MODIFY COLUMN status ENUM('pending', 'active', 'suspended') NOT NULL DEFAULT 'pending'`)
+    }
   }
 
   const [idTypeColumn] = await connection.query(

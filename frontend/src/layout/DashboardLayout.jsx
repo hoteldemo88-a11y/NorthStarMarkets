@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link, Navigate, Outlet, useLocation } from 'react-router-dom'
-import { LayoutDashboard, Shield, LogOut, Users, Download, Upload, CandlestickChart, Activity, Settings, Sparkles, Menu, X, Bell } from 'lucide-react'
+import { LayoutDashboard, Shield, LogOut, Users, Download, Upload, CandlestickChart, Activity, Settings, Sparkles, Menu, X, Bell, UserCheck } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import { apiRequest } from '../services/api'
 import { adminApi } from '../services/adminApi'
@@ -9,7 +9,7 @@ export default function DashboardLayout() {
   const { user, logout } = useAuth()
   const location = useLocation()
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
-  const [notifications, setNotifications] = useState({ pendingRequests: 0, newTrades: 0, newDepositRequests: 0, newWithdrawRequests: 0, openTrades: 0, pendingDeposits: 0, pendingWithdrawals: 0, totalPendingRequests: 0, totalOpenTrades: 0 })
+  const [notifications, setNotifications] = useState({ pendingRequests: 0, newTrades: 0, newDepositRequests: 0, newWithdrawRequests: 0, openTrades: 0, pendingDeposits: 0, pendingWithdrawals: 0, totalPendingRequests: 0, totalOpenTrades: 0, pendingAccounts: 0 })
   const [seenCounts, setSeenCounts] = useState({ openTrades: 0, pendingDeposits: 0, pendingWithdrawals: 0, totalPendingRequests: 0, totalOpenTrades: 0 })
   const notificationCheckRef = useRef(null)
 
@@ -32,6 +32,7 @@ export default function DashboardLayout() {
         pendingWithdrawals: notifs.pendingWithdrawals || 0,
         totalPendingRequests: notifs.totalPendingRequests || 0,
         totalOpenTrades: notifs.totalOpenTrades || 0,
+        pendingAccounts: notifs.pendingAccounts || 0,
       })
     } catch (err) {
       console.error('Notification check failed:', err)
@@ -76,6 +77,7 @@ export default function DashboardLayout() {
   const adminLinks = [
     { to: '/admin/dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { to: '/admin/users', label: 'Users', icon: Users },
+    { to: '/admin/pending-accounts', label: 'Pending Accounts', icon: UserCheck },
     { to: '/admin/deposits', label: 'Recharges', icon: Download },
     { to: '/admin/withdrawals', label: 'Withdrawals', icon: Upload },
     { to: '/admin/trades', label: 'Trades', icon: CandlestickChart },
@@ -108,7 +110,7 @@ export default function DashboardLayout() {
   }
 
   const totalNotifications = user.role === 'admin' 
-    ? getUnseenCount('totalPendingRequests') + getUnseenCount('totalOpenTrades')
+    ? getUnseenCount('totalPendingRequests') + getUnseenCount('totalOpenTrades') + getUnseenCount('pendingAccounts')
     : getUnseenCount('openTrades') + getUnseenCount('pendingDeposits') + getUnseenCount('pendingWithdrawals')
 
   useEffect(() => {
@@ -146,6 +148,9 @@ export default function DashboardLayout() {
 <nav className="mt-6 space-y-2 lg:flex-1 lg:overflow-y-auto lg:pr-1">
             {links.map((link) => {
               let showBadge = false
+              if (user.role === 'admin' && link.to.includes('pending-accounts') && getUnseenCount('pendingAccounts') > 0) {
+                showBadge = true
+              }
               if (user.role === 'admin' && link.to.includes('deposits') && getUnseenCount('totalPendingRequests') > 0) {
                 showBadge = true
               }

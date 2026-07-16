@@ -25,6 +25,7 @@ import AdminWithdrawals from './pages/AdminWithdrawals'
 import AdminTrades from './pages/AdminTrades'
 import AdminActivityLogs from './pages/AdminActivityLogs'
 import AdminSettings from './pages/AdminSettings'
+import AdminPendingAccounts from './pages/AdminPendingAccounts'
 import GoldPrice from './pages/GoldPrice'
 import SilverPrice from './pages/SilverPrice'
 import ForexGuide from './pages/ForexGuide'
@@ -71,6 +72,7 @@ function App() {
             <Route path="withdrawals" element={<AdminWithdrawals />} />
             <Route path="trades" element={<AdminTrades />} />
             <Route path="activity-logs" element={<AdminActivityLogs />} />
+            <Route path="pending-accounts" element={<AdminPendingAccounts />} />
             <Route path="settings" element={<AdminSettings />} />
           </Route>
         </Routes>

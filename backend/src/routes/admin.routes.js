@@ -140,6 +140,44 @@ router.get('/users/pending-verification', async (_req, res) => {
   return res.json(rows)
 })
 
+router.get('/users/pending-accounts', async (_req, res) => {
+  const [rows] = await pool.query(
+    `SELECT id, username, email, first_name AS firstName, last_name AS lastName, phone, country, 
+    date_of_birth AS dateOfBirth, annual_income AS annualIncome, net_worth AS netWorth,
+    employment_status AS employmentStatus, source_of_funds AS sourceOfFunds,
+    us_citizen AS usCitizen, pep_status AS pepStatus, tax_residency AS taxResidency,
+    risk_tolerance AS riskTolerance, investment_horizon AS investmentHorizon,
+    years_trading AS yearsTrading, created_at
+    FROM users WHERE role = "client" AND status = 'pending' ORDER BY id DESC`
+  )
+  return res.json(rows)
+})
+
+router.patch('/users/:id/approve', async (req, res) => {
+  const userId = Number(req.params.id)
+  const [[user]] = await pool.query('SELECT id, email, status FROM users WHERE id = ? AND role = "client" LIMIT 1', [userId])
+  if (!user) return res.status(404).json({ message: 'User not found' })
+
+  if (user.status !== 'pending') {
+    return res.status(400).json({ message: 'User is not pending approval' })
+  }
+
+  await pool.query('UPDATE users SET status = "active" WHERE id = ?', [userId])
+  await logActivity(req.user.id, `User(${userId}) ${user.email} approved and activated`)
+  return res.json({ message: 'Account approved and activated' })
+})
+
+router.patch('/users/:id/reject-account', async (req, res) => {
+  const userId = Number(req.params.id)
+  const { reason } = req.body
+  const [[user]] = await pool.query('SELECT id, email, status FROM users WHERE id = ? AND role = "client" LIMIT 1', [userId])
+  if (!user) return res.status(404).json({ message: 'User not found' })
+
+  await pool.query('UPDATE users SET status = "suspended" WHERE id = ?', [userId])
+  await logActivity(req.user.id, `User(${userId}) ${user.email} rejected: ${reason || 'No reason'}`)
+  return res.json({ message: 'Account rejected' })
+})
+
 router.get('/users/:id', async (req, res) => {
   const userId = Number(req.params.id)
   const [[user]] = await pool.query('SELECT id, username, email, balance, phone, id_type, id_number, country, date_of_birth, first_name, last_name, annual_income, net_worth, employment_status, source_of_funds, us_citizen, pep_status, tax_residency, risk_tolerance, investment_horizon, max_drawdown, years_trading, products_traded, average_trades_per_month, preferred_markets, strategy_style, preferred_leverage, status, created_at, id_front, verification_status, verification_notes, account_number FROM users WHERE id = ? AND role = "client" LIMIT 1', [userId])
@@ -452,11 +490,16 @@ router.get('/notifications', async (req, res) => {
     'SELECT COUNT(*) as count FROM trades WHERE status = "open"'
   )
 
+  const [pendingAccounts] = await pool.query(
+    'SELECT COUNT(*) as count FROM users WHERE role = "client" AND status = "pending"'
+  )
+
   return res.json({
     pendingRequests: pendingRequests[0].count,
     newTrades: newTrades[0].count,
     totalPendingRequests: totalPendingRequests[0].count,
     totalOpenTrades: totalOpenTrades[0].count,
+    pendingAccounts: pendingAccounts[0].count,
   })
 })
 

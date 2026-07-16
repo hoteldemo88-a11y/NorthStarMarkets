@@ -264,6 +264,7 @@ export default function OpenAccount() {
   const [errors, setErrors] = useState({})
   const [loading, setLoading] = useState(false)
   const [apiError, setApiError] = useState('')
+  const [registrationPending, setRegistrationPending] = useState(false)
   const [countryIso, setCountryIso] = useState('ca')
   const [selectedCountry, setSelectedCountry] = useState('')
   const [captchaVerified, setCaptchaVerified] = useState(false)
@@ -302,6 +303,26 @@ export default function OpenAccount() {
 
   if (user) {
     return null
+  }
+
+  if (registrationPending) {
+    return (
+      <div className="min-h-screen bg-[#08080d] pt-28 pb-16 px-3 sm:px-4 lg:px-6 overflow-x-hidden flex items-center justify-center">
+        <div className="max-w-md w-full text-center">
+          <div className="rounded-3xl border border-white/[0.08] bg-gradient-to-br from-[#141421] via-[#10101a] to-[#0d0d15] p-8">
+            <div className="w-16 h-16 rounded-2xl bg-amber-500/15 border border-amber-400/25 flex items-center justify-center text-amber-300 mx-auto mb-5">
+              <FaShieldAlt className="text-2xl" />
+            </div>
+            <h2 className="text-xl font-bold text-white mb-2">Registration Submitted</h2>
+            <p className="text-sm text-gray-400 mb-6">Your account is pending admin approval. You will be able to log in once an administrator reviews and approves your registration.</p>
+            <p className="text-xs text-gray-500 mb-6">This usually takes 1-24 hours. You will receive an email once approved.</p>
+            <a href="/login" className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-indigo-600 to-cyan-500 text-white font-semibold">
+              Go to Login
+            </a>
+          </div>
+        </div>
+      </div>
+    )
   }
 
   if (!captchaVerified) {
@@ -410,12 +431,16 @@ export default function OpenAccount() {
     setLoading(true)
 
     try {
-      await register({
+      const response = await register({
         ...formData,
         productsTraded: formData.productsTraded.join(','),
         preferredMarkets: formData.preferredMarkets.join(','),
       })
-      navigate('/dashboard?section=main')
+      if (response?.pending) {
+        setRegistrationPending(true)
+      } else {
+        navigate('/dashboard?section=main')
+      }
     } catch (err) {
       setApiError(err.message)
     } finally {

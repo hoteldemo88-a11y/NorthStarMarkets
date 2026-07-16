@@ -22,4 +22,7 @@ export const adminApi = {
   requestDocuments: (userId, message) => apiRequest(`/admin/users/${userId}/request-documents`, { method: 'PATCH', body: JSON.stringify({ message }) }),
   getVerificationDocs: (userId) => apiRequest(`/admin/users/${userId}/verification-docs`),
   setAccountNumber: (userId, accountNumber) => apiRequest(`/admin/users/${userId}/account-number`, { method: 'PATCH', body: JSON.stringify({ accountNumber }) }),
+  getPendingAccounts: () => apiRequest('/admin/users/pending-accounts'),
+  approveAccount: (userId) => apiRequest(`/admin/users/${userId}/approve`, { method: 'PATCH' }),
+  rejectAccount: (userId, reason) => apiRequest(`/admin/users/${userId}/reject-account`, { method: 'PATCH', body: JSON.stringify({ reason }) }),
 }

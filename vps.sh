@@ -29,7 +29,7 @@ git reset --hard origin/main
 # Recreate frontend .env (not tracked in git)
 cat > "$FRONTEND_DIR/.env" << EOF
 VITE_API_URL=/api
-VITE_RECAPTCHA_SITEKEY=6Ld4XlctAAAAAHp87tviY_YSQAwSVipfn1Mg2j88
+VITE_RECAPTCHA_SITEKEY=6LdOY1ctAAAAAHQE-_-_D6jMJmZoZEmY3aJxS7PM
 EOF
 
 # Recreate backend .env with Cloudinary credentials (not tracked in git)
@@ -54,7 +54,7 @@ SMTP_PASS=+8Cii!gM
 SMTP_FROM=North Star Markets <mailer@northstarmarketsglobal.com>
 FRONTEND_URL=https://northstarmarketsglobal.com
 EMAIL_LOGO_URL=https://northstarmarketsglobal.com/nortstar.png
-RECAPTCHA_SECRET_KEY=6Ld4XlctAAAAAORIvbbZa4-wDr7Yk4fu6y747sM1
+RECAPTCHA_SECRET_KEY=6LdOY1ctAAAAAOmi76aDsDz2Q3LmbYty2aHT_PnW
 EOF
 
 # Install backend dependencies (always update to get latest packages)

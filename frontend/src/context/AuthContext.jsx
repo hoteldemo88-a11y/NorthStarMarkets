@@ -79,6 +79,7 @@ export function AuthProvider({ children }) {
         throw new Error(`Server error: ${text.substring(0, 200)}`)
       }
       if (!response.ok) throw new Error(res.message || 'Registration failed')
+      if (res.pending) return { pending: true }
       setUser(res.user)
       localStorage.setItem('token', res.token)
       return res.user
