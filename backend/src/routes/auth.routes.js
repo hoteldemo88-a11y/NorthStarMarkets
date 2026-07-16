@@ -5,6 +5,8 @@ import { authenticate } from '../middleware/auth.js'
 import { signToken } from '../utils/tokens.js'
 import { logActivity } from '../utils/activity.js'
 
+const RECAPTCHA_SECRET = process.env.RECAPTCHA_SECRET_KEY || ''
+
 const router = Router()
 
 router.post('/register', async (req, res) => {

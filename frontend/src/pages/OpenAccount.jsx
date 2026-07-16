@@ -1,4 +1,4 @@
-import { useMemo, useState, useEffect } from 'react'
+import { useMemo, useState, useEffect, useRef, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { AnimatePresence, motion } from 'framer-motion'
 import {
@@ -256,6 +256,8 @@ function getCountryFromLocale() {
   return locale || 'us'
 }
 
+const RECAPTCHA_SITEKEY = import.meta.env.VITE_RECAPTCHA_SITEKEY || '6LdPLACEHOLDER'
+
 export default function OpenAccount() {
   const [step, setStep] = useState(0)
   const [formData, setFormData] = useState(initialData)
@@ -264,6 +266,9 @@ export default function OpenAccount() {
   const [apiError, setApiError] = useState('')
   const [countryIso, setCountryIso] = useState('ca')
   const [selectedCountry, setSelectedCountry] = useState('')
+  const [captchaVerified, setCaptchaVerified] = useState(false)
+  const [captchaError, setCaptchaError] = useState('')
+  const captchaRef = useRef(null)
   const { user, loading: authLoading, register } = useAuth()
   const navigate = useNavigate()
 
@@ -275,6 +280,22 @@ export default function OpenAccount() {
     }
   }, [user, navigate])
 
+  useEffect(() => {
+    const timer = setInterval(() => {
+      if (window.grecaptcha && captchaRef.current && !captchaVerified) {
+        window.grecaptcha.render(captchaRef.current, {
+          sitekey: RECAPTCHA_SITEKEY,
+          callback: () => setCaptchaVerified(true),
+          'expired-callback': () => setCaptchaVerified(false),
+          'error-callback': () => setCaptchaError('CAPTCHA failed. Please try again.'),
+          theme: 'dark',
+        })
+        clearInterval(timer)
+      }
+    }, 500)
+    return () => clearInterval(timer)
+  }, [captchaVerified])
+
   if (authLoading) {
     return <div className="min-h-screen bg-[#090910] text-white flex items-center justify-center">Loading...</div>
   }
@@ -282,6 +303,27 @@ export default function OpenAccount() {
   if (user) {
     return null
   }
+
+  if (!captchaVerified) {
+    return (
+      <div className="min-h-screen bg-[#08080d] pt-28 pb-16 px-3 sm:px-4 lg:px-6 overflow-x-hidden flex items-center justify-center">
+        <div className="max-w-md w-full text-center">
+          <div className="rounded-3xl border border-white/[0.08] bg-gradient-to-br from-[#141421] via-[#10101a] to-[#0d0d15] p-8">
+            <div className="w-16 h-16 rounded-2xl bg-indigo-500/15 border border-indigo-400/25 flex items-center justify-center text-indigo-300 mx-auto mb-5">
+              <FaShieldAlt className="text-2xl" />
+            </div>
+            <h2 className="text-xl font-bold text-white mb-2">Verify You're Human</h2>
+            <p className="text-sm text-gray-400 mb-6">Complete the CAPTCHA below to access the registration form.</p>
+            <div className="flex justify-center mb-4">
+              <div ref={captchaRef}></div>
+            </div>
+            {captchaError && <p className="text-sm text-red-400">{captchaError}</p>}
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   const currentStep = stepConfig[step]
 
   const setField = (name, value) => {
