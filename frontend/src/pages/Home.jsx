@@ -57,7 +57,7 @@ function Counter({ value, suffix, prefix, decimals, label, delay }) {
 }
 
 const markets = [
-  { icon: Currency, name: 'Currencies', desc: 'Trade major, minor & exotic pairs', color: 'from-blue-500 to-cyan-400' },
+  { icon: Currency, name: 'Currencies', desc: 'major, minor & exotic pairs', color: 'from-blue-500 to-cyan-400' },
   { icon: Wheat, name: 'Agricultural', desc: 'Wheat, corn, soybeans & more', color: 'from-green-500 to-emerald-400' },
   { icon: Gem, name: 'Metals', desc: 'Gold, silver, platinum', color: 'from-amber-500 to-yellow-400' },
   { icon: EnergyIcon, name: 'Energy', desc: 'Oil, natural gas & energy', color: 'from-orange-500 to-red-400' },
@@ -146,7 +146,7 @@ export default function Home() {
 
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6 leading-tight text-white">
                 North Star Markets<br />
-                <span className="bg-gradient-to-r from-indigo-400 via-cyan-400 to-emerald-400 bg-clip-text text-transparent">Global Financial Markets & Trading Insights</span>
+                <span className="bg-gradient-to-r from-indigo-400 via-cyan-400 to-emerald-400 bg-clip-text text-transparent">Global Financial Markets & Worldwide Insights</span>
               </h1>
 
               <p className="text-lg text-gray-300 mb-8 max-w-lg">Experience next-generation trading with institutional-grade tools, lightning-fast execution, and unmatched security.</p>
@@ -205,8 +205,8 @@ export default function Home() {
       <section className="py-24 bg-[#0a0a0f] overflow-hidden">
         <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 mb-16">
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center">
-            <h2 className="text-3xl md:text-5xl font-bold mb-4 text-white">Trusted By Traders <span className="bg-gradient-to-r from-indigo-400 via-cyan-400 to-emerald-400 bg-clip-text text-transparent">Worldwide</span></h2>
-            <p className="text-gray-400 text-lg">Join thousands of successful traders achieving their financial goals</p>
+            <h2 className="text-3xl md:text-5xl font-bold mb-4 text-white">Your Trusted Source for Market Insights <span className="bg-gradient-to-r from-indigo-400 via-cyan-400 to-emerald-400 bg-clip-text text-transparent">Worldwide</span></h2>
+            <p className="text-gray-400 text-lg">Join thousands staying informed with professional market insights</p>
           </motion.div>
         </div>
 
@@ -301,7 +301,7 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6">
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold mb-4 text-white">Our <span className="bg-gradient-to-r from-indigo-400 via-cyan-400 to-emerald-400 bg-clip-text text-transparent">Markets</span></h2>
-            <p className="text-gray-300 max-w-xl mx-auto">Trade diverse financial instruments across global markets.</p>
+            <p className="text-gray-300 max-w-xl mx-auto">Explore global financial markets and asset classes</p>
           </motion.div>
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
@@ -444,7 +444,7 @@ export default function Home() {
         
         <div className="relative z-10 max-w-4xl mx-auto px-3 sm:px-4 lg:px-6 text-center">
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
-            <h2 className="text-3xl md:text-5xl font-bold mb-5 text-white">Ready for Market Insights?</h2>
+            <h2 className="text-3xl md:text-5xl font-bold mb-5 text-white">Join thousands staying informed with professional market insights</h2>
             <p className="text-lg text-gray-300 mb-8">Join over 150,000 traders today.</p>
             <div className="flex flex-wrap justify-center gap-4">
               <Link to="/open-account" className="px-10 py-4 text-base font-semibold text-white bg-gradient-to-r from-indigo-600 to-indigo-600 rounded-xl hover:from-indigo-500 hover:to-indigo-500 transition-all duration-300 shadow-lg shadow-indigo-500/25">Get Started</Link>
