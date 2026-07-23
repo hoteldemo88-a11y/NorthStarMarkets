@@ -83,7 +83,7 @@ export default function Footer() {
         </div>
 
         <div className="mt-8 pt-6 border-t border-white/[0.08] flex flex-col md:flex-row items-center justify-between gap-4">
-          <p className="text-gray-300 text-sm">© {new Date().getFullYear()} North Star Markets. All rights reserved.</p>
+          <p className="text-gray-300 text-sm">© {new Date().getFullYear()} North Star Markets. All rights reserved. North Star International | UEN: 202300679N |Incorporated in Singapore</p>
           <div className="flex flex-wrap justify-center gap-4 sm:gap-6">
             <Link to="/about" onClick={() => window.scrollTo(0, 0)} className="text-gray-300 text-sm hover:text-white transition-colors">Privacy Policy</Link>
             <Link to="/about" onClick={() => window.scrollTo(0, 0)} className="text-gray-300 text-sm hover:text-white transition-colors">Cookie Policy</Link>
