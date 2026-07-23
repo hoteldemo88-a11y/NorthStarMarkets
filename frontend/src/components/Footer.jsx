@@ -92,9 +92,7 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="mt-4 pt-4 border-t border-white/[0.08]">
-          <p className="text-gray-400 text-xs text-center">Risk Disclosure: Trading financial markets involves significant risk and may not be suitable for all individuals. Past performance is not indicative of future results.</p>
-        </div>
+        
       </div>
     </footer>
   )
